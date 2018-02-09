@@ -1,0 +1,8 @@
+{
+		"FftOnset"	: {
+			"preset0"	: {
+				"thresh"	: 0,
+				"relaxtime"	: 0
+			}
+		}
+	}

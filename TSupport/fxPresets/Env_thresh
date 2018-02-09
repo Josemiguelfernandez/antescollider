@@ -1,0 +1,33 @@
+var o, p;
+o = [
+	IdentityDictionary.prNew,  Array.prNew(32),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(5)
+];
+p = [
+	// IdentityDictionary
+	0, [ array: o[1],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: false ],  
+	// Array
+	1, [ 'env_thresh_cclaire',  o[2],  nil,  nil,  
+		nil,  nil,  'env_thresh2',  o[3],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'env_thresh_cclaire2',  o[4],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'preset0',  o[5],  
+		nil,  nil,  nil,  nil ],  
+	// Array
+	2, [ 1.000000,  0.570000,  0.620000,  0.490000,  
+		0.000000 ],  
+	// Array
+	3, [ 1.000000,  0.080000,  0.120000,  0.490000,  
+		0.000000 ],  
+	// Array
+	4, [ 1.000000,  0.460000,  0.560000,  0.490000,  
+		0.000000 ],  
+	// Array
+	5, [ 0,  0,  0,  0,  
+		0 ]
+];
+prUnarchive(o,p);

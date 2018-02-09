@@ -1,0 +1,16 @@
+{
+	"ATK_TransPushY16"	: {
+		"preset0"	: {
+			"angle"	: 0,
+			"azim"	: 0,
+			"elev"	: 0,
+			"amp"	: 0
+		},
+		"MR1"	: {
+			"angle"	: 0.211,
+			"azim"	: 44.24,
+			"elev"	: 181.606,
+			"amp"	: 1.5038509674286
+		}
+	}
+}

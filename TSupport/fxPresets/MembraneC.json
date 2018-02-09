@@ -1,0 +1,11 @@
+{
+		"MembraneC"	: {
+			"preset0"	: {
+				"freq"	: 0,
+				"tension"	: 0,
+				"loss"	: 0,
+				"lag"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

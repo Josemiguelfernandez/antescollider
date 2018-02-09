@@ -1,0 +1,16 @@
+{
+			"TSVF"	: {
+				"preset0"	: {
+					"sin_freq"	: 0,
+					"sin_mul"	: 0,
+					"sin_add"	: 0,
+					"reson"	: 0,
+					"low"	: 0,
+					"band"	: 0,
+					"high"	: 0,
+					"notch"	: 0,
+					"peak"	: 0,
+					"amp"	: 0
+				}
+			}
+		}

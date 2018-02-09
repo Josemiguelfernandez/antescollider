@@ -1,0 +1,60 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(5),  Array.prNew(5),  Array.prNew(9),  
+	List.prNew,  Array.prNew(3),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  List.prNew,  
+	Array.prNew,  Array.prNew(3),  Array.prNew(2),  Array.prNew(3),  
+	Array.prNew(2),  Array.prNew(5),  Array.prNew(4),  List.prNew,  
+	Array.prNew
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2],  o[9],  o[13],  o[15],  
+		o[17] ],  
+	// Array
+	2, [ 'TAddic_5_8',  1,  o[3],  o[4],  
+		nil ],  
+	// Array
+	3, [ 1.0199999809265,  -9.0758771896362,  0.0,  -600.0,  
+		0.0,  0.0,  0.0,  2.0,  
+		0.20000000298023 ],  
+	// List
+	4, [ array: o[5] ],  
+	// Array
+	5, [ o[6],  o[7],  o[8] ],  
+	// Array
+	6, [ 1963.9300537109,  1573.0200195312,  2451.9899902344,  3729.3100585938,  
+		3733.2199707031 ],  
+	// Array
+	7, [ 1.3899999856949,  0.99000000953674,  1.3899999856949,  1.7200000286102,  
+		2.0 ],  
+	// Array
+	8, [ 9.9999997473788e-05,  9.9999997473788e-05,  9.9999997473788e-05,  9.9999997473788e-05,  
+		9.9999997473788e-05 ],  
+	// Array
+	9, [ 'TGranInterpExt',  1,  o[10],  o[11],  
+		nil ],  
+	// Array
+	10, [ 0.15399999916553,  0.0,  0.0,  0.0,  
+		0.0 ],  
+	// List
+	11, [ array: o[12] ],  
+	// Array
+	13, [ 'TMFxShift2',  1,  o[14] ],  
+	// Array
+	14, [ -631.32946777344,  0.0 ],  
+	// Array
+	15, [ 'TMFxPitch2',  1,  o[16] ],  
+	// Array
+	16, [ 2.1059999465942,  0.0 ],  
+	// Array
+	17, [ 'TPan8',  1,  o[18],  o[19],  
+		nil ],  
+	// Array
+	18, [ -1.2000000476837,  2.0,  0.0,  0.0 ],  
+	// List
+	19, [ array: o[20] ]
+];
+prUnarchive(o,p);

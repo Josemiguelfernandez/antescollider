@@ -1,0 +1,18 @@
+{
+			"TRingMod1"	: {
+				"preset0"	: {
+					"modfreq"	: 0,
+					"ampmod"	: 0,
+					"lpfilt"	: 0,
+					"hpfilt"	: 0,
+					"amp"	: 0
+				},
+				"alto-mes316"	: {
+					"modfreq"	: 123.7,
+					"ampmod"	: 9.84036,
+					"lpfilt"	: 10000,
+					"hpfilt"	: 50,
+					"amp"	: 0
+				}
+			}
+		}

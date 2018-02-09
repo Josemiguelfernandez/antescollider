@@ -1,0 +1,35 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(4),  Array.prNew(5),  Array.prNew(1),  
+	Array.prNew(5),  Array.prNew(8),  Array.prNew(5),  Array.prNew(8),  
+	Array.prNew(5),  Array.prNew(4)
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2],  o[4],  o[6],  o[8] ],  
+	// Array
+	2, [ 'AudioInput',  1,  o[3],  nil,  
+		nil ],  
+	// Array
+	3, [ 0.000000 ],  
+	// Array
+	4, [ 'TAdCVerb',  1,  o[5],  nil,  
+		nil ],  
+	// Array
+	5, [ 25.460000,  0.100000,  0.020000,  0.600000,  
+		0.995000,  1.000000,  1.000000,  0.000000 ],  
+	// Array
+	6, [ 'TNCabinet',  1,  o[7],  nil,  
+		nil ],  
+	// Array
+	7, [ 1.599862,  3029.000000,  0.552590,  0.013087,  
+		73.230982,  46.599103,  28.000000,  -17.000000 ],  
+	// Array
+	8, [ 'TPan8',  1,  o[9],  nil,  
+		nil ],  
+	// Array
+	9, [ 0.220000,  2.783000,  0.200000,  0.000000 ]
+];
+prUnarchive(o,p);

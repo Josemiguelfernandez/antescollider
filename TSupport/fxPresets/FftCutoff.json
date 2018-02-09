@@ -1,0 +1,8 @@
+{
+		"FftCutoff"	: {
+			"preset0"	: {
+				"wipe"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

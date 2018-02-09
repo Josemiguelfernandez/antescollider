@@ -1,0 +1,14 @@
+{
+			"TPlaybuf1"	: {
+				"preset0"	: {
+					"pos"	: 0,
+					"rate"	: 0,
+					"amp"	: 0
+				},
+				"buff1"	: {
+					"pos"	: 1,
+					"rate"	: 1,
+					"amp"	: 0.998
+				}
+			}
+		}

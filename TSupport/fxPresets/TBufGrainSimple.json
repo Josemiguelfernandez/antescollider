@@ -1,0 +1,10 @@
+{
+	"TBufGrainSimple"	: {
+		"default"	: {
+			"dur"	: 0.01,
+			"sndbuf"	: 858,
+			"amp"	: 0,
+			"envbuf"	: 38
+		}
+	}
+}

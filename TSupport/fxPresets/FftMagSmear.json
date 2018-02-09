@@ -1,0 +1,12 @@
+{
+		"FftMagSmear"	: {
+			"multi1"	: {
+				"bins"	: 7.598,
+				"amp"	: 1.410971
+			},
+			"preset0"	: {
+				"bins"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

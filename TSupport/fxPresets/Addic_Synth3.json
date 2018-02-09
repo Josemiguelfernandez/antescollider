@@ -1,0 +1,36 @@
+{
+	"Addic_Synth3"	: {
+		"preset0"	: {
+			"transp"	: 0,
+			"amp"	: 0,
+			"d1"	: 0,
+			"d2"	: 0,
+			"d3"	: 0,
+			"d4"	: 0,
+			"d5"	: 0,
+			"shift"	: 0,
+			"distor"	: 0,
+			"lag"	: 0,
+			"lagGen"	: 0,
+			"amp0"	: 0,
+			"amp1"	: 0,
+			"amp2"	: 0,
+			"amp3"	: 0,
+			"amp4"	: 0,
+			"amp5"	: 0,
+			"amp6"	: 0,
+			"amp7"	: 0,
+			"amp8"	: 0,
+			"amp9"	: 0,
+			"amp10"	: 0,
+			"amp11"	: 0,
+			"amp12"	: 0,
+			"amp13"	: 0,
+			"amp14"	: 0,
+			"amp15"	: 0,
+			"width"	: 0,
+			"lag_spat"	: 0,
+			"pos"	: 0
+		}
+	}
+}

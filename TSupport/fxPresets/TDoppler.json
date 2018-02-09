@@ -1,0 +1,11 @@
+{
+		"TDoppler"	: {
+			"preset0"	: {
+				"speed"	: 0,
+				"dist"	: 0,
+				"panoffset"	: 0,
+				"dirt"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

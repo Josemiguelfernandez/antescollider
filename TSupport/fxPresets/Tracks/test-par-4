@@ -1,0 +1,33 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(4),  Array.prNew(5),  Array.prNew(2),  
+	Array.prNew(5),  Array.prNew(2),  Array.prNew(5),  Array.prNew(2),  
+	Array.prNew(5),  Array.prNew(2)
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2],  o[4],  o[6],  o[8] ],  
+	// Array
+	2, [ 'TMFxSin2',  1,  o[3],  nil,  
+		nil ],  
+	// Array
+	3, [ 476.589582,  -10.788056 ],  
+	// Array
+	4, [ 'TMFxSin2',  1,  o[5],  nil,  
+		nil ],  
+	// Array
+	5, [ 452.495184,  -16.142026 ],  
+	// Array
+	6, [ 'TMFxSin2',  1,  o[7],  nil,  
+		nil ],  
+	// Array
+	7, [ 937.663653,  -14.531649 ],  
+	// Array
+	8, [ 'TMFxSin2',  1,  o[9],  nil,  
+		nil ],  
+	// Array
+	9, [ 184.824069,  -17.765302 ]
+];
+prUnarchive(o,p);

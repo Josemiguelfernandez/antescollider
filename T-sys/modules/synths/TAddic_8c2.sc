@@ -1,0 +1,87 @@
+TAddic_8c2 : Tmodule2 {
+
+	classvar n = 20; //numero de componentes
+	// : TEffectModule
+	*def
+	{
+		^SynthDef(\TAddic_8c2, {|out = -1, outbus = -2, transp = 1.0, amp = 0, d = 0, shift = 0, distor = 0, lfnoise_amp = 0.001, lag = 1, ampmod = 0, gate = 1, free = 1, matrix_ramp = 0.01, width = 2, orientation = 0, lag_spat = 0.2|
+
+			var freqs, amps, ringtimes, sig, pos, conca, len, lista, distarray, offset, envgate, envpause;
+
+			envgate = EnvGen.kr(Env.asr(matrix_ramp, 1.0, matrix_ramp, \welch ), free, doneAction:2);
+			envpause = EnvGen.kr(Env.asr(matrix_ramp, 1.0, matrix_ramp, \welch ), gate, doneAction:1);
+			//offset = Line.kr(0, -0.02, 60);
+			distarray = Array.series(n, 1);
+			freqs = \freqs.kr(Array.fill(n, { [(40 + 75.rand) * (0.50.midiratio),(40 + 75.rand)].choose.midicps}));
+			amps = \amps.kr(Array.fill(n, { 0.02 + 0.07.rand }));
+			pos = \pos.kr((Array.series(n, 0)*(2/n)).postln);
+
+			sig = Mix.fill(n*3, { |i|
+				var ampc;
+				ampc = AmpCompA.kr(freqs.wrapAt(i));
+
+				PanAz.ar(8, SinOsc.ar(Lag.kr((freqs.wrapAt(i)*transp) + (Rand(-2.0, 2.0) * d  + shift) * (distarray.wrapAt(i) ** distor), (0.5 + 2.0.rand)*lag) , 0, Lag.kr(amps.wrapAt(i) * max(0, LFDNoise3.kr(lfnoise_amp,1.0)), ((0.5 + 2.0.rand)*lag)) * SinOsc.ar(ampmod, 0, 0.5, 1)), Lag.kr(pos.wrapAt(i), lag_spat), 1, width, orientation) * ampc;
+		 	});
+
+
+/*
+			pos = (freqs*transp+shift) * (distarray ** distor);
+			conca = [pos, amps].flop;
+			len = conca.size*2;
+			lista = conca.reshape(len);
+			SendReply.kr(Impulse.kr(30), '/mi-list', Lag.kr(lista, lag));*/
+
+			sig = 0.25 * sig * envgate * envpause;
+
+
+			Out.ar(out, sig*amp.dbamp.lag(1));
+			// Out.ar(outbus, sig*amp.dbamp.lag(1))
+
+		}).load;
+	}
+	// TAddic_8c2.def
+	*metadata
+	{
+	 ^(metadata: (
+			synthdefname: "TAddic_8c2",
+			type: \gen,
+			main: \transp,
+			sliders: [
+				\transp -> ControlSpec(0.001, 5, \lin, 0.001, 1, \transp),
+				\amp -> ControlSpec(0.ampdb, 2.ampdb, \db, 0, 0, \dB),
+				\d -> ControlSpec(0, 200, \lin, 0.1, 0, \desv),
+				\shift -> ControlSpec(-1200, 1200, \lin, 0, 0, \shift),
+				\distor -> ControlSpec(-2, 2, \lin, 0.001, 0, \distor),
+				\lfnoise_amp -> ControlSpec(0, 20, \lin, 0.001, 0.001, \lfamp),
+				\lag -> ControlSpec(0.001, 10, \lin, 0.001, 1, \lag),
+				\width -> ControlSpec(0, 8, \lin, 0.001, 2, \width),
+				\lag_spat -> ControlSpec(0.001, 10, \lin, 0.001, 0.2, \lag_spat)
+			],
+			multisliders: [
+				\freqs -> [ControlSpec(20, 10000, \exp, 0.01, 20, \freqs), n],
+				\amps -> [ControlSpec(0, 2, \amp, 0.01, 0.02), n],
+				\pos -> [ControlSpec(0.0001, 2, \lin, 0, 0.3, \vol), n]
+			],
+			\buttons: [ //[<\que controla>, <\parametro>, <action (funcion, listas, elementos,etc)>]
+				\freqs -> [\multisliders, \freqs, {
+					var freq_min = 40, freq_max = 75; //en midi quart de ton
+					[(freq_min + freq_max.rand) * (0.50.midiratio),(freq_min + freq_max.rand)].choose.midicps}, n],
+				\amps -> [\multisliders, \amps,{ rrand(0.0, 2.0) }, n],
+				\pos -> [\multisliders, \pos, { rrand(0.0, 2.0) }, n],
+				\pos_rt -> [\multisliders, \pos, Array.series(n, 0)*(2/n)],
+				\fq_sr -> [\multisliders, \freqs, Array.series(n, 1).linlin(1, n, 20, 10000)]
+			]
+		))
+
+	}
+
+}
+
+/*x = Synth(\adict_spat_8, [\out, 0, \d, 10.5, \amps, [Array.fill(32, { 1.2 + 1.7.rand })], \freqs, [Array.fill(32, { [(40 + 75.rand) * (0.50.midiratio),(40 + 75.rand)].choose.midicps})]] );
+x = Synth(\adict_spat_8)
+//a = (metadata: (synthdefname: "adict_spat_8"))
+x = Synth(\adict_spat_8, [\xFade, 1, \transp, 0.723, \amp, 2, \d, 18.8, \shift, 0, \distor, 0, \lfnoise_amp, 0.001, \lag, 1, \width, 2, \lag_spat, 0.2, \freqs, [ 170.93, 184.06, 193.21, 202.12, 222.8, 243.78, 267.86, 289.32, 310.31, 329.47, 367.88, 433.97, 481.55, 508.8, 550.02, 594.59, 720.28, 931.13, 1072.16, 1347.29, 1627.78, 2064.02, 2571.6, 3061.33, 3674.79, 4115.6, 4260.83, 4489.38, 4819.98, 5532.93, 5957.8, 3822.1 ], \amps, [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1.91 ]])*/
+// TAddic_8c2.def
+
+
+//a[\metadata][\synthdefname]*/

@@ -1,0 +1,14 @@
+{
+		"FftOnsetReplay"	: {
+			"preset0"	: {
+				"thresh"	: 0,
+				"relaxtime"	: 0,
+				"amp"	: 0
+			},
+			"percu1"	: {
+				"thresh"	: 0.2,
+				"relaxtime"	: 0.27,
+				"amp"	: 1.031596
+			}
+		}
+	}

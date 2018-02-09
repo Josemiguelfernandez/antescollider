@@ -1,0 +1,12 @@
+{
+			"TPWaveDiv8"	: {
+				"preset0"	: {
+					"lag"	: 0,
+					"div"	: 0,
+					"amp"	: 0,
+					"eq"	: 0,
+					"lss"	: 0,
+					"am"	: 0
+				}
+			}
+		}

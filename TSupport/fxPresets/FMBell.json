@@ -1,0 +1,10 @@
+{
+	"FMBell"	: {
+		"default"	: {
+			"freq"	: 110,
+			"attack"	: 0.02,
+			"decay"	: 8,
+			"amp"	: 0
+		}
+	}
+}

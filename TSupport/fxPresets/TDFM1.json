@@ -1,0 +1,10 @@
+{
+		"TDFM1"	: {
+			"preset0"	: {
+				"freq"	: 0,
+				"res"	: 0,
+				"noiselevel"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

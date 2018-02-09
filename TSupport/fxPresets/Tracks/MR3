@@ -1,0 +1,24 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(2),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(8)
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2],  o[4] ],  
+	// Array
+	2, [ 'Synth_tw_196',  1,  o[3],  nil,  
+		nil ],  
+	// Array
+	3, [ 811.0,  0.1,  855.0,  855.0,  
+		-20.0 ],  
+	// Array
+	4, [ 'TGranIn',  1,  o[5],  nil,  
+		nil ],  
+	// Array
+	5, [ 10.9,  47.157348431234,  0.023,  0.068186566912682,  
+		0.0,  0.98963030364304,  0.001,  0.0 ]
+];
+prUnarchive(o,p);

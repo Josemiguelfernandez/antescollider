@@ -1,0 +1,28 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(3),  Array.prNew(5),  Array.prNew(6),  
+	Array.prNew(5),  Array.prNew(1),  Array.prNew(5),  Array.prNew(3)
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2],  o[4],  o[6] ],  
+	// Array
+	2, [ 'Laconicism_14',  1,  o[3],  nil,  
+		nil ],  
+	// Array
+	3, [ 39.031983993379,  0.059643446904593,  52.664336766251,  0.037411807685762,  
+		0.1,  0.0 ],  
+	// Array
+	4, [ 'FftMagNoise',  1,  o[5],  nil,  
+		nil ],  
+	// Array
+	5, [ 1.2135195821713 ],  
+	// Array
+	6, [ 'FftRandComb',  1,  o[7],  nil,  
+		nil ],  
+	// Array
+	7, [ 0.0,  0.623,  5.0417840433079 ]
+];
+prUnarchive(o,p);

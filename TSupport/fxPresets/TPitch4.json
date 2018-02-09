@@ -1,0 +1,60 @@
+{
+			"TPitch4"	: {
+				"piano_parte2"	: {
+					"pitch1"	: 0.974,
+					"pitch2"	: 1.144,
+					"pitch3"	: 0.907,
+					"pitch4"	: 1.177,
+					"amp"	: -11.30856112973
+				},
+				"piano_ribatuto"	: {
+					"pitch1"	: 0.485,
+					"pitch2"	: 0.788,
+					"pitch3"	: 0.907,
+					"pitch4"	: 1.262,
+					"amp"	: -0.210138
+				},
+				"piano_init"	: {
+					"pitch1"	: 0.974,
+					"pitch2"	: 1.144,
+					"pitch3"	: 0.907,
+					"pitch4"	: 1.177,
+					"amp"	: -11.512958
+				},
+				"pitch-mes90"	: {
+					"pitch1"	: 1.194,
+					"pitch2"	: 0.941,
+					"pitch3"	: 1.279,
+					"pitch4"	: 1.008,
+					"amp"	: 0.74462
+				},
+				"trb-mes164"	: {
+					"pitch1"	: 1.11,
+					"pitch2"	: 0.974,
+					"pitch3"	: 1.009,
+					"pitch4"	: 0.84,
+					"amp"	: -16.117224
+				},
+				"sax-mes316"	: {
+					"pitch1"	: 1.33,
+					"pitch2"	: 1.245,
+					"pitch3"	: 0.974,
+					"pitch4"	: 0.654,
+					"amp"	: 5.032863
+				},
+				"preset0"	: {
+					"pitch1"	: 0,
+					"pitch2"	: 0,
+					"pitch3"	: 0,
+					"pitch4"	: 0,
+					"amp"	: 0
+				},
+				"piano_1"	: {
+					"pitch1"	: 1.161,
+					"pitch2"	: 0.788,
+					"pitch3"	: 0.907,
+					"pitch4"	: 1.262,
+					"amp"	: -5.875085
+				}
+			}
+		}

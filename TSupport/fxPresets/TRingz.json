@@ -1,0 +1,9 @@
+{
+	"TRingz"	: {
+		"default"	: {
+			"freq"	: 440,
+			"rq"	: 1,
+			"amp"	: 0
+		}
+	}
+}

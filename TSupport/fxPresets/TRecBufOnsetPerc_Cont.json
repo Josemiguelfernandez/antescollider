@@ -1,0 +1,8 @@
+{
+	"TRecBufOnsetPerc_Cont"	: {
+		"default"	: {
+			"amp"	: 0.3,
+			"buf"	: 858
+		}
+	}
+}

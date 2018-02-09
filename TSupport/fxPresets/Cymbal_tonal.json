@@ -1,0 +1,11 @@
+{
+		"Cymbal_tonal"	: {
+			"preset0"	: {
+				"freq"	: 0,
+				"sing_switch"	: 0,
+				"decayscale"	: 0,
+				"lag"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

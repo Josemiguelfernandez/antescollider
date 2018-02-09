@@ -1,0 +1,28 @@
+{
+	"TGranIn16_ext"	: {
+		"default"	: {
+			"dur"	: 0.001,
+			"t_trig"	: 0,
+			"pos"	: 0,
+			"amp"	: 0
+		},
+		"sect2_1"	: {
+			"dur"	: 0.196,
+			"t_trig"	: 0,
+			"pos"	: 0,
+			"amp"	: 0
+		},
+		"noisy3"	: {
+			"dur"	: 0.3,
+			"t_trig"	: 0,
+			"pos"	: 0,
+			"amp"	: 0
+		},
+		"preset"	: {
+			"dur"	: 0.001,
+			"t_trig"	: 0,
+			"pos"	: 0,
+			"amp"	: 0
+		}
+	}
+}

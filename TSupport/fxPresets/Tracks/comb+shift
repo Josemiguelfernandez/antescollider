@@ -1,0 +1,35 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(4),  Array.prNew(5),  Array.prNew(2),  
+	Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(3),  Array.prNew(5)
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2],  o[4],  o[6],  o[8] ],  
+	// Array
+	2, [ TMFxSin2,  1,  o[3],  nil,  
+		nil ],  
+	// Array
+	3, [ 1176.544615,  -14.833382 ],  
+	// Array
+	4, [ 'TCombC',  1,  o[5],  nil,  
+		nil ],  
+	// Array
+	5, [ 0.500000,  0.022000,  -10.000000,  6.400000,  
+		-8.736352 ],  
+	// Array
+	6, [ 'TGranFreeze',  1,  o[7],  nil,  
+		nil ],  
+	// Array
+	7, [ 0.000000,  1.000000,  60.000000,  1.000000,  
+		6.020600 ],  
+	// Array
+	8, [ 'TFShift4',  1,  o[9] ],  
+	// Array
+	9, [ 142.222222,  -183.439490,  60.952381,  -81.463957,  
+		-5.009901 ]
+];
+prUnarchive(o,p);

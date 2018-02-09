@@ -1,0 +1,12 @@
+{
+	"TVbapKubusZig"	: {
+		"default"	: {
+			"spr"	: 0,
+			"lag"	: 0.2,
+			"elemod"	: 3,
+			"buf"	: 175,
+			"amp"	: 0,
+			"azig"	: 0.5
+		}
+	}
+}

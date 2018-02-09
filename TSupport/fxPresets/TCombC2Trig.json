@@ -1,0 +1,18 @@
+{
+		"TCombC2Trig"	: {
+			"comb_trig1"	: {
+				"deltime"	: 0.067,
+				"dectime"	: 0.5,
+				"imp"	: 3.85,
+				"gentime"	: 24.6,
+				"amp"	: 0
+			},
+			"preset0"	: {
+				"deltime"	: 0,
+				"dectime"	: 0,
+				"imp"	: 0,
+				"gentime"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

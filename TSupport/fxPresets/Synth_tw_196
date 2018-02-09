@@ -1,0 +1,36 @@
+var o, p;
+o = [
+	IdentityDictionary.prNew,  Array.prNew(32),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(5),  Array.prNew(5)
+];
+p = [
+	// IdentityDictionary
+	0, [ array: o[1],  size: 5,  
+		proto: nil,  parent: nil,  
+		know: false ],  
+	// Array
+	1, [ nil,  nil,  nil,  nil,  
+		'MR4',  o[2],  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'MR3',  o[3],  
+		nil,  nil,  nil,  nil,  
+		'MR1',  o[4],  nil,  nil,  
+		nil,  nil,  'preset0',  o[5],  
+		'MR2',  o[6],  nil,  nil ],  
+	// Array
+	2, [ 112.67398291095,  7.465,  134.06846251754,  27.506069740717,  
+		-9.9725399125907 ],  
+	// Array
+	3, [ 778.63570130609,  0.0,  1037.4636115728,  4781.9659493409,  
+		-9.9725399125907 ],  
+	// Array
+	4, [ 22.519652836904,  4.59,  486.07562198804,  37.050892527443,  
+		-7.6990255551402 ],  
+	// Array
+	5, [ 0,  0,  0,  0,  
+		0 ],  
+	// Array
+	6, [ 505.13317602308,  4.837,  2051.7332016656,  845.75728509745,  
+		-9.9725399125907 ]
+];
+prUnarchive(o,p);

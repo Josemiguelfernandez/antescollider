@@ -1,0 +1,20 @@
+{
+			"TOSFold"	: {
+				"preset0"	: {
+					"amp"	: 0,
+					"lo"	: 0,
+					"hi"	: 0,
+					"lpp"	: 0,
+					"drv"	: 0,
+					"lag"	: 0
+				},
+				"MR-disto1"	: {
+					"amp"	: 0,
+					"lo"	: -90,
+					"hi"	: 0,
+					"lpp"	: 131,
+					"drv"	: 16,
+					"lag"	: 0.6
+				}
+			}
+		}

@@ -1,0 +1,23 @@
+{
+		"TCortaOnset"	: {
+			"preset0"	: {
+				"gran_dur"	: 0,
+				"trig_time"	: 0,
+				"rate"	: 0,
+				"pos"	: 0,
+				"thresh"	: 0,
+				"trigDev"	: 0,
+				"trigAmp"	: 0
+			},
+			"lara1"	: {
+				"gran_dur"	: 0.381,
+				"trig_time"	: 12.989,
+				"rate"	: -3.265,
+				"pos"	: 0.361,
+				"thresh"	: 0.25,
+				"trigDev"	: 14.856,
+				"trigAmp"	: 2.044,
+				"amp"	: 2
+			}
+		}
+	}

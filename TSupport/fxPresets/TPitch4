@@ -1,0 +1,46 @@
+var o, p;
+o = [
+	IdentityDictionary.prNew,  Array.prNew(32),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(5)
+];
+p = [
+	// IdentityDictionary
+	0, [ array: o[1],  size: 8,  
+		proto: nil,  parent: nil,  
+		know: false ],  
+	// Array
+	1, [ nil,  nil,  nil,  nil,  
+		'piano_parte2',  o[2],  nil,  nil,  
+		'piano_ribatuto',  o[3],  'piano_init',  o[4],  
+		'pitch-mes90',  o[5],  'trb-mes164',  o[6],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		'sax-mes316',  o[7],  'preset0',  o[8],  
+		nil,  nil,  'piano_1',  o[9] ],  
+	// Array
+	2, [ 0.974,  1.144,  0.907,  1.177,  
+		-11.30856112973 ],  
+	// Array
+	3, [ 0.485,  0.788,  0.907,  1.262,  
+		-0.210138 ],  
+	// Array
+	4, [ 0.974,  1.144,  0.907,  1.177,  
+		-11.512958 ],  
+	// Array
+	5, [ 1.194,  0.941,  1.279,  1.008,  
+		0.74462 ],  
+	// Array
+	6, [ 1.11,  0.974,  1.009,  0.84,  
+		-16.117224 ],  
+	// Array
+	7, [ 1.33,  1.245,  0.974,  0.654,  
+		5.032863 ],  
+	// Array
+	8, [ 0,  0,  0,  0,  
+		0 ],  
+	// Array
+	9, [ 1.161,  0.788,  0.907,  1.262,  
+		-5.875085 ]
+];
+prUnarchive(o,p);

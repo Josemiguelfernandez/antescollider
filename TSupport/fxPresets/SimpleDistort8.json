@@ -1,0 +1,25 @@
+{
+		"SimpleDistort8"	: {
+			"disco"	: {
+				"distAmt"	: 1359.906312,
+				"lowPassCutoff"	: 4750.897088,
+				"highPassCutoff"	: 62.691454,
+				"postDistCutoff"	: 4222.183686,
+				"amp"	: -20.0162
+			},
+			"preset0"	: {
+				"distAmt"	: 0,
+				"lowPassCutoff"	: 0,
+				"highPassCutoff"	: 0,
+				"postDistCutoff"	: 0,
+				"amp"	: 0
+			},
+			"disco2"	: {
+				"distAmt"	: 1359.906312,
+				"lowPassCutoff"	: 4750.897088,
+				"highPassCutoff"	: 62.691454,
+				"postDistCutoff"	: 4222.183686,
+				"amp"	: -6.744564
+			}
+		}
+	}

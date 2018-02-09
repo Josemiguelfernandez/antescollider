@@ -1,0 +1,14 @@
+{
+			"TNCabinet"	: {
+				"preset0"	: {
+					"amp"	: 0,
+					"lmt"	: 0,
+					"res"	: 0,
+					"lag"	: 0,
+					"lpp"	: 0,
+					"hpp"	: 0,
+					"drv"	: 0,
+					"tlt"	: 0
+				}
+			}
+		}

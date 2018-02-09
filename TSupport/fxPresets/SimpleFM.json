@@ -1,0 +1,10 @@
+{
+		"SimpleFM"	: {
+			"preset0"	: {
+				"carrfreq"	: 0,
+				"modfreq"	: 0,
+				"modindex"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

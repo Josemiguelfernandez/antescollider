@@ -1,0 +1,14 @@
+{
+	"TScrambler"	: {
+		"preset1"	: {
+			"maxdel"	: 2,
+			"amp"	: 0,
+			"noise_freq"	: 13
+		},
+		"default"	: {
+			"maxdel"	: 2,
+			"noise_freq"	: 13,
+			"amp"	: 0
+		}
+	}
+}

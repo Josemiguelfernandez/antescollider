@@ -1,0 +1,10 @@
+{
+	"ATK_TransPushZ16"	: {
+		"preset0"	: {
+			"angle"	: 0,
+			"azim"	: 0,
+			"elev"	: 0,
+			"angle2"	: 0
+		}
+	}
+}

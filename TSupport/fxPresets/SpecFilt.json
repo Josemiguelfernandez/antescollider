@@ -1,0 +1,16 @@
+{
+		"SpecFilt"	: {
+			"preset2"	: {
+				"filt_buf"	: 52,
+				"amp"	: 0
+			},
+			"preset0"	: {
+				"filt_buf"	: 0,
+				"amp"	: 0
+			},
+			"preset1"	: {
+				"filt_buf"	: 52,
+				"amp"	: 0
+			}
+		}
+	}

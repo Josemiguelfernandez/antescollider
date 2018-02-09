@@ -1,0 +1,20 @@
+{
+			"TMFxSin2"	: {
+				"preset1"	: {
+					"freq"	: 4812.341669,
+					"amp"	: -11.312372
+				},
+				"preset2"	: {
+					"freq"	: 91.495136,
+					"amp"	: -11.710038
+				},
+				"preset3"	: {
+					"freq"	: 545.41756,
+					"amp"	: -13.210463
+				},
+				"preset0"	: {
+					"freq"	: 20,
+					"amp"	: -Infinity-inf
+				}
+			}
+		}

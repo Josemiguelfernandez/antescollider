@@ -1,0 +1,12 @@
+{
+		"TCombDelOnset2"	: {
+			"preset0"	: {
+				"startpos"	: 0,
+				"endpos"	: 0,
+				"decaytime"	: 0,
+				"thresh"	: 0,
+				"fastMul"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

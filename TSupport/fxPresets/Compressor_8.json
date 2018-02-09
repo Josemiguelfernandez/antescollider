@@ -1,0 +1,13 @@
+{
+		"Compressor_8"	: {
+			"preset0"	: {
+				"inlev"	: 0,
+				"thresh"	: 0,
+				"slopeBelow"	: 0,
+				"slopeAbove"	: 0,
+				"clampTime"	: 0,
+				"relaxTime"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

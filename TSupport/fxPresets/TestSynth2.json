@@ -1,0 +1,12 @@
+{
+		"TestSynth2"	: {
+			"default"	: {
+				"amp"	: 0,
+				"note"	: 36,
+				"width"	: 0,
+				"rq"	: 0.25,
+				"fc"	: 1000,
+				"bal"	: 0
+			}
+		}
+	}

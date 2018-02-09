@@ -1,0 +1,44 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(5),  Array.prNew(5),  Array.prNew(6),  
+	Array.prNew(5),  Array.prNew(8),  Array.prNew(5),  Array.prNew(7),  
+	Array.prNew(5),  Array.prNew(4),  Array.prNew(5),  Array.prNew(9)
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2],  o[4],  o[6],  o[8],  
+		o[10] ],  
+	// Array
+	2, [ 'TestSynth2',  1,  o[3],  nil,  
+		nil ],  
+	// Array
+	3, [ 25.000000,  1043.440000,  0.352000,  -0.772312,  
+		0.000000,  0.000000 ],  
+	// Array
+	4, [ 'TNCabinet',  1,  o[5],  nil,  
+		nil ],  
+	// Array
+	5, [ -0.498788,  6688.000000,  0.352602,  0.051358,  
+		119.445809,  51.087509,  7.000000,  6.750000 ],  
+	// Array
+	6, [ 'Compressor_8',  1,  o[7],  nil,  
+		nil ],  
+	// Array
+	7, [ 0.000000,  1.001000,  0.606000,  1.000000,  
+		0.467300,  0.420000,  0.000000 ],  
+	// Array
+	8, [ 'TDFM1',  1,  o[9],  nil,  
+		nil ],  
+	// Array
+	9, [ 858.100000,  1.018000,  0.008600,  0.000000 ],  
+	// Array
+	10, [ 'TPComb',  1,  o[11],  nil,  
+		nil ],  
+	// Array
+	11, [ 0.739226,  26.200000,  0.788066,  3.400000,  
+		1986.000000,  130.000000,  0.020000,  28.700000,  
+		0.410000 ]
+];
+prUnarchive(o,p);

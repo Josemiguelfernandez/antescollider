@@ -1,0 +1,55 @@
+var o, p;
+o = [
+	IdentityDictionary.prNew,  Array.prNew(64),  Array.prNew(2),  Array.prNew(2),  
+	Array.prNew(2),  Array.prNew(2),  Array.prNew(2),  Array.prNew(2),  
+	Array.prNew(2),  Array.prNew(2),  Array.prNew(2),  Array.prNew(2),  
+	Array.prNew(2),  Array.prNew(2)
+];
+p = [
+	// IdentityDictionary
+	0, [ array: o[1],  size: 12,  
+		proto: nil,  parent: nil,  
+		know: false ],  
+	// Array
+	1, [ 'init-R',  o[2],  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'init_z_in',  o[3],  
+		nil,  nil,  nil,  nil,  
+		'MR1',  o[4],  'test1',  o[5],  
+		nil,  nil,  nil,  nil,  
+		'MR1t',  o[6],  'MR2',  o[7],  
+		nil,  nil,  nil,  nil,  
+		'MR5',  o[8],  'estremo-cb-mes81',  o[9],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'MR3',  o[10],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'preset0',  o[11],  
+		'gekipe_medio1',  o[12],  'test2',  o[13] ],  
+	// Array
+	2, [ 3.209,  0.0 ],  
+	// Array
+	3, [ 2.309,  0.0 ],  
+	// Array
+	4, [ 2.902,  0.0 ],  
+	// Array
+	5, [ 0.346,  0.0 ],  
+	// Array
+	6, [ 2.902,  0.0 ],  
+	// Array
+	7, [ 3.563,  0.0 ],  
+	// Array
+	8, [ 3.086,  0.0 ],  
+	// Array
+	9, [ 1.784,  0.024259 ],  
+	// Array
+	10, [ 3.086,  0.0 ],  
+	// Array
+	11, [ 0,  0 ],  
+	// Array
+	12, [ 3.626,  0.52527 ],  
+	// Array
+	13, [ 2.208,  0.0 ]
+];
+prUnarchive(o,p);

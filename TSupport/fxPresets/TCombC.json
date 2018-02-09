@@ -1,0 +1,18 @@
+{
+		"TCombC"	: {
+			"mes138"	: {
+				"maxdelaytime"	: 0.162,
+				"delaytime"	: 0.029,
+				"decaytime"	: -6.17,
+				"lag"	: 0.2,
+				"amp"	: -5.749674
+			},
+			"preset0"	: {
+				"maxdelaytime"	: 0,
+				"delaytime"	: 0,
+				"decaytime"	: 0,
+				"lag"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

@@ -1,0 +1,33 @@
+var o, p;
+o = [
+	IdentityDictionary.prNew,  Array.prNew(32),  Array.prNew(7),  Array.prNew(7),  
+	Array.prNew(7),  Array.prNew(7)
+];
+p = [
+	// IdentityDictionary
+	0, [ array: o[1],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: false ],  
+	// Array
+	1, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'acord-final-Lara1bass',  o[2],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'bassSyn2',  o[3],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'preset0',  o[4],  
+		nil,  nil,  'bassSyn3',  o[5] ],  
+	// Array
+	2, [ 48.213124,  0.471000,  0.771000,  500.000000,  
+		40.000000,  0.500000,  -11.538678 ],  
+	// Array
+	3, [ 68.286208,  0.471000,  0.771000,  500.000000,  
+		40.000000,  0.500000,  -11.741910 ],  
+	// Array
+	4, [ 0,  0,  0,  0,  
+		0,  0,  0 ],  
+	// Array
+	5, [ 68.286208,  0.471000,  0.771000,  500.000000,  
+		40.000000,  0.500000,  -11.741910 ]
+];
+prUnarchive(o,p);

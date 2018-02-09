@@ -1,0 +1,32 @@
+{
+		"Env_thresh"	: {
+			"env_thresh_cclaire"	: {
+				"thresh"	: 1,
+				"lo"	: 0.57,
+				"hi"	: 0.62,
+				"filter_time"	: 0.49,
+				"amp"	: 0
+			},
+			"env_thresh_cclaire2"	: {
+				"thresh"	: 1,
+				"lo"	: 0.46,
+				"hi"	: 0.56,
+				"filter_time"	: 0.49,
+				"amp"	: 0
+			},
+			"env_thresh2"	: {
+				"thresh"	: 1,
+				"lo"	: 0.08,
+				"hi"	: 0.12,
+				"filter_time"	: 0.49,
+				"amp"	: 0
+			},
+			"preset0"	: {
+				"thresh"	: 0,
+				"lo"	: 0,
+				"hi"	: 0,
+				"filter_time"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

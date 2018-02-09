@@ -1,0 +1,107 @@
+{
+		"TGVerb"	: {
+			"MR-synth_perc"	: {
+				"inlev"	: -12,
+				"roomsize"	: 10,
+				"revtime"	: 1.5,
+				"damping"	: 0.5,
+				"inputbw"	: 0.5,
+				"spread"	: 15,
+				"drylevel"	: 0,
+				"earlylevel"	: -3,
+				"taillevel"	: -6,
+				"maxroomsize"	: 300,
+				"amp"	: 0
+			},
+			"cb-mes170"	: {
+				"inlev"	: -10.151027,
+				"roomsize"	: 2.8,
+				"revtime"	: 3,
+				"damping"	: 0.5,
+				"inputbw"	: 0.5,
+				"spread"	: 15,
+				"drylevel"	: 0,
+				"earlylevel"	: -3,
+				"taillevel"	: -6,
+				"maxroomsize"	: 300,
+				"amp"	: 0
+			},
+			"rev-mes90"	: {
+				"inlev"	: -12,
+				"roomsize"	: 10,
+				"revtime"	: 3,
+				"damping"	: 0.5,
+				"inputbw"	: 0.5,
+				"spread"	: 15,
+				"drylevel"	: 0,
+				"earlylevel"	: -3,
+				"taillevel"	: -6,
+				"maxroomsize"	: 300,
+				"amp"	: 0
+			},
+			"rev_klank"	: {
+				"inlev"	: -12,
+				"roomsize"	: 21.9,
+				"revtime"	: 2.8,
+				"damping"	: 0.518,
+				"inputbw"	: 0.152,
+				"spread"	: 15,
+				"drylevel"	: -9.084255,
+				"earlylevel"	: -6.019195,
+				"taillevel"	: -4.469147,
+				"maxroomsize"	: 288,
+				"amp"	: 0
+			},
+			"MR1"	: {
+				"inlev"	: -12,
+				"roomsize"	: 10,
+				"revtime"	: 35.6,
+				"damping"	: 0.022,
+				"inputbw"	: 0.5,
+				"spread"	: 15,
+				"drylevel"	: 0,
+				"earlylevel"	: -3,
+				"taillevel"	: -6,
+				"maxroomsize"	: 300,
+				"amp"	: 0
+			},
+			"multi1"	: {
+				"inlev"	: -5.874621,
+				"roomsize"	: 100.8,
+				"revtime"	: 9.2,
+				"damping"	: 0.692,
+				"inputbw"	: 0.123,
+				"spread"	: 6.4,
+				"drylevel"	: 0,
+				"earlylevel"	: -9.801689,
+				"taillevel"	: -9.06527,
+				"maxroomsize"	: 348,
+				"amp"	: 0
+			},
+			"preset0"	: {
+				"inlev"	: 0,
+				"roomsize"	: 0,
+				"revtime"	: 0,
+				"damping"	: 0,
+				"inputbw"	: 0,
+				"spread"	: 0,
+				"drylevel"	: 0,
+				"earlylevel"	: 0,
+				"taillevel"	: 0,
+				"maxroomsize"	: 0
+			},
+			"MR-Tube"	: {
+				"inlev"	: -12,
+				"roomsize"	: 10,
+				"revtime"	: 3,
+				"damping"	: 0.5,
+				"inputbw"	: 0.5,
+				"spread"	: 15,
+				"drylevel"	: 0,
+				"earlylevel"	: -3,
+				"taillevel"	: -6,
+				"maxroomsize"	: 300,
+				"amp"	: 0
+			}
+		}
+	}

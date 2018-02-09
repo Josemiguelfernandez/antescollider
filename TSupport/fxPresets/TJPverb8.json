@@ -1,0 +1,32 @@
+{
+			"TJPverb8"	: {
+				"preset0"	: {
+					"t60"	: 0,
+					"damp"	: 0,
+					"size"	: 0,
+					"earlydiff"	: 0,
+					"modDepth"	: 0,
+					"modFreq"	: 0,
+					"low"	: 0,
+					"mid"	: 0,
+					"high"	: 0,
+					"lowcut"	: 0,
+					"highcut"	: 0,
+					"amp"	: 0
+				},
+				"octa1"	: {
+					"t60"	: 1,
+					"damp"	: 0,
+					"size"	: 1,
+					"earlydiff"	: 0.707,
+					"modDepth"	: 0.1,
+					"modFreq"	: 2,
+					"low"	: 1,
+					"mid"	: 1,
+					"high"	: 1,
+					"lowcut"	: 500,
+					"highcut"	: 2000,
+					"amp"	: 0
+				}
+			}
+		}

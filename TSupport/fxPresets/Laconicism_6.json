@@ -1,0 +1,46 @@
+{
+	"Laconicism_6"	: {
+		"agua_fin"	: {
+			"fbMul"	: 0.22865886854482,
+			"noise2Freq"	: 9.1847125291824,
+			"noiseFreq"	: 236.55899679661,
+			"freqMul"	: 1.1174163756532,
+			"amp"	: -6.9409832869346
+		},
+		"test1"	: {
+			"amp"	: -9.0641543602081,
+			"freqMul"	: 1.8733976722564,
+			"noise2Freq"	: 1.7073982954025,
+			"noiseFreq"	: 185.70213055611,
+			"fbMul"	: 7.056107632132
+		},
+		"test2"	: {
+			"amp"	: -9.0641543602081,
+			"freqMul"	: 3.8592457345415,
+			"noise2Freq"	: 5.5222076177597,
+			"noiseFreq"	: 37.539751291275,
+			"fbMul"	: 32.124301489899
+		},
+		"agua2"	: {
+			"amp"	: -6.9409832869346,
+			"freqMul"	: 6.0052876725646,
+			"noise2Freq"	: 3.5470879077911,
+			"noiseFreq"	: 76.283080339432,
+			"fbMul"	: 0.1158153431938
+		},
+		"agua"	: {
+			"amp"	: 0,
+			"freqMul"	: 1,
+			"noise2Freq"	: 1,
+			"noiseFreq"	: 128,
+			"fbMul"	: 1
+		},
+		"preset0"	: {
+			"amp"	: 0,
+			"freqMul"	: 0,
+			"noise2Freq"	: 0,
+			"noiseFreq"	: 0,
+			"fbMul"	: 0
+		}
+	}
+}

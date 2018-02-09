@@ -1,0 +1,29 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(3),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(6),  Array.prNew(5),  Array.prNew(4)
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2],  o[4],  o[6] ],  
+	// Array
+	2, [ 'Bajo',  1,  o[3],  nil,  
+		nil ],  
+	// Array
+	3, [ 37.730000,  1.910000,  1.276000,  5.000000,  
+		-3.686482 ],  
+	// Array
+	4, [ 'SimpleBass',  1,  o[5],  nil,  
+		nil ],  
+	// Array
+	5, [ 24.000000,  289.550000,  0.342000,  0.000000,  
+		0.000000,  1.501725 ],  
+	// Array
+	6, [ 'TPan8',  1,  o[7],  nil,  
+		nil ],  
+	// Array
+	7, [ 0.000000,  2.000000,  0.200000,  0.000000 ]
+];
+prUnarchive(o,p);

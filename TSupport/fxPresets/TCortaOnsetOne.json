@@ -1,0 +1,14 @@
+{
+		"TCortaOnsetOne"	: {
+			"preset0"	: {
+				"gran_dur"	: 0,
+				"trig_time"	: 0,
+				"rate"	: 0,
+				"pos"	: 0,
+				"thresh"	: 0,
+				"trigDev"	: 0,
+				"trigAmp"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

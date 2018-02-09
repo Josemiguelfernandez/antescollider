@@ -1,0 +1,11 @@
+{
+			"TStresonLfo"	: {
+				"preset0"	: {
+					"lfofreq"	: 0,
+					"freqmin"	: 0,
+					"freqmax"	: 0,
+					"reson"	: 0,
+					"amp"	: 0
+				}
+			}
+		}

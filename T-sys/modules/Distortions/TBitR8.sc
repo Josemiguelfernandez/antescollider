@@ -1,0 +1,58 @@
+TBitR8 : Tmodule2 {
+
+	*def
+	{
+		^SynthDef(\tBitR8, {|in = 0, inbus, ingain = 0, out = 0, outbus, outgain = 0, xFade = 1, amp = 0, matrix_ramp = 0.01, gate = 1, free = 1,
+			bit = 16, drv = 0, lag = 0.1, lpp = 120, hpp = 25, wet = 0, noise = -90
+			|
+			var sig, envgate, envpause, cross, ins;
+
+			envgate = EnvGen.ar(Env.asr(matrix_ramp, 1.0, matrix_ramp, \welch ), free, doneAction:2);
+			envpause = EnvGen.ar(Env.asr(matrix_ramp, 1.0, matrix_ramp, \welch ), gate, doneAction:1);
+			//cross = Line.ar(0, free, 0.01); // xfade to avoid clicks
+			cross = xFade * envgate * envpause;
+
+			sig = In.ar(in, 8) + (In.ar(inbus, 8) * ingain);
+			ins = sig;
+			drv = Lag.kr(drv.dbamp, lag);
+
+			sig = sig * drv;
+			ins = ins * drv;
+			sig = sig + PinkNoise.ar(noise.dbamp.lag(lag));
+
+			sig = PBitR.ar(sig, bit.lag(lag));
+
+
+			sig = SelectX.ar(wet.lag(lag), [sig, sig-ins]);
+
+			sig = BLowPass.ar(sig, lpp.midicps.lag(lag));
+			sig	= HPF.ar(sig, Lag.kr(hpp.midicps, lag));
+	//sig = sig * drv.reciprocal.sqrt;
+
+
+			sig = sig * envgate * envpause * amp.dbamp.lag;
+			XOut.ar(out, cross, sig); //salida directa a un bus
+			Out.ar(outbus, sig* outgain); //salida a un bus auxiliar
+		}).load;
+
+	}
+
+	*metadata
+	{
+		^(metadata: (
+			synthdefname: \tBitR8,
+			type: \fx,
+			main: \bit,
+			sliders: [
+				\amp -> ControlSpec(0.ampdb, 2.ampdb, \db, 0, 0, \dB),
+				\bit -> ControlSpec(1, 16, \db, 0.25, 16, \dB),
+				\lpp -> ControlSpec(40, 131, \lin, 0, 100, \midi),
+				\drv -> ControlSpec(-50, 50, \lin, 1, -12),
+				\lag -> ControlSpec(0.01, 1, \exp, 0, 0.6),
+				\wet -> ControlSpec(0, 1, \lin, 0, 0, \amt),
+				\noise -> ControlSpec(-120, 0, 'lin', 0, -90, \dB)
+			],
+		))
+	}
+}
+

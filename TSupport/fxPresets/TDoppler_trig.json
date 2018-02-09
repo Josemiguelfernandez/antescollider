@@ -1,0 +1,11 @@
+{
+	"TDoppler_trig"	: {
+		"default"	: {
+			"panoffset"	: 0,
+			"speed"	: 1,
+			"dirt"	: 1,
+			"dist"	: 10,
+			"amp"	: 0
+		}
+	}
+}

@@ -1,0 +1,17 @@
+{
+		"Impulse_BPF"	: {
+			"preset0"	: {
+				"freq"	: 0,
+				"freq_filter"	: 0,
+				"rq"	: 0,
+				"gain"	: 0
+			},
+			"MR1"	: {
+				"freq"	: 6.78,
+				"freq_filter"	: 618.82357060243,
+				"rq"	: 0.939,
+				"gain"	: 4.86,
+				"amp"	: 0.55320154564024
+			}
+		}
+	}

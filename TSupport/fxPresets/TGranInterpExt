@@ -1,0 +1,51 @@
+var o, p;
+o = [
+	IdentityDictionary.prNew,  Array.prNew(32),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(4),  Array.prNew(5),  Array.prNew(5)
+];
+p = [
+	// IdentityDictionary
+	0, [ array: o[1],  size: 10,  
+		proto: nil,  parent: nil,  
+		know: false ],  
+	// Array
+	1, [ 'synth6_4',  o[2],  'MR-Syn_init_end',  o[3],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'MR3',  o[4],  
+		nil,  nil,  'synth6_2_env',  o[5],  
+		'synth7-dur-env',  o[6],  'MR-granos1',  o[7],  
+		'MR1',  o[8],  'preset0',  o[9],  
+		'MR2',  o[10],  'synth8-dur-env',  o[11] ],  
+	// Array
+	2, [ 0.01,  0.0,  0.0,  0.54235500286456,  
+		0.011355996496782 ],  
+	// Array
+	3, [ 0.014,  0.021679641424864,  0.0,  0.54235500097275,  
+		0.011355996131897 ],  
+	// Array
+	4, [ 0.001,  0.11058201058201,  0.42809624911536,  0.54235500286456,  
+		0.011355996496782 ],  
+	// Array
+	5, [ 0.014,  0.0,  0.0,  0.54235500286456,  
+		0.011355996496782 ],  
+	// Array
+	6, [ 0.141,  0.8015401206484,  0.0,  0.54235500286456,  
+		0.011355996496782 ],  
+	// Array
+	7, [ 0.005,  0.0,  0.0,  0.0,  
+		0.011355996131897 ],  
+	// Array
+	8, [ 0.25,  0.0,  0.0,  0.0,  
+		0.0 ],  
+	// Array
+	9, [ 0,  0,  0,  0 ],  
+	// Array
+	10, [ 0.023,  0.11058201058201,  0.0,  0.54235500286456,  
+		0.011355996496782 ],  
+	// Array
+	11, [ 0.551,  0.50425976476932,  0.68718612194061,  0.0,  
+		0.0 ]
+];
+prUnarchive(o,p);

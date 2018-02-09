@@ -1,0 +1,25 @@
+{
+		"TFreeVerb"	: {
+			"preset0"	: {
+				"inlev"	: 0,
+				"mix"	: 0,
+				"roomsize"	: 0,
+				"damp"	: 0,
+				"amp"	: 0
+			},
+			"init-R"	: {
+				"inlev"	: -0.198409,
+				"mix"	: 0.33,
+				"roomsize"	: 0.684,
+				"damp"	: 0.5,
+				"amp"	: 0
+			},
+			"sex-mes165"	: {
+				"inlev"	: 0.026243,
+				"mix"	: 0.415,
+				"roomsize"	: 0.517,
+				"damp"	: 0.5,
+				"amp"	: 0
+			}
+		}
+	}

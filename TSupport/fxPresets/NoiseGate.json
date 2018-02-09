@@ -1,0 +1,14 @@
+{
+		"NoiseGate"	: {
+			"preset0"	: {
+				"thresh"	: 0,
+				"dur"	: 0,
+				"amp"	: 0
+			},
+			"cb-mes302"	: {
+				"thresh"	: 0.047,
+				"dur"	: 0.01,
+				"amp"	: 0
+			}
+		}
+	}

@@ -1,0 +1,38 @@
+var o, p;
+o = [
+	IdentityDictionary.prNew,  Array.prNew(32),  Array.prNew(4),  Array.prNew(4),  
+	Array.prNew(4),  Array.prNew(4),  Array.prNew(4),  Array.prNew(3),  
+	Array.prNew(4),  Array.prNew(4)
+];
+p = [
+	// IdentityDictionary
+	0, [ array: o[1],  size: 8,  
+		proto: nil,  parent: nil,  
+		know: false ],  
+	// Array
+	1, [ 'init-R',  o[2],  'gekipe_medio1',  o[3],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'init_z_in',  o[4],  
+		nil,  nil,  'synth6_2_env',  o[5],  
+		nil,  nil,  'test1',  o[6],  
+		nil,  nil,  'preset0',  o[7],  
+		'cb-mes302',  o[8],  'test2',  o[9] ],  
+	// Array
+	2, [ 0.313,  2.0,  0.2,  0.0 ],  
+	// Array
+	3, [ 0.534,  3.225,  0.2,  0.0 ],  
+	// Array
+	4, [ 1.11,  2.0,  0.2,  0.119902 ],  
+	// Array
+	5, [ 0.0,  2.0,  0.001,  0.0 ],  
+	// Array
+	6, [ 1.177,  2.0,  0.2,  0.0 ],  
+	// Array
+	7, [ 0,  0,  0 ],  
+	// Array
+	8, [ 1.272,  3.496,  0.2,  3.406337 ],  
+	// Array
+	9, [ 0.323,  2.0,  0.2,  0.0 ]
+];
+prUnarchive(o,p);

@@ -1,0 +1,13 @@
+{
+			"TOSTrunc"	: {
+				"preset0"	: {
+					"amp"	: 0,
+					"lo"	: 0,
+					"lpp"	: 0,
+					"drv"	: 0,
+					"lag"	: 0,
+					"wet"	: 0,
+					"noise"	: 0
+				}
+			}
+		}

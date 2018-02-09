@@ -1,0 +1,8 @@
+{
+	"TRecBufOnsetPerc_Gate"	: {
+		"default"	: {
+			"amp"	: 0.3,
+			"buf"	: 858
+		}
+	}
+}

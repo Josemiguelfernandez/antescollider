@@ -1,0 +1,9 @@
+{
+		"OnsetHainsworth"	: {
+			"preset0"	: {
+				"thresh"	: 0,
+				"waittime"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

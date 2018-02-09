@@ -1,0 +1,11 @@
+{
+	"TVbap4Zig"	: {
+		"default"	: {
+			"azig"	: 0.5,
+			"spr"	: 0,
+			"lag"	: 0.2,
+			"buf"	: 176,
+			"amp"	: 0
+		}
+	}
+}

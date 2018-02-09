@@ -1,0 +1,56 @@
+var o, p;
+o = [
+	IdentityDictionary.prNew,  Array.prNew(32),  Array.prNew(5),  Array.prNew(8),  
+	Array.prNew(5),  Array.prNew(8),  Array.prNew(5),  Array.prNew(8),  
+	Array.prNew(5),  Array.prNew(8),  Array.prNew(5),  Array.prNew(8),  
+	Array.prNew(5)
+];
+p = [
+	// IdentityDictionary
+	0, [ array: o[1],  size: 6,  
+		proto: nil,  parent: nil,  
+		know: false ],  
+	// Array
+	1, [ 'preset1',  o[2],  nil,  nil,  
+		'preset4',  o[4],  nil,  nil,  
+		nil,  nil,  'preset3',  o[6],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		'MR1',  o[8],  'preset2',  o[10],  
+		nil,  nil,  'preset0',  o[12],  
+		nil,  nil,  nil,  nil ],  
+	// Array
+	2, [ 0.0,  1.0,  0.5,  0.1,  
+		o[3] ],  
+	// Array
+	3, [ 0.447173,  0.5,  0.489158,  0.47619,  
+		0.352273,  0.345238,  0.285714,  0.221726 ],  
+	// Array
+	4, [ 0.0,  15.634575,  0.5,  0.1,  
+		o[5] ],  
+	// Array
+	5, [ 0.0,  0.0,  0.100893,  0.285714,  
+		0.261905,  0.25,  0.202381,  0.355655 ],  
+	// Array
+	6, [ 0.0,  1.832175,  0.5,  0.1,  
+		o[7] ],  
+	// Array
+	7, [ 0.0,  0.0,  0.0,  0.0,  
+		0.333333,  0.27381,  0.154762,  0.119048 ],  
+	// Array
+	8, [ -0.74039922177822,  13.562017350534,  0.92367135105989,  0.1,  
+		o[9] ],  
+	// Array
+	9, [ 0.52735256648658,  0.31640618294478,  0.46045914900546,  0.32653064143901,  
+		0.5625,  0.54478455954939,  0.34027775459819,  0.75524380363845 ],  
+	// Array
+	10, [ 0.0,  1.0,  0.5,  0.1,  
+		o[11] ],  
+	// Array
+	11, [ 0.165805,  0.297878,  0.366284,  0.380952,  
+		0.370164,  0.333333,  0.404762,  0.333333 ],  
+	// Array
+	12, [ 0,  0,  0,  0,  
+		0 ]
+];
+prUnarchive(o,p);

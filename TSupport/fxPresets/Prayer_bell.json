@@ -1,0 +1,46 @@
+{
+		"Prayer_bell"	: {
+			"MR5"	: {
+				"freq"	: 5825.9,
+				"sing_switch"	: 1.16,
+				"lag"	: 0.001,
+				"amp"	: 0
+			},
+			"MR2"	: {
+				"freq"	: 6718.1,
+				"sing_switch"	: 1.16,
+				"lag"	: 0.001,
+				"amp"	: 0
+			},
+			"preset0"	: {
+				"freq"	: 0,
+				"sing_switch"	: 0,
+				"lag"	: 0,
+				"amp"	: 0
+			},
+			"MR4"	: {
+				"freq"	: 6206.2,
+				"sing_switch"	: 0.87,
+				"lag"	: 0.001,
+				"amp"	: 0
+			},
+			"crotale_tib"	: {
+				"freq"	: 2972.1,
+				"sing_switch"	: 0.93,
+				"lag"	: 1,
+				"amp"	: 0
+			},
+			"MR1"	: {
+				"freq"	: 8536.2,
+				"sing_switch"	: 1.16,
+				"lag"	: 0.001,
+				"amp"	: 0
+			},
+			"MR3"	: {
+				"freq"	: 6206.2,
+				"sing_switch"	: 1.16,
+				"lag"	: 0.001,
+				"amp"	: 0
+			}
+		}
+	}

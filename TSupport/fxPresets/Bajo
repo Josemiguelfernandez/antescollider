@@ -1,0 +1,49 @@
+var o, p;
+o = [
+	IdentityDictionary.prNew,  Array.prNew(32),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(5),  Array.prNew(5)
+];
+p = [
+	// IdentityDictionary
+	0, [ array: o[1],  size: 9,  
+		proto: nil,  parent: nil,  
+		know: false ],  
+	// Array
+	1, [ 'bajo_mes13',  o[2],  'bajo-p3',  o[3],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		'm25',  o[4],  'bajo-Lara',  o[5],  
+		'fin_bols1',  o[6],  nil,  nil,  
+		'MR1',  o[7],  nil,  nil,  
+		'cuidad_sueno1',  o[8],  'preset0',  o[9],  
+		'mes-338',  o[10],  nil,  nil ],  
+	// Array
+	2, [ 67.65,  0.0,  0.0,  5.0,  
+		-0.000231 ],  
+	// Array
+	3, [ 43.67,  0.0,  0.0,  5.0,  
+		-6.0 ],  
+	// Array
+	4, [ 43.67,  0.0,  0.0,  5.0,  
+		-0.412095 ],  
+	// Array
+	5, [ 38.94,  0.0,  0.001,  5.0,  
+		-0.291784 ],  
+	// Array
+	6, [ 20.02,  1.91,  1.276,  5.0,  
+		-3.686482 ],  
+	// Array
+	7, [ 46.2,  1.1,  20.0,  5.0,  
+		-0.00023099999999981 ],  
+	// Array
+	8, [ 47.63,  0.89,  4.679,  5.0,  
+		-2.316586 ],  
+	// Array
+	9, [ 0,  0,  0,  0,  
+		0 ],  
+	// Array
+	10, [ 63.58,  0.5,  0.0,  5.0,  
+		-14.585471 ]
+];
+prUnarchive(o,p);

@@ -1,0 +1,25 @@
+{
+	"TPluck"	: {
+		"preset1"	: {
+			"amp"	: 0,
+			"decaytime"	: 5,
+			"amp2"	: 0.1,
+			"coef"	: 0.5,
+			"freq"	: 300
+		},
+		"preset2"	: {
+			"freq"	: 335.2,
+			"amp2"	: 0.1,
+			"coef"	: 0.2,
+			"amp"	: 0,
+			"decaytime"	: 5
+		},
+		"preset0"	: {
+			"amp"	: 0,
+			"decaytime"	: 0,
+			"amp2"	: 0,
+			"coef"	: 0,
+			"freq"	: 0
+		}
+	}
+}

@@ -1,0 +1,13 @@
+{
+		"OnsetAttackSlope"	: {
+			"preset0"	: {
+				"energythreshold"	: 0,
+				"sumthreshold"	: 0,
+				"peakpicksize"	: 0,
+				"mingap"	: 0,
+				"leak"	: 0,
+				"numslopesaveraged"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

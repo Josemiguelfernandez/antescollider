@@ -1,0 +1,21 @@
+{
+	"TGran_ext_in_Perc"	: {
+		"default"	: {
+			"startPos"	: 0.1,
+			"panDev"	: 0.001,
+			"dur"	: 0.001,
+			"sndbuf"	: 185,
+			"pan"	: 0,
+			"centerDev"	: 0.001,
+			"rate"	: 1,
+			"trigRateDev"	: 0.001,
+			"amp"	: 0.3,
+			"interpol"	: 4,
+			"ampDev"	: 0.001,
+			"trigRate"	: 20,
+			"rateDev"	: 0.001,
+			"durDev"	: 0.001,
+			"envbuf"	: 48
+		}
+	}
+}

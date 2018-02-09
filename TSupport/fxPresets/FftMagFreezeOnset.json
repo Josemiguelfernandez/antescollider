@@ -1,0 +1,9 @@
+{
+		"FftMagFreezeOnset"	: {
+			"preset0"	: {
+				"thresh"	: 0,
+				"amp"	: 0,
+				"buf"	: 0
+			}
+		}
+	}

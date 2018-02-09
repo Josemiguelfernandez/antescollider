@@ -1,0 +1,10 @@
+{
+		"Laconicism_18"	: {
+			"preset0"	: {
+				"lagMul"	: 0,
+				"fbck"	: 0,
+				"cfMul"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

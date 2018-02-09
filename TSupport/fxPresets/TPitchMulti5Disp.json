@@ -1,0 +1,11 @@
+{
+			"TPitchMulti5Disp"	: {
+				"preset0"	: {
+					"trans"	: 0,
+					"pitchDispersion"	: 0,
+					"timeDispersion"	: 0,
+					"lag"	: 0,
+					"amp"	: 0
+				}
+			}
+		}

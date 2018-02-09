@@ -1,0 +1,52 @@
+{
+			"TMFxPitch2"	: {
+				"MR3"	: {
+					"pitch"	: 3.086,
+					"amp"	: 0
+				},
+				"gekipe_medio1"	: {
+					"pitch"	: 3.626,
+					"amp"	: 0.52527
+				},
+				"init_z_in"	: {
+					"pitch"	: 2.309,
+					"amp"	: 0
+				},
+				"test2"	: {
+					"pitch"	: 2.208,
+					"amp"	: 0
+				},
+				"MR5"	: {
+					"pitch"	: 3.086,
+					"amp"	: 0
+				},
+				"preset0"	: {
+					"pitch"	: 0,
+					"amp"	: 0
+				},
+				"init-R"	: {
+					"pitch"	: 3.209,
+					"amp"	: 0
+				},
+				"MR1"	: {
+					"pitch"	: 2.902,
+					"amp"	: 0
+				},
+				"test1"	: {
+					"pitch"	: 0.346,
+					"amp"	: 0
+				},
+				"estremo-cb-mes81"	: {
+					"pitch"	: 1.784,
+					"amp"	: 0.024259
+				},
+				"MR1t"	: {
+					"pitch"	: 2.902,
+					"amp"	: 0
+				},
+				"MR2"	: {
+					"pitch"	: 3.563,
+					"amp"	: 0
+				}
+			}
+		}

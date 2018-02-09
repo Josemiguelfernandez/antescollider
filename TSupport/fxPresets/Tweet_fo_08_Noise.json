@@ -1,0 +1,26 @@
+{
+	"Tweet_fo_08_Noise"	: {
+		"preset1"	: {
+			"rangeB1"	: 0.145,
+			"trandhi"	: 2541,
+			"rangeB2"	: 0.3951,
+			"rangeA1"	: 0.05,
+			"decaytime"	: 0.0389,
+			"amp"	: -9.0457489480949,
+			"trandlo"	: 381,
+			"lfo"	: 200,
+			"rangeA2"	: 0
+		},
+		"preset0"	: {
+			"decaytime"	: 0,
+			"rangeB2"	: 0,
+			"lfo"	: 0,
+			"amp"	: 0,
+			"trandhi"	: 0,
+			"rangeA1"	: 0,
+			"rangeA2"	: 0,
+			"rangeB1"	: 0,
+			"trandlo"	: 0
+		}
+	}
+}

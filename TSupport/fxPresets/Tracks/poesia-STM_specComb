@@ -1,0 +1,24 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(2),  Array.prNew(5),  Array.prNew(1),  
+	Array.prNew(5),  Array.prNew(12)
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2],  o[4] ],  
+	// Array
+	2, [ 'AudioInput',  1,  o[3],  nil,  
+		nil ],  
+	// Array
+	3, [ 0.000000 ],  
+	// Array
+	4, [ 'STM_specCombN',  1,  o[5],  nil,  
+		nil ],  
+	// Array
+	5, [ 53.000000,  1.063000,  1.394000,  34.877000,  
+		0.459000,  0.229000,  0.000000,  1.488000,  
+		1.041000,  0.760000,  0.298000,  -7.267495 ]
+];
+prUnarchive(o,p);

@@ -1,0 +1,32 @@
+{
+			"TRingMod"	: {
+				"rm-sax-mes165"	: {
+					"modfreq"	: 568.3,
+					"ampmod"	: 6.116301,
+					"lpfilt"	: 10000,
+					"hpfilt"	: 50,
+					"amp"	: 0
+				},
+				"test1"	: {
+					"modfreq"	: 3.1,
+					"ampmod"	: 1,
+					"lpfilt"	: 10000,
+					"hpfilt"	: 50,
+					"amp"	: 0
+				},
+				"sax-mes316"	: {
+					"modfreq"	: 1,
+					"ampmod"	: 8.775014,
+					"lpfilt"	: 9539.9,
+					"hpfilt"	: 35.4,
+					"amp"	: 4.645862
+				},
+				"preset0"	: {
+					"modfreq"	: 0,
+					"ampmod"	: 0,
+					"lpfilt"	: 0,
+					"hpfilt"	: 0,
+					"amp"	: 0
+				}
+			}
+		}

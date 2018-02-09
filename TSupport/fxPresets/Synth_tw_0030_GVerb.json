@@ -1,0 +1,13 @@
+{
+	"Synth_tw_0030_GVerb"	: {
+		"default"	: {
+			"roomsize"	: 80,
+			"amp"	: -20,
+			"f4"	: 3,
+			"f1"	: 1,
+			"f3"	: 0.2,
+			"f2"	: 0.05,
+			"revtime"	: 3
+		}
+	}
+}

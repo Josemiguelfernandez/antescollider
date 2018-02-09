@@ -1,0 +1,48 @@
+{
+		"TCombDelOnset"	: {
+			"Cuidad_sin_sueno1"	: {
+				"del"	: 0.04,
+				"startpos"	: 0,
+				"endpos"	: 0.683,
+				"decaytime"	: 1.026,
+				"thresh"	: 0.018,
+				"fastMul"	: 0.687,
+				"amp"	: -6.193814
+			},
+			"Cuidad_sin_sueno4"	: {
+				"del"	: 0.04,
+				"startpos"	: 0,
+				"endpos"	: 0.683,
+				"decaytime"	: 1.026,
+				"thresh"	: 0.034,
+				"fastMul"	: 0.687,
+				"amp"	: -9.969012
+			},
+			"Cuidad_sin_sueno3"	: {
+				"del"	: 0.04,
+				"startpos"	: 0,
+				"endpos"	: 0.683,
+				"decaytime"	: 1.026,
+				"thresh"	: 0.056,
+				"fastMul"	: 0.687,
+				"amp"	: -9.969012
+			},
+			"Cuidad_sin_sueno2"	: {
+				"del"	: 0.04,
+				"startpos"	: 0,
+				"endpos"	: 0.683,
+				"decaytime"	: 1.026,
+				"thresh"	: 0.03,
+				"fastMul"	: 0.687,
+				"amp"	: -6.193814
+			},
+			"preset0"	: {
+				"del"	: 0,
+				"startpos"	: 0,
+				"endpos"	: 0,
+				"decaytime"	: 0,
+				"thresh"	: 0,
+				"fastMul"	: 0
+			}
+		}
+	}

@@ -1,0 +1,18 @@
+{
+		"FftOnsetReplay3"	: {
+			"preset0"	: {
+				"thresh"	: 0,
+				"relaxtime"	: 0,
+				"filter_time"	: 0
+			},
+			"onset3"	: {
+				"thresh"	: 0.28,
+				"relaxtime"	: 0.41,
+				"filter_time"	: 0.67,
+				"floor"	: 6,
+				"mingap"	: 11,
+				"medianspan"	: 2,
+				"whtype"	: 0
+			}
+		}
+	}

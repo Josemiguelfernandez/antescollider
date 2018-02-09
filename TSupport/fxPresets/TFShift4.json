@@ -1,0 +1,46 @@
+{
+		"TFShift4"	: {
+			"preset0"	: {
+				"modfreq1"	: 0,
+				"modfreq2"	: 0,
+				"modfreq3"	: 0,
+				"modfreq4"	: 0,
+				"amp"	: 0
+			},
+			"piano_virt_p2"	: {
+				"modfreq1"	: 81.269841,
+				"modfreq2"	: -60.952381,
+				"modfreq3"	: 81.463957,
+				"modfreq4"	: -81.269841,
+				"amp"	: -0.094874967858589
+			},
+			"shift4_fl_mes81"	: {
+				"modfreq1"	: 81.269841,
+				"modfreq2"	: -60.952381,
+				"modfreq3"	: 81.463957,
+				"modfreq4"	: -81.269841,
+				"amp"	: -7.558763
+			},
+			"piano_fshift"	: {
+				"modfreq1"	: 1016.649479,
+				"modfreq2"	: 894.032959,
+				"modfreq3"	: 527.4128,
+				"modfreq4"	: 692.217167,
+				"amp"	: 0.639282
+			},
+			"trb-diagonal"	: {
+				"modfreq1"	: 182.727732,
+				"modfreq2"	: -81.852189,
+				"modfreq3"	: -264.191689,
+				"modfreq4"	: -344.943888,
+				"amp"	: -1.9704
+			},
+			"trb-mes316"	: {
+				"modfreq1"	: 182.727732,
+				"modfreq2"	: -81.852189,
+				"modfreq3"	: -264.191689,
+				"modfreq4"	: -344.943888,
+				"amp"	: -1.9704
+			}
+		}
+	}

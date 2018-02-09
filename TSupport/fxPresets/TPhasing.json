@@ -1,0 +1,11 @@
+{
+			"TPhasing"	: {
+				"preset0"	: {
+					"modfreq"	: 0,
+					"ampmod"	: 0,
+					"decaytime"	: 0,
+					"lpfilt"	: 0,
+					"hpfilt"	: 0
+				}
+			}
+		}

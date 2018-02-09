@@ -1,0 +1,49 @@
+{
+			"TGranBuf_RecIn"	: {
+				"freeze_tam1"	: {
+					"trigRate"	: 51.2,
+					"trigRateDev"	: 55.582516,
+					"startPos"	: 0.102,
+					"centerDev"	: 0.034243,
+					"dur"	: 0.107,
+					"durDev"	: 0.055529,
+					"rate"	: 1,
+					"rateDev"	: 0.001,
+					"pan"	: -0.084494,
+					"panDev"	: 0,
+					"amp"	: 0,
+					"ampDev"	: 0.001,
+					"interpol"	: 4
+				},
+				"preset0"	: {
+					"trigRate"	: 0,
+					"trigRateDev"	: 0,
+					"startPos"	: 0,
+					"centerDev"	: 0,
+					"dur"	: 0,
+					"durDev"	: 0,
+					"rate"	: 0,
+					"rateDev"	: 0,
+					"pan"	: 0,
+					"panDev"	: 0,
+					"amp"	: 0,
+					"ampDev"	: 0,
+					"interpol"	: 0
+				},
+				"freeze_tam2"	: {
+					"trigRate"	: 57.6,
+					"trigRateDev"	: 55.582516,
+					"startPos"	: 0.102,
+					"centerDev"	: 0.034243,
+					"dur"	: 0.107,
+					"durDev"	: 0.055529,
+					"rate"	: 1,
+					"rateDev"	: 0.001,
+					"pan"	: -0.864436,
+					"panDev"	: 0,
+					"amp"	: -8.931847,
+					"ampDev"	: 0.001,
+					"interpol"	: 4
+				}
+			}
+		}

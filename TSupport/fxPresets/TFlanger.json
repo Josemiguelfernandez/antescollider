@@ -1,0 +1,20 @@
+{
+		"TFlanger"	: {
+			"cb-mes307"	: {
+				"flangefreq"	: 0.06,
+				"ampmod"	: 0.004,
+				"fdback"	: 0.95,
+				"lpfilt"	: 10000,
+				"hpfilt"	: 50,
+				"amp"	: 0
+			},
+			"preset0"	: {
+				"flangefreq"	: 0,
+				"ampmod"	: 0,
+				"fdback"	: 0,
+				"lpfilt"	: 0,
+				"hpfilt"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

@@ -1,0 +1,33 @@
+var o, p;
+o = [
+	IdentityDictionary.prNew,  Array.prNew(32),  Array.prNew(8),  Array.prNew(8),  
+	Array.prNew(8),  Array.prNew(8)
+];
+p = [
+	// IdentityDictionary
+	0, [ array: o[1],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: false ],  
+	// Array
+	1, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  'cb-mes170',  o[2],  
+		'freeze2',  o[3],  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'preset0',  o[4],  
+		'freeze_mod',  o[5],  nil,  nil ],  
+	// Array
+	2, [ 0.170000,  0.020000,  0.565000,  0.106000,  
+		0.060000,  1.928000,  3.212000,  0.000000 ],  
+	// Array
+	3, [ 0.100000,  0.000000,  2.102000,  0.055000,  
+		1.000000,  3.839000,  0.852000,  3.319559 ],  
+	// Array
+	4, [ 0,  0,  0,  0,  
+		0,  0,  0,  0 ],  
+	// Array
+	5, [ 0.130000,  0.000000,  0.681000,  0.055000,  
+		1.000000,  38.447000,  1.617000,  3.319559 ]
+];
+prUnarchive(o,p);

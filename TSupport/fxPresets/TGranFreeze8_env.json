@@ -1,0 +1,17 @@
+{
+			"TGranFreeze8_env"	: {
+				"preset0"	: {
+					"t_trig"	: 0,
+					"buf"	: 0,
+					"trate"	: 0,
+					"tratedev"	: 0,
+					"rate"	: 0,
+					"rateDev"	: 0,
+					"dur"	: 0,
+					"durDev"	: 0,
+					"pan"	: 0,
+					"panDev"	: 0,
+					"amp"	: 0
+				}
+			}
+		}

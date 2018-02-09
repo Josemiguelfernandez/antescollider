@@ -1,0 +1,26 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(3),  Array.prNew(3),  Array.prNew(6),  
+	Array.prNew(3),  Array.prNew(6),  Array.prNew(3),  Array.prNew(2)
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2],  o[4],  o[6] ],  
+	// Array
+	2, [ 'TestSynth2',  1,  o[3] ],  
+	// Array
+	3, [ 51.000000,  1591.640000,  0.250000,  0.000000,  
+		0.000000,  2.000000 ],  
+	// Array
+	4, [ 'TestSynth2',  1,  o[5] ],  
+	// Array
+	5, [ 51.000000,  308.650000,  0.250000,  0.000000,  
+		0.000000,  2.000000 ],  
+	// Array
+	6, [ 'TMFxShift2',  0.470000,  o[7] ],  
+	// Array
+	7, [ 720.000000,  2.000000 ]
+];
+prUnarchive(o,p);

@@ -1,0 +1,9 @@
+{
+	"ATK_TransRttSpread"	: {
+		"preset0"	: {
+			"azim"	: 0,
+			"angle"	: 0,
+			"rttFreq"	: 0
+		}
+	}
+}

@@ -1,0 +1,14 @@
+{
+	"TBufGrainMod"	: {
+		"default"	: {
+			"dur_add"	: 0.001,
+			"dur"	: 0.01,
+			"saw_freq"	: 0.5,
+			"sndbuf"	: 858,
+			"iphase"	: 0,
+			"amp"	: 0,
+			"freq"	: 1,
+			"envbuf"	: 48
+		}
+	}
+}

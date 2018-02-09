@@ -1,0 +1,25 @@
+{
+		"SimpleDistort"	: {
+			"MR1"	: {
+				"distAmt"	: 1357.008054,
+				"lowPassCutoff"	: 4761.526463,
+				"highPassCutoff"	: 62.411868,
+				"postDistCutoff"	: 5838.0945459833,
+				"amp"	: -1.369222999236
+			},
+			"disto1"	: {
+				"distAmt"	: 1357.008054,
+				"lowPassCutoff"	: 4761.526463,
+				"highPassCutoff"	: 62.411868,
+				"postDistCutoff"	: 4233.995065,
+				"amp"	: -20.590596
+			},
+			"preset0"	: {
+				"distAmt"	: 0,
+				"lowPassCutoff"	: 0,
+				"highPassCutoff"	: 0,
+				"postDistCutoff"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

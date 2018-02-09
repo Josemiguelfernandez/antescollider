@@ -1,0 +1,8 @@
+{
+	"TSine"	: {
+		"default"	: {
+			"freq"	: 200,
+			"amp"	: 0
+		}
+	}
+}

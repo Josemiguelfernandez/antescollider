@@ -1,0 +1,74 @@
+{
+		"STM_specCombN"	: {
+			"fl-sec3"	: {
+				"partials"	: 17,
+				"ratio"	: 1.223,
+				"strength"	: 1.16,
+				"comb_teeth"	: 24.659,
+				"comb_phase"	: 0.587,
+				"comb_width"	: 0.897,
+				"scr_trig"	: 0,
+				"scr_wipe"	: 0.441,
+				"scr_width"	: 0.129,
+				"limLev"	: 1.2,
+				"limDur"	: 0.061,
+				"amp"	: -0.005862
+			},
+			"sex-sec3"	: {
+				"partials"	: 17,
+				"ratio"	: 1.223,
+				"strength"	: 0.972,
+				"comb_teeth"	: 43.35,
+				"comb_phase"	: 0.611,
+				"comb_width"	: 1.023,
+				"scr_trig"	: 0,
+				"scr_wipe"	: 0.095,
+				"scr_width"	: 0.213,
+				"limLev"	: 1.2,
+				"limDur"	: 0.061,
+				"amp"	: -0.005862
+			},
+			"sax-sec3"	: {
+				"partials"	: 17,
+				"ratio"	: 1.223,
+				"strength"	: 0.972,
+				"comb_teeth"	: 43.35,
+				"comb_phase"	: 0.611,
+				"comb_width"	: 1.023,
+				"scr_trig"	: 0,
+				"scr_wipe"	: 0.095,
+				"scr_width"	: 0.213,
+				"limLev"	: 1.2,
+				"limDur"	: 0.061,
+				"amp"	: -0.005862
+			},
+			"mes-378"	: {
+				"partials"	: 38,
+				"ratio"	: 1.097,
+				"strength"	: 0.229,
+				"comb_teeth"	: 40.867,
+				"comb_phase"	: 0.196,
+				"comb_width"	: 0.972,
+				"scr_trig"	: 0,
+				"scr_wipe"	: 0.239,
+				"scr_width"	: 1.523,
+				"limLev"	: 0.432,
+				"limDur"	: 0.01,
+				"amp"	: -0.005862
+			},
+			"preset0"	: {
+				"partials"	: 0,
+				"ratio"	: 0,
+				"strength"	: 0,
+				"comb_teeth"	: 0,
+				"comb_phase"	: 0,
+				"comb_width"	: 0,
+				"scr_trig"	: 0,
+				"scr_wipe"	: 0,
+				"scr_width"	: 0,
+				"limLev"	: 0,
+				"limDur"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

@@ -1,0 +1,9 @@
+{
+		"FftMagMulLFSaw"	: {
+			"preset0"	: {
+				"lfsaw_freq"	: 0,
+				"lfsaw_amp"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

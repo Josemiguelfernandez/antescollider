@@ -1,0 +1,43 @@
+NoiseGate : Tmodule2 {
+
+	*def
+	{
+
+
+
+		^SynthDef(\noiseGate, {|in = 0, inbus, ingain = 0, out = 0, outbus, inlev = 0, amp = 0, outgain = -120, thresh = 0.1, dur = 0.01, matrix_ramp = 0.05, gate = 1, free = 1, xFade = 1|
+			var sig, envgate, envpause, cross;
+
+			envgate = EnvGen.ar(Env.asr(matrix_ramp, 1.0, matrix_ramp, \welch ), free, doneAction:2);
+			envpause = EnvGen.ar(Env.asr(matrix_ramp, 1.0, matrix_ramp, \welch ), gate, doneAction:1);
+
+			cross = xFade * envgate * envpause;
+
+			sig = In.ar(in, 1) + (In.ar(inbus, 1) * ingain);
+			sig = Compander.ar(sig, sig, thresh, 10, 1);
+
+			sig = sig * envgate * envpause;
+
+			XOut.ar(out, cross, sig); //salida directa a un bus
+			Out.ar(outbus, sig * outgain.dbamp.lag); //salida a un bus auxiliar
+		}).load;
+
+	}
+
+	*metadata
+	{
+		^(metadata: (
+			synthdefname: "noiseGate",
+			type: \fx,
+			main: \thresh,
+			sliders: [
+				\thresh -> ControlSpec(0, 1,\lin, 0.001,0.1,\thresh),
+				\dur -> ControlSpec(0, 1,\lin, 0.001,0.01,\dur),
+				\amp -> ControlSpec(0.ampdb, 2.ampdb, \db, 0, 0, \dB)
+			],
+		))
+
+	}
+
+}
+

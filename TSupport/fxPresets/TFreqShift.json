@@ -1,0 +1,8 @@
+{
+	"TFreqShift"	: {
+		"default"	: {
+			"modfreq"	: 0,
+			"amp"	: 0
+		}
+	}
+}

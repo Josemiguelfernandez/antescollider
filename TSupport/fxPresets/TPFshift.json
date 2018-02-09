@@ -1,0 +1,14 @@
+{
+			"TPFshift"	: {
+				"preset0"	: {
+					"shft"	: 0,
+					"lfo"	: 0,
+					"fb"	: 0,
+					"hpp"	: 0,
+					"lpp"	: 0,
+					"lag"	: 0,
+					"del"	: 0,
+					"amp"	: 0
+				}
+			}
+		}

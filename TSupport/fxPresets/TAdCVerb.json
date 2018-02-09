@@ -1,0 +1,94 @@
+{
+		"TAdCVerb"	: {
+			"estremo-rev-init"	: {
+				"revTime"	: 11.65,
+				"hfDamping"	: 0.1,
+				"predelay"	: 0.02,
+				"inFilter"	: 0.6,
+				"leakCoeff"	: 0.995,
+				"combScale"	: 1,
+				"apScale"	: 1,
+				"amp"	: 0
+			},
+			"rev_cclaire2"	: {
+				"revTime"	: 28.55,
+				"hfDamping"	: 0.1,
+				"predelay"	: 0.02,
+				"inFilter"	: 0.6,
+				"leakCoeff"	: 0.995,
+				"combScale"	: 1,
+				"apScale"	: 1,
+				"amp"	: -8.009233
+			},
+			"amas-mes313"	: {
+				"revTime"	: 2.54,
+				"hfDamping"	: 0.1,
+				"predelay"	: 0.02,
+				"inFilter"	: 0.6,
+				"leakCoeff"	: 0.995,
+				"combScale"	: 1,
+				"apScale"	: 1,
+				"amp"	: 1.78941
+			},
+			"preset0"	: {
+				"revTime"	: 0,
+				"hfDamping"	: 0,
+				"predelay"	: 0,
+				"inFilter"	: 0,
+				"leakCoeff"	: 0,
+				"combScale"	: 0,
+				"apScale"	: 0,
+				"amp"	: 0
+			},
+			"rev_cclaire1"	: {
+				"revTime"	: 28.55,
+				"hfDamping"	: 0.1,
+				"predelay"	: 0.02,
+				"inFilter"	: 0.6,
+				"leakCoeff"	: 0.995,
+				"combScale"	: 1,
+				"apScale"	: 1,
+				"amp"	: 0
+			},
+			"interact-bol1"	: {
+				"revTime"	: 3.27,
+				"hfDamping"	: 0.161,
+				"predelay"	: 0.002,
+				"inFilter"	: 0.6,
+				"leakCoeff"	: 0.995,
+				"combScale"	: 1,
+				"apScale"	: 1,
+				"amp"	: 0
+			},
+			"karate_fin_Z2"	: {
+				"revTime"	: 11.21,
+				"hfDamping"	: 0.161,
+				"predelay"	: 0.002,
+				"inFilter"	: 0.6,
+				"leakCoeff"	: 0.995,
+				"combScale"	: 1,
+				"apScale"	: 1,
+				"amp"	: 0
+			},
+			"interact_bol1"	: {
+				"revTime"	: 3.27,
+				"hfDamping"	: 0.161,
+				"predelay"	: 0.002,
+				"inFilter"	: 0.6,
+				"leakCoeff"	: 0.995,
+				"combScale"	: 1,
+				"apScale"	: 1,
+				"amp"	: 0
+			},
+			"gekipe_medio1"	: {
+				"revTime"	: 0.06,
+				"hfDamping"	: 0.1,
+				"predelay"	: 0.02,
+				"inFilter"	: 0.6,
+				"leakCoeff"	: 0.995,
+				"combScale"	: 1,
+				"apScale"	: 1,
+				"amp"	: 0
+			}
+		}
+	}

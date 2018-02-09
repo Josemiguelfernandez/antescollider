@@ -1,0 +1,14 @@
+{
+			"TGranInterp"	: {
+				"preset0"	: {
+					"trigRate"	: 0,
+					"trigRateDev"	: 0,
+					"dur"	: 0,
+					"durDev"	: 0,
+					"pan"	: 0,
+					"panDev"	: 0,
+					"ampDev"	: 0,
+					"amp"	: 0
+				}
+			}
+		}

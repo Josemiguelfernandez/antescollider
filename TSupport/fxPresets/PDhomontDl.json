@@ -1,0 +1,22 @@
+{
+		"PDhomontDl"	: {
+			"preset1"	: {
+				"lag"	: 1.023,
+				"jitF"	: 4.397,
+				"md"	: 0.005,
+				"dlJ"	: 1.547,
+				"hpp"	: 29.803,
+				"lpp"	: 135,
+				"amp"	: 0
+			},
+			"preset0"	: {
+				"lag"	: 0,
+				"jitF"	: 0,
+				"md"	: 0,
+				"dlJ"	: 0,
+				"hpp"	: 0,
+				"lpp"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

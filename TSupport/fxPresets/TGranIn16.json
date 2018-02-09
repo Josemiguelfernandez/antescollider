@@ -1,0 +1,64 @@
+{
+	"TGranIn16"	: {
+		"noise_zig1"	: {
+			"panDev"	: 0.99823069572449,
+			"dur"	: 0.095,
+			"ampDev"	: 0,
+			"pan"	: 0,
+			"trigRate"	: 10.9,
+			"amp"	: 0,
+			"trigRateDev"	: 85.27954864502,
+			"durDev"	: 0
+		},
+		"sect2_2"	: {
+			"panDev"	: 1,
+			"dur"	: 0.366,
+			"ampDev"	: 0.001,
+			"pan"	: 0,
+			"trigRate"	: 46.9,
+			"amp"	: 0,
+			"trigRateDev"	: 0,
+			"durDev"	: 0.001
+		},
+		"sect2_1"	: {
+			"panDev"	: 1,
+			"dur"	: 0.196,
+			"ampDev"	: 0.001,
+			"pan"	: 0,
+			"trigRate"	: 19.4,
+			"amp"	: 0,
+			"trigRateDev"	: 106.34920634921,
+			"durDev"	: 0.001
+		},
+		"default"	: {
+			"panDev"	: 0.001,
+			"dur"	: 0.001,
+			"ampDev"	: 0.001,
+			"pan"	: 0,
+			"trigRate"	: 20,
+			"amp"	: 0,
+			"trigRateDev"	: 0.001,
+			"durDev"	: 0.001
+		},
+		"laco_gran1"	: {
+			"panDev"	: 1,
+			"dur"	: 0.095,
+			"ampDev"	: 0.001,
+			"pan"	: 0,
+			"trigRate"	: 19.4,
+			"amp"	: 0,
+			"trigRateDev"	: 42.695379638055,
+			"durDev"	: 0.14878509082331
+		},
+		"rand2"	: {
+			"panDev"	: 0.57660836450645,
+			"dur"	: 0.077,
+			"ampDev"	: 0,
+			"pan"	: -0.53341421494288,
+			"trigRate"	: 13,
+			"amp"	: 0,
+			"trigRateDev"	: 85.27954864502,
+			"durDev"	: 0
+		}
+	}
+}

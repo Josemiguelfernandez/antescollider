@@ -1,0 +1,9 @@
+{
+	"ATK_TransFocus8In"	: {
+		"preset0"	: {
+			"dist"	: 0,
+			"azim"	: 0,
+			"amp"	: 0
+		}
+	}
+}

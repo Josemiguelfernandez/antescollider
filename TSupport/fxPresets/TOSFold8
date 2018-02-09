@@ -1,0 +1,30 @@
+var o, p;
+o = [
+	IdentityDictionary.prNew,  Array.prNew(32),  Array.prNew(6),  Array.prNew(6),  
+	Array.prNew(6)
+];
+p = [
+	// IdentityDictionary
+	0, [ array: o[1],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: false ],  
+	// Array
+	1, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  'interact_bol1',  o[2],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		'karate_fin_Z2',  o[3],  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'preset0',  o[4],  
+		nil,  nil,  nil,  nil ],  
+	// Array
+	2, [ 0.000000,  -90.000000,  0.000000,  104.452583,  
+		-50.000000,  0.600000 ],  
+	// Array
+	3, [ 0.000000,  -90.000000,  0.000000,  104.452583,  
+		-50.000000,  0.370798 ],  
+	// Array
+	4, [ 0,  0,  0,  0,  
+		0,  0 ]
+];
+prUnarchive(o,p);

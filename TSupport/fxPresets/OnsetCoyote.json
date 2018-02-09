@@ -1,0 +1,13 @@
+{
+		"OnsetCoyote"	: {
+			"preset0"	: {
+				"thresh"	: 0,
+				"trackFall"	: 0,
+				"slowLag"	: 0,
+				"fastLag"	: 0,
+				"fastMul"	: 0,
+				"minDur"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

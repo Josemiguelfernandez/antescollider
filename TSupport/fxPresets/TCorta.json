@@ -1,0 +1,11 @@
+{
+		"TCorta"	: {
+			"preset0"	: {
+				"gran_dur"	: 0,
+				"rate"	: 0,
+				"pos"	: 0,
+				"trigDev"	: 0,
+				"trigAmp"	: 0
+			}
+		}
+	}

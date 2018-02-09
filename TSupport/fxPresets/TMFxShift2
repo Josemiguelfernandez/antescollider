@@ -1,0 +1,53 @@
+var o, p;
+o = [
+	IdentityDictionary.prNew,  Array.prNew(64),  Array.prNew(2),  Array.prNew(2),  
+	Array.prNew(2),  Array.prNew(2),  Array.prNew(2),  Array.prNew(2),  
+	Array.prNew(2),  Array.prNew(2),  Array.prNew(2),  Array.prNew(2),  
+	Array.prNew(2)
+];
+p = [
+	// IdentityDictionary
+	0, [ array: o[1],  size: 11,  
+		proto: nil,  parent: nil,  
+		know: false ],  
+	// Array
+	1, [ 'init-R',  o[2],  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		'fl-mes316',  o[3],  'init_z_in',  o[4],  
+		'piano_virt_p2',  o[5],  nil,  nil,  
+		'MR1',  o[6],  'fl-diagonal',  o[7],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		'preset1',  o[8],  nil,  nil,  
+		'MR5',  o[9],  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'preset0',  o[10],  
+		'gekipe_medio1',  o[11],  'test2',  o[12] ],  
+	// Array
+	2, [ -158.980892,  0.0 ],  
+	// Array
+	3, [ -142.545749,  6.0206 ],  
+	// Array
+	4, [ -1358.940451,  1.116586 ],  
+	// Array
+	5, [ 81.205135982206,  -5.0368764477113 ],  
+	// Array
+	6, [ -1018.0729956526,  0.0 ],  
+	// Array
+	7, [ 40.440805,  3.397624 ],  
+	// Array
+	8, [ 60.564149,  0.0 ],  
+	// Array
+	9, [ -1117.9132544738,  0.0 ],  
+	// Array
+	10, [ 0,  0 ],  
+	// Array
+	11, [ -385.061167,  0.0 ],  
+	// Array
+	12, [ -2173.385906,  0.0 ]
+];
+prUnarchive(o,p);

@@ -1,0 +1,20 @@
+{
+		"OnsetJensen"	: {
+			"perc2"	: {
+				"thresh"	: 0.03,
+				"waittime"	: 0.08,
+				"propsc"	: 0.88,
+				"prophfe"	: 1,
+				"propsf"	: 0.73,
+				"amp"	: 0
+			},
+			"preset0"	: {
+				"thresh"	: 0,
+				"waittime"	: 0,
+				"propsc"	: 0,
+				"prophfe"	: 0,
+				"propsf"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

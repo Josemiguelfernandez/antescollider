@@ -1,0 +1,12 @@
+{
+	"TVbapKubus"	: {
+		"default"	: {
+			"ele"	: 1,
+			"spr"	: 0,
+			"lag"	: 0.2,
+			"buf"	: 175,
+			"amp"	: 0,
+			"azi"	: 0
+		}
+	}
+}

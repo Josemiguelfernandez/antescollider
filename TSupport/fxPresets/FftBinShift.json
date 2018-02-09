@@ -1,0 +1,14 @@
+{
+		"FftBinShift"	: {
+			"om"	: {
+				"stretch"	: 0.725,
+				"shift"	: 2.129,
+				"amp"	: 1.503547
+			},
+			"preset0"	: {
+				"stretch"	: 0,
+				"shift"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

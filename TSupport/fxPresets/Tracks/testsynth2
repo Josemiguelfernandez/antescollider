@@ -1,0 +1,16 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(1),  Array.prNew(3),  Array.prNew(6)
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2] ],  
+	// Array
+	2, [ 'TestSynth2',  1,  o[3] ],  
+	// Array
+	3, [ 54.000000,  1000.000000,  0.250000,  0.000000,  
+		0.000000,  2.000000 ]
+];
+prUnarchive(o,p);

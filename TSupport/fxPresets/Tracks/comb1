@@ -1,0 +1,22 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(2),  Array.prNew(3),  Array.prNew(2),  
+	Array.prNew(5),  Array.prNew(5)
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2],  o[4] ],  
+	// Array
+	2, [ TMFxSin2,  1,  o[3] ],  
+	// Array
+	3, [ 594.424115,  -14.833382 ],  
+	// Array
+	4, [ 'TCombC',  1,  o[5],  nil,  
+		nil ],  
+	// Array
+	5, [ 0.500000,  0.022000,  -10.000000,  6.400000,  
+		-8.736352 ]
+];
+prUnarchive(o,p);

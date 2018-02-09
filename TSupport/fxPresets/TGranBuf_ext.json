@@ -1,0 +1,19 @@
+{
+			"TGranBuf_ext"	: {
+				"preset0"	: {
+					"trigRate"	: 0,
+					"trigRateDev"	: 0,
+					"startPos"	: 0,
+					"centerDev"	: 0,
+					"dur"	: 0,
+					"durDev"	: 0,
+					"rate"	: 0,
+					"rateDev"	: 0,
+					"pan"	: 0,
+					"panDev"	: 0,
+					"amp"	: 0,
+					"ampDev"	: 0,
+					"interpol"	: 0
+				}
+			}
+		}

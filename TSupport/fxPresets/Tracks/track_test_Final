@@ -1,0 +1,41 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(2),  Array.prNew(5),  Array.prNew(9),  
+	List.prNew,  Array.prNew(3),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(5),  Array.prNew(2),  List.prNew,  
+	Array.prNew
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2],  o[9] ],  
+	// Array
+	2, [ 'TAddic_5_8',  1,  o[3],  o[4],  
+		nil ],  
+	// Array
+	3, [ 1.0,  0.0,  0.0,  0.0,  
+		0.0,  0.0,  1.0,  2.0,  
+		0.20000000298023 ],  
+	// List
+	4, [ array: o[5] ],  
+	// Array
+	5, [ o[6],  o[7],  o[8] ],  
+	// Array
+	6, [ 830.609375,  2217.4609375,  1136.7507324219,  349.2282409668,  
+		706.47692871094 ],  
+	// Array
+	7, [ 0.042123630642891,  0.026011627167463,  0.070950172841549,  0.039312250912189,  
+		0.041566889733076 ],  
+	// Array
+	8, [ 0.0,  0.40000000596046,  0.80000001192093,  1.2000000476837,  
+		1.6000000238419 ],  
+	// Array
+	9, [ 'TMFxShift2',  1,  o[10],  o[11],  
+		nil ],  
+	// Array
+	10, [ 0.0,  0.0 ],  
+	// List
+	11, [ array: o[12] ]
+];
+prUnarchive(o,p);

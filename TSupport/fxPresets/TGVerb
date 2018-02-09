@@ -1,0 +1,54 @@
+var o, p;
+o = [
+	IdentityDictionary.prNew,  Array.prNew(32),  Array.prNew(11),  Array.prNew(11),  
+	Array.prNew(11),  Array.prNew(11),  Array.prNew(11),  Array.prNew(11),  
+	Array.prNew(10),  Array.prNew(11)
+];
+p = [
+	// IdentityDictionary
+	0, [ array: o[1],  size: 8,  
+		proto: nil,  parent: nil,  
+		know: false ],  
+	// Array
+	1, [ nil,  nil,  nil,  nil,  
+		'MR-synth_perc',  o[2],  'cb-mes170',  o[3],  
+		nil,  nil,  nil,  nil,  
+		'rev-mes90',  o[4],  nil,  nil,  
+		nil,  nil,  'rev_klank',  o[5],  
+		'MR1',  o[6],  nil,  nil,  
+		'multi1',  o[7],  'preset0',  o[8],  
+		'MR-Tube',  o[9],  nil,  nil ],  
+	// Array
+	2, [ -12.0,  10.0,  1.5,  0.5,  
+		0.5,  15.0,  0.0,  -3.0,  
+		-6.0,  300.0,  0.0 ],  
+	// Array
+	3, [ -10.151027,  2.8,  3.0,  0.5,  
+		0.5,  15.0,  0.0,  -3.0,  
+		-6.0,  300.0,  0.0 ],  
+	// Array
+	4, [ -12.0,  10.0,  3.0,  0.5,  
+		0.5,  15.0,  0.0,  -3.0,  
+		-6.0,  300.0,  0.0 ],  
+	// Array
+	5, [ -12.0,  21.9,  2.8,  0.518,  
+		0.152,  15.0,  -9.084255,  -6.019195,  
+		-4.469147,  288.0,  0.0 ],  
+	// Array
+	6, [ -12.0,  10.0,  35.6,  0.022,  
+		0.5,  15.0,  0.0,  -3.0,  
+		-6.0,  300.0,  0.0 ],  
+	// Array
+	7, [ -5.874621,  100.8,  9.2,  0.692,  
+		0.123,  6.4,  0.0,  -9.801689,  
+		-9.06527,  348.0,  0.0 ],  
+	// Array
+	8, [ 0,  0,  0,  0,  
+		0,  0,  0,  0,  
+		0,  0 ],  
+	// Array
+	9, [ -12.0,  10.0,  3.0,  0.5,  
+		0.5,  15.0,  0.0,  -3.0,  
+		-6.0,  300.0,  0.0 ]
+];
+prUnarchive(o,p);

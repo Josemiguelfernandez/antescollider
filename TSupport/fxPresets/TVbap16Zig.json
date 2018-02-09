@@ -1,0 +1,156 @@
+{
+	"TVbap16Zig"	: {
+		"tball1"	: {
+			"azig"	: 0.269,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 1.029,
+			"amp"	: 0
+		},
+		"default"	: {
+			"azig"	: 0.5,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 3,
+			"amp"	: 0
+		},
+		"fin3"	: {
+			"azig"	: 0.142,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 1.409,
+			"amp"	: 0
+		},
+		"fin8"	: {
+			"spr"	: 0,
+			"lag"	: 0.2,
+			"elemod"	: 1.409,
+			"buf"	: 174,
+			"amp"	: 0,
+			"azig"	: 0.6
+		},
+		"medio2"	: {
+			"azig"	: 0.5,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 3,
+			"amp"	: 0
+		},
+		"zig_perc1"	: {
+			"azig"	: 0.5,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 3,
+			"amp"	: 0
+		},
+		"perc_vbap1"	: {
+			"azig"	: 11.825,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 2.032,
+			"amp"	: 0
+		},
+		"fin4"	: {
+			"azig"	: 0.2,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 1.409,
+			"amp"	: 0
+		},
+		"noisy3"	: {
+			"azig"	: 0.776,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 0.517,
+			"amp"	: 0
+		},
+		"0049_zig"	: {
+			"azig"	: 0.649,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 3,
+			"amp"	: 0
+		},
+		"fin5"	: {
+			"azig"	: 0.3,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 1.409,
+			"amp"	: 0
+		},
+		"fin6"	: {
+			"azig"	: 0.4,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 1.409,
+			"amp"	: 0
+		},
+		"MR2"	: {
+			"azig"	: 0.523,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 2.175,
+			"amp"	: 0
+		},
+		"MR1"	: {
+			"azig"	: 11.347,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 19.498,
+			"amp"	: 0
+		},
+		"klang_impulse1"	: {
+			"azig"	: 0.643,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 17.593,
+			"amp"	: 0
+		},
+		"bajo1"	: {
+			"azig"	: 5.854,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 0.897,
+			"amp"	: 0
+		},
+		"noisy4"	: {
+			"azig"	: 0.332,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 3,
+			"amp"	: 0
+		},
+		"fin7"	: {
+			"azig"	: 0.5,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 1.409,
+			"amp"	: 0
+		},
+		"perc_vbap"	: {
+			"azig"	: 0.517,
+			"spr"	: 0,
+			"buf"	: 174,
+			"lag"	: 0.2,
+			"elemod"	: 1.285,
+			"amp"	: 0
+		}
+	}
+}

@@ -1,0 +1,36 @@
+{
+	"SimpleBass"	: {
+		"gran_bajo1"	: {
+			"amp"	: 2.9917713557549,
+			"note"	: 24,
+			"width"	: 0,
+			"rq"	: 0.25,
+			"fc"	: 205.81,
+			"bal"	: 0
+		},
+		"bajo-Lara"	: {
+			"note"	: 24,
+			"fc"	: 205.81,
+			"width"	: 0,
+			"bal"	: 0,
+			"amp"	: 0,
+			"rq"	: 0.25
+		},
+		"fin_bols1"	: {
+			"note"	: 26,
+			"fc"	: 289.55,
+			"width"	: 0,
+			"bal"	: 0,
+			"amp"	: 1.501725,
+			"rq"	: 0.342
+		},
+		"preset0"	: {
+			"note"	: 0,
+			"fc"	: 0,
+			"width"	: 0,
+			"bal"	: 0,
+			"amp"	: 0,
+			"rq"	: 0
+		}
+	}
+}

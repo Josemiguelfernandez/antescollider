@@ -1,0 +1,24 @@
+{
+	"TStutter"	: {
+		"preset1"	: {
+			"centerpos"	: 0.1,
+			"length"	: 0.045,
+			"maxdel"	: 10,
+			"dur"	: 0.001,
+			"amp"	: 0,
+			"rate"	: 1,
+			"t_trig"	: 0,
+			"pos"	: 0
+		},
+		"default"	: {
+			"centerpos"	: 0.1,
+			"length"	: 0.05,
+			"maxdel"	: 2,
+			"dur"	: 0.001,
+			"amp"	: 0,
+			"rate"	: 1,
+			"t_trig"	: 0,
+			"pos"	: 0
+		}
+	}
+}

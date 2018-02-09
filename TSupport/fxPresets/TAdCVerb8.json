@@ -1,0 +1,14 @@
+{
+		"TAdCVerb8"	: {
+			"preset0"	: {
+				"revTime"	: 0,
+				"hfDamping"	: 0,
+				"predelay"	: 0,
+				"inFilter"	: 0,
+				"leakCoeff"	: 0,
+				"combScale"	: 0,
+				"apScale"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

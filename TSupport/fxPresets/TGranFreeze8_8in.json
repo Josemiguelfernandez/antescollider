@@ -1,0 +1,30 @@
+{
+	"TGranFreeze8_8in"	: {
+		"aux_freeze"	: {
+			"panDev"	: 0,
+			"dur"	: 0.06,
+			"pan"	: 0,
+			"amp"	: -6,
+			"rate"	: 1,
+			"tratedev"	: 89,
+			"trate"	: 6.7,
+			"t_trig"	: 0,
+			"buf"	: 1,
+			"rateDev"	: 0.001,
+			"durDev"	: 0.06
+		},
+		"preset0"	: {
+			"pan"	: 0,
+			"rateDev"	: 0,
+			"t_trig"	: 0,
+			"dur"	: 0,
+			"rate"	: 0,
+			"buf"	: 0,
+			"panDev"	: 0,
+			"durDev"	: 0,
+			"amp"	: 0,
+			"tratedev"	: 0,
+			"trate"	: 0
+		}
+	}
+}

@@ -1,0 +1,47 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(6),  Array.prNew(5),  Array.prNew(6),  
+	Array.prNew(5),  Array.prNew(6),  Array.prNew(5),  Array.prNew(2),  
+	Array.prNew(5),  Array.prNew(2),  Array.prNew(5),  Array.prNew(2),  
+	Array.prNew(5),  Array.prNew(2)
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2],  o[4],  o[6],  o[8],  
+		o[10],  o[12] ],  
+	// Array
+	2, [ 'TestSynth2',  1,  o[3],  nil,  
+		nil ],  
+	// Array
+	3, [ 33.000000,  1000.000000,  0.250000,  0.000000,  
+		0.000000,  1.414833 ],  
+	// Array
+	4, [ 'TestSynth2',  1,  o[5],  nil,  
+		nil ],  
+	// Array
+	5, [ 54.000000,  1000.000000,  0.250000,  0.000000,  
+		0.000000,  2.511752 ],  
+	// Array
+	6, [ 'TMFxPitch2',  0.160000,  o[7],  nil,  
+		nil ],  
+	// Array
+	7, [ 1.559000,  2.360001 ],  
+	// Array
+	8, [ 'TMFxPitch2',  0.150000,  o[9],  nil,  
+		nil ],  
+	// Array
+	9, [ 0.441000,  -1.011585 ],  
+	// Array
+	10, [ 'TMFxShift2',  0.370000,  o[11],  nil,  
+		nil ],  
+	// Array
+	11, [ 624.000000,  -0.247428 ],  
+	// Array
+	12, [ 'TMFxShift2',  0.660000,  o[13],  nil,  
+		nil ],  
+	// Array
+	13, [ -816.000000,  2.573154 ]
+];
+prUnarchive(o,p);

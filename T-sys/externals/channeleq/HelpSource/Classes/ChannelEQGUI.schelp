@@ -1,0 +1,18 @@
+title:: ChannelEQGUI
+categories:: Classes
+summary:: interface for ChannelEQ
+
+description::
+
+classmethods::
+
+method:: prefsFile
+Allows you to select a location of the preferences file, set to code:: Platform.userConfigDir +/+ "eq-prefs.dat" :: by default.
+
+instancemethods::
+
+method:: channelEQ
+The "parent" ChannelEQ associated with this object.
+
+method:: stopOnClose
+Whether to stop the parent when the window closes. If you used the lazy method of initialization (ChannelEQ.new), this is automatically set to true for consistency with MasterEQ.

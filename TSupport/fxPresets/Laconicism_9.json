@@ -1,0 +1,16 @@
+{
+		"Laconicism_9"	: {
+			"preset0"	: {
+				"sLag"	: 0,
+				"ranFreqMul"	: 0,
+				"fMul"	: 0,
+				"amp"	: 0
+			},
+			"bajo-noise"	: {
+				"sLag"	: 0.019246,
+				"ranFreqMul"	: 64.697677,
+				"fMul"	: 0.802844,
+				"amp"	: 0
+			}
+		}
+	}

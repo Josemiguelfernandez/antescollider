@@ -1,0 +1,21 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(2),  Array.prNew(3),  Array.prNew(6),  
+	Array.prNew(3),  Array.prNew(2)
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2],  o[4] ],  
+	// Array
+	2, [ 'TestSynth2',  1,  o[3] ],  
+	// Array
+	3, [ 27.000000,  417.100000,  0.153000,  0.000000,  
+		0.000000,  2.000000 ],  
+	// Array
+	4, [ 'TMFxShift2',  0.810000,  o[5] ],  
+	// Array
+	5, [ -729.422708,  1.939953 ]
+];
+prUnarchive(o,p);

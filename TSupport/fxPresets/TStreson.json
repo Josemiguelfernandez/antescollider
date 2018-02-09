@@ -1,0 +1,19 @@
+{
+			"TStreson"	: {
+				"mes138"	: {
+					"delayTime"	: 0.026,
+					"reson"	: 0.906,
+					"amp"	: 0
+				},
+				"preset0"	: {
+					"delayTime"	: 0,
+					"reson"	: 0,
+					"amp"	: 0
+				},
+				"trame1"	: {
+					"delayTime"	: 0.03,
+					"reson"	: 0.708,
+					"amp"	: 0
+				}
+			}
+		}

@@ -1,0 +1,12 @@
+{
+	"TVbap16Mod"	: {
+		"default"	: {
+			"ele"	: 1,
+			"spr"	: 0,
+			"lag"	: 0.2,
+			"buf"	: 174,
+			"amp"	: 0,
+			"azi"	: 0
+		}
+	}
+}

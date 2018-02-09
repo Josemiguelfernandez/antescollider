@@ -1,0 +1,9 @@
+{
+	"FftFreezeOneOnset"	: {
+		"default"	: {
+			"buf"	: 73,
+			"thresh"	: 0.5,
+			"amp"	: 0
+		}
+	}
+}

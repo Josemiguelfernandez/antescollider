@@ -1,0 +1,8 @@
+{
+		"FftMagBelow"	: {
+			"preset0"	: {
+				"threshold"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

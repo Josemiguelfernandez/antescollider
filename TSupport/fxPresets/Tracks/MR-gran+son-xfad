@@ -1,0 +1,28 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(3),  Array.prNew(5),  Array.prNew(4),  
+	Array.prNew(5),  Array.prNew(8),  Array.prNew(5),  Array.prNew(4)
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2],  o[4],  o[6] ],  
+	// Array
+	2, [ 'Tweets_fo_0143',  1,  o[3],  nil,  
+		nil ],  
+	// Array
+	3, [ 32.361373976342,  67.84,  8.707,  0.10904461465577 ],  
+	// Array
+	4, [ 'TGranIn',  1.0,  o[5],  nil,  
+		nil ],  
+	// Array
+	5, [ 36.4,  216.88740605938,  0.052,  0.089417989417989,  
+		0.0,  0.98537053887372,  0.001,  2.5596122026145 ],  
+	// Array
+	6, [ 'ATK_TransRttSpread16',  1.0,  o[7],  nil,  
+		nil ],  
+	// Array
+	7, [ 0.0,  0.107,  5.112,  0.81617777509642 ]
+];
+prUnarchive(o,p);

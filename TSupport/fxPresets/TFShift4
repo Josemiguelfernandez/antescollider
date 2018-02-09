@@ -1,0 +1,39 @@
+var o, p;
+o = [
+	IdentityDictionary.prNew,  Array.prNew(32),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  Array.prNew(5)
+];
+p = [
+	// IdentityDictionary
+	0, [ array: o[1],  size: 6,  
+		proto: nil,  parent: nil,  
+		know: false ],  
+	// Array
+	1, [ nil,  nil,  'shift4_fl_mes81',  o[2],  
+		'trb-diagonal',  o[3],  'piano_fshift',  o[4],  
+		nil,  nil,  'trb-mes316',  o[5],  
+		nil,  nil,  nil,  nil,  
+		'piano_virt_p2',  o[6],  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'preset0',  o[7],  
+		nil,  nil,  nil,  nil ],  
+	// Array
+	2, [ 81.269841,  -60.952381,  81.463957,  -81.269841,  
+		-7.558763 ],  
+	// Array
+	3, [ 182.727732,  -81.852189,  -264.191689,  -344.943888,  
+		-1.9704 ],  
+	// Array
+	4, [ 1016.649479,  894.032959,  527.4128,  692.217167,  
+		0.639282 ],  
+	// Array
+	5, [ 182.727732,  -81.852189,  -264.191689,  -344.943888,  
+		-1.9704 ],  
+	// Array
+	6, [ 81.269841,  -60.952381,  81.463957,  -81.269841,  
+		-0.094874967858589 ],  
+	// Array
+	7, [ 0,  0,  0,  0,  
+		0 ]
+];
+prUnarchive(o,p);

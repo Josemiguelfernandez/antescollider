@@ -1,0 +1,36 @@
+var o, p;
+o = [
+	IdentityDictionary.prNew,  Array.prNew(32),  Array.prNew(7),  Array.prNew(7),  
+	Array.prNew(7),  Array.prNew(7),  Array.prNew(6)
+];
+p = [
+	// IdentityDictionary
+	0, [ array: o[1],  size: 5,  
+		proto: nil,  parent: nil,  
+		know: false ],  
+	// Array
+	1, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		'Cuidad_sin_sueno3',  o[2],  'Cuidad_sin_sueno2',  o[3],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'Cuidad_sin_sueno1',  o[4],  
+		'Cuidad_sin_sueno4',  o[5],  nil,  nil,  
+		nil,  nil,  'preset0',  o[6],  
+		nil,  nil,  nil,  nil ],  
+	// Array
+	2, [ 0.040000,  0.000000,  0.683000,  1.026000,  
+		0.056000,  0.687000,  -9.969012 ],  
+	// Array
+	3, [ 0.040000,  0.000000,  0.683000,  1.026000,  
+		0.030000,  0.687000,  -6.193814 ],  
+	// Array
+	4, [ 0.040000,  0.000000,  0.683000,  1.026000,  
+		0.018000,  0.687000,  -6.193814 ],  
+	// Array
+	5, [ 0.040000,  0.000000,  0.683000,  1.026000,  
+		0.034000,  0.687000,  -9.969012 ],  
+	// Array
+	6, [ 0,  0,  0,  0,  
+		0,  0 ]
+];
+prUnarchive(o,p);

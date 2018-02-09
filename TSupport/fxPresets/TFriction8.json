@@ -1,0 +1,12 @@
+{
+		"TFriction8"	: {
+			"preset0"	: {
+				"friction"	: 0,
+				"spring"	: 0,
+				"damp"	: 0,
+				"mass"	: 0,
+				"beltmass"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

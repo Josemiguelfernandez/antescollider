@@ -1,0 +1,9 @@
+{
+	"AM2"	: {
+		"default"	: {
+			"freq"	: 440,
+			"modfreq"	: 5,
+			"amp"	: 0
+		}
+	}
+}

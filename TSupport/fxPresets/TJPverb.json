@@ -1,0 +1,32 @@
+{
+			"TJPverb"	: {
+				"preset0"	: {
+					"t60"	: 0,
+					"damp"	: 0,
+					"size"	: 0,
+					"earlydiff"	: 0,
+					"modDepth"	: 0,
+					"modFreq"	: 0,
+					"low"	: 0,
+					"mid"	: 0,
+					"high"	: 0,
+					"lowcut"	: 0,
+					"highcut"	: 0,
+					"amp"	: 0
+				},
+				"trb-mes164"	: {
+					"t60"	: 1.09,
+					"damp"	: 0,
+					"size"	: 0.649,
+					"earlydiff"	: 0.012,
+					"modDepth"	: 22.313,
+					"modFreq"	: 5.521,
+					"low"	: 1,
+					"mid"	: 1,
+					"high"	: 1,
+					"lowcut"	: 500,
+					"highcut"	: 2000,
+					"amp"	: -1.398631
+				}
+			}
+		}

@@ -1,0 +1,16 @@
+{
+			"TPan8_In8"	: {
+				"preset0"	: {
+					"pos"	: 0,
+					"width"	: 0,
+					"lag"	: 0,
+					"amp"	: 0
+				},
+				"rev_cclaire1"	: {
+					"pos"	: 1.415,
+					"width"	: 2.681,
+					"lag"	: 0.2,
+					"amp"	: 0
+				}
+			}
+		}

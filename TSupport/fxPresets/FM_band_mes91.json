@@ -1,0 +1,20 @@
+{
+		"FM_band_mes91"	: {
+			"preset0"	: {
+				"transp"	: 0,
+				"amp"	: 0,
+				"index1"	: 0,
+				"index2"	: 0,
+				"index3"	: 0,
+				"index4"	: 0,
+				"index5"	: 0,
+				"lfnoise_amp"	: 0,
+				"shift"	: 0,
+				"distor"	: 0,
+				"lag"	: 0,
+				"lagGen"	: 0,
+				"width"	: 0,
+				"lag_spat"	: 0
+			}
+		}
+	}

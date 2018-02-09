@@ -1,0 +1,32 @@
+{
+	"TCombC2"	: {
+		"MR1"	: {
+			"dectime"	: 0.268,
+			"imp"	: 17.41,
+			"gentime"	: 0.3,
+			"amp"	: 0,
+			"deltime"	: 0.005
+		},
+		"preset0"	: {
+			"gentime"	: 0,
+			"amp"	: 0,
+			"dectime"	: 0,
+			"deltime"	: 0,
+			"imp"	: 0
+		},
+		"piano_1"	: {
+			"gentime"	: 5.2,
+			"amp"	: 0,
+			"dectime"	: 0.5,
+			"deltime"	: 0.065,
+			"imp"	: 0.25
+		},
+		"gran-comb-in1"	: {
+			"gentime"	: 0.1,
+			"amp"	: 0,
+			"dectime"	: 0.05,
+			"deltime"	: 0.102,
+			"imp"	: 36.4
+		}
+	}
+}

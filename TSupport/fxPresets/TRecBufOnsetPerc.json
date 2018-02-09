@@ -1,0 +1,8 @@
+{
+	"TRecBufOnsetPerc"	: {
+		"default"	: {
+			"amp"	: 0.3,
+			"buf"	: 31
+		}
+	}
+}

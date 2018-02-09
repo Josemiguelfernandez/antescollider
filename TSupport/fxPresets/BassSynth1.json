@@ -1,0 +1,40 @@
+{
+		"BassSynth1"	: {
+			"bassSyn2"	: {
+				"freq"	: 68.286208,
+				"fmrange"	: 0.471,
+				"fmfreq"	: 0.771,
+				"lpf"	: 500,
+				"hpf"	: 40,
+				"rq"	: 0.5,
+				"amp"	: -11.74191
+			},
+			"acord-final-Lara1bass"	: {
+				"freq"	: 48.213124,
+				"fmrange"	: 0.471,
+				"fmfreq"	: 0.771,
+				"lpf"	: 500,
+				"hpf"	: 40,
+				"rq"	: 0.5,
+				"amp"	: -11.538678
+			},
+			"preset0"	: {
+				"freq"	: 0,
+				"fmrange"	: 0,
+				"fmfreq"	: 0,
+				"lpf"	: 0,
+				"hpf"	: 0,
+				"rq"	: 0,
+				"amp"	: 0
+			},
+			"bassSyn3"	: {
+				"freq"	: 68.286208,
+				"fmrange"	: 0.471,
+				"fmfreq"	: 0.771,
+				"lpf"	: 500,
+				"hpf"	: 40,
+				"rq"	: 0.5,
+				"amp"	: -11.74191
+			}
+		}
+	}

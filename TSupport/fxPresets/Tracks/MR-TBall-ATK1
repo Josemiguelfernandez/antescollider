@@ -1,0 +1,23 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(2),  Array.prNew(5),  Array.prNew(6),  
+	Array.prNew(5),  Array.prNew(4)
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2],  o[4] ],  
+	// Array
+	2, [ 'TBall_DyKlang',  1,  o[3],  nil,  
+		nil ],  
+	// Array
+	3, [ 20.5,  20.0,  1.66,  0.0408,  
+		0.0018,  3.478593542465 ],  
+	// Array
+	4, [ 'ATK_TransPushY16',  1,  o[5],  nil,  
+		nil ],  
+	// Array
+	5, [ 0.211,  44.24,  181.606,  1.5038509674286 ]
+];
+prUnarchive(o,p);

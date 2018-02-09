@@ -1,0 +1,16 @@
+{
+	"ATK_TransRttSpread16"	: {
+		"preset0"	: {
+			"azim"	: 0,
+			"angle"	: 0,
+			"rttFreq"	: 0,
+			"amp"	: 0
+		},
+		"MR1"	: {
+			"azim"	: 12,
+			"angle"	: 0.133,
+			"rttFreq"	: 7.15,
+			"amp"	: 0
+		}
+	}
+}

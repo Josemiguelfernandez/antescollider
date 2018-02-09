@@ -1,0 +1,57 @@
+{
+	"TPan8"	: {
+		"init-R"	: {
+			"width"	: 2,
+			"lag"	: 0.2,
+			"pos"	: 0.313,
+			"amp"	: 0
+		},
+		"cb-mes302"	: {
+			"width"	: 3.496,
+			"lag"	: 0.2,
+			"pos"	: 1.272,
+			"amp"	: 3.406337
+		},
+		"init_z_in"	: {
+			"width"	: 2,
+			"lag"	: 0.2,
+			"pos"	: 1.11,
+			"amp"	: 0.119902
+		},
+		"synth6_2_env"	: {
+			"width"	: 2,
+			"lag"	: 0.001,
+			"pos"	: 0,
+			"amp"	: 0
+		},
+		"test1"	: {
+			"width"	: 2,
+			"lag"	: 0.2,
+			"pos"	: 1.177,
+			"amp"	: 0
+		},
+		"bajo_cresc2"	: {
+			"width"	: 8,
+			"lag"	: 0.2,
+			"pos"	: 0,
+			"amp"	: -0.84543147586344
+		},
+		"preset0"	: {
+			"pos"	: 0,
+			"width"	: 0,
+			"lag"	: 0
+		},
+		"gekipe_medio1"	: {
+			"width"	: 3.225,
+			"lag"	: 0.2,
+			"pos"	: 0.534,
+			"amp"	: 0
+		},
+		"test2"	: {
+			"width"	: 2,
+			"lag"	: 0.2,
+			"pos"	: 0.323,
+			"amp"	: 0
+		}
+	}
+}

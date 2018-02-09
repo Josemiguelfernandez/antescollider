@@ -1,0 +1,4424 @@
+////////SUPERCOLLIDER
+
+// command line boot
+// ./scsynth -u 57110 -i 43 -o 43 -b 1026 -d 2048 -n 16384 -m 1048576 -w 256  -S 48000 &
+
+
+
+// indique qu'il faut gerer les arrays OSC pour piloter SuperCollider
+ _ := @set_osc_handling_tab(false) ///SuperCollider a diferencia de antescofo/sclang
+
+antescofo::bypass_temporeset "on"
+
+// SuperCollider Server
+
+// // server
+// oscsend quit "localhost" :57110 "/quit" // quit server application
+// oscsend notify "localhost" :57110 "/notify"
+// oscsend status "localhost" :57110 "/status"
+// oscsend cmd "localhost" :57110 "/cmd"
+// oscsend dumpOSC "localhost" :57110 "/dumpOSC"
+// oscsend sync "localhost" :57110 "/sync"
+// oscsend clearSched "localhost" :57110 "/clearSched"
+// oscsend error "localhost" :57110 "/error"
+// oscsend version "localhost" :57110 "/version"
+
+// // Synth definition NOT YET!
+// //
+// // node
+// oscsend n_free "localhost" :57110 "/n_free" // 57110 local server port
+// oscsend n_run "localhost" :57110 "/n_run"
+// oscsend n_set "localhost" :57110 "/n_set" 
+// oscsend n_setn "localhost" :57110 "/n_setn" 
+// oscsend n_fill "localhost" :57110 "/n_fill" 
+// oscsend n_map "localhost" :57110 "/n_map" 
+// oscsend n_mapn "localhost" :57110 "/n_mapn" 
+// oscsend n_mapa "localhost" :57110 "/n_mapa" 
+// oscsend n_mapan "localhost" :57110 "/n_mapan" 
+// oscsend n_before "localhost" :57110 "/n_before"
+// oscsend n_after "localhost" :57110 "/n_after"
+// oscsend n_query "localhost" :57110 "/n_query"
+// oscsend n_trace "localhost" :57110 "/n_trace"
+// oscsend n_order "localhost" :57110 "/n_order"
+
+// // synth
+// oscsend s_new "localhost" :57110 "/s_new" 
+// oscsend s_get "localhost" :57110 "/s_get" 
+// oscsend s_getn "localhost" :57110 "/s_getn" 
+// oscsend s_noid "localhost" :57110 "/s_noid" 
+
+// // group
+// oscsend g_new "localhost" :57110 "/g_new" 
+// oscsend p_new "localhost" :57110 "/p_new" 
+// oscsend g_head "localhost" :57110 "/g_head" 
+// oscsend g_tail "localhost" :57110 "/g_tail" 
+// oscsend g_freeAll "localhost" :57110 "/g_freeAll" 
+// oscsend g_freeAll "localhost" :57110 "/g_freeAll" 
+// oscsend g_dumpTree "localhost" :57110 "/g_dumpTree" 
+// oscsend g_queryTree "localhost" :57110 "/g_queryTree" 
+
+// // buffers
+// oscsend b_alloc "localhost" :57110 "/b_alloc"
+// oscsend b_allocRead "localhost" :57110 "/b_allocRead"
+// oscsend b_allocReadChannel "localhost" :57110 "/b_allocReadChannel"
+// oscsend b_read "localhost" :57110 "/b_read"
+// oscsend b_readChannel "localhost" :57110 "/b_readChannel"
+// oscsend b_write "localhost" :57110 "/b_write"
+// oscsend b_free "localhost" :57110 "/b_free"
+// oscsend b_zero "localhost" :57110 "/b_zero"
+// oscsend b_set "localhost" :57110 "/b_set"
+// oscsend b_setn "localhost" :57110 "/b_setn"
+// oscsend b_fill "localhost" :57110 "/b_fill"
+// oscsend b_gen "localhost" :57110 "/b_gen"
+// oscsend b_close "localhost" :57110 "/b_close"
+// oscsend b_query "localhost" :57110 "/b_query"
+// oscsend b_get "localhost" :57110 "/b_get"
+// oscsend b_get "localhost" :57110 "/b_get"
+
+oscsend quitlocalhost localhost : 57110 "/quit"
+oscsend notifylocalhost localhost : 57110 "/notify"
+oscsend statuslocalhost localhost : 57110 "/status"
+oscsend cmdlocalhost localhost : 57110 "/cmd"
+oscsend dumpOSClocalhost localhost : 57110 "/dumpOSC"
+oscsend synclocalhost localhost : 57110 "/sync"
+oscsend clearSchedlocalhost localhost : 57110 "/clearSched"
+oscsend errorlocalhost localhost : 57110 "/error"
+oscsend versionlocalhost localhost : 57110 "/version"
+oscsend n_freelocalhost localhost : 57110 "/n_free"
+oscsend n_runlocalhost localhost : 57110 "/n_run"
+oscsend n_setlocalhost localhost : 57110 "/n_set"
+oscsend n_setnlocalhost localhost : 57110 "/n_setn"
+oscsend n_filllocalhost localhost : 57110 "/n_fill"
+oscsend n_maplocalhost localhost : 57110 "/n_map"
+oscsend n_mapnlocalhost localhost : 57110 "/n_mapn"
+oscsend n_mapalocalhost localhost : 57110 "/n_mapa"
+oscsend n_mapanlocalhost localhost : 57110 "/n_mapan"
+oscsend n_beforelocalhost localhost : 57110 "/n_before"
+oscsend n_afterlocalhost localhost : 57110 "/n_after"
+oscsend n_querylocalhost localhost : 57110 "/n_query"
+oscsend n_tracelocalhost localhost : 57110 "/n_trace"
+oscsend n_orderlocalhost localhost : 57110 "/n_order"
+oscsend s_newlocalhost localhost : 57110 "/s_new"
+oscsend s_getlocalhost localhost : 57110 "/s_get"
+oscsend s_getnlocalhost localhost : 57110 "/s_getn"
+oscsend s_noidlocalhost localhost : 57110 "/s_noid"
+oscsend g_newlocalhost localhost : 57110 "/g_new"
+oscsend p_newlocalhost localhost : 57110 "/p_new"
+oscsend g_headlocalhost localhost : 57110 "/g_head"
+oscsend g_taillocalhost localhost : 57110 "/g_tail"
+oscsend g_freeAlllocalhost localhost : 57110 "/g_freeAll"
+oscsend g_freeAlllocalhost localhost : 57110 "/g_freeAll"
+oscsend g_dumpTreelocalhost localhost : 57110 "/g_dumpTree"
+oscsend g_queryTreelocalhost localhost : 57110 "/g_queryTree"
+oscsend b_alloclocalhost localhost : 57110 "/b_alloc"
+oscsend b_allocReadlocalhost localhost : 57110 "/b_allocRead"
+oscsend b_allocReadChannellocalhost localhost : 57110 "/b_allocReadChannel"
+oscsend b_readlocalhost localhost : 57110 "/b_read"
+oscsend b_readChannellocalhost localhost : 57110 "/b_readChannel"
+oscsend b_writelocalhost localhost : 57110 "/b_write"
+oscsend b_freelocalhost localhost : 57110 "/b_free"
+oscsend b_zerolocalhost localhost : 57110 "/b_zero"
+oscsend b_setlocalhost localhost : 57110 "/b_set"
+oscsend b_setnlocalhost localhost : 57110 "/b_setn"
+oscsend b_filllocalhost localhost : 57110 "/b_fill"
+oscsend b_genlocalhost localhost : 57110 "/b_gen"
+oscsend b_closelocalhost localhost : 57110 "/b_close"
+oscsend b_querylocalhost localhost : 57110 "/b_query"
+oscsend b_getlocalhost localhost : 57110 "/b_get"
+oscsend b_getlocalhost localhost : 57110 "/b_get"
+
+
+oscsend quitserver2 localhost : 57111 "/quit"
+oscsend notifyserver2 localhost : 57111 "/notify"
+oscsend statusserver2 localhost : 57111 "/status"
+oscsend cmdserver2 localhost : 57111 "/cmd"
+oscsend dumpOSCserver2 localhost : 57111 "/dumpOSC"
+oscsend syncserver2 localhost : 57111 "/sync"
+oscsend clearSchedserver2 localhost : 57111 "/clearSched"
+oscsend errorserver2 localhost : 57111 "/error"
+oscsend versionserver2 localhost : 57111 "/version"
+oscsend n_freeserver2 localhost : 57111 "/n_free"
+oscsend n_runserver2 localhost : 57111 "/n_run"
+oscsend n_setserver2 localhost : 57111 "/n_set"
+oscsend n_setnserver2 localhost : 57111 "/n_setn"
+oscsend n_fillserver2 localhost : 57111 "/n_fill"
+oscsend n_mapserver2 localhost : 57111 "/n_map"
+oscsend n_mapnserver2 localhost : 57111 "/n_mapn"
+oscsend n_mapaserver2 localhost : 57111 "/n_mapa"
+oscsend n_mapanserver2 localhost : 57111 "/n_mapan"
+oscsend n_beforeserver2 localhost : 57111 "/n_before"
+oscsend n_afterserver2 localhost : 57111 "/n_after"
+oscsend n_queryserver2 localhost : 57111 "/n_query"
+oscsend n_traceserver2 localhost : 57111 "/n_trace"
+oscsend n_orderserver2 localhost : 57111 "/n_order"
+oscsend s_newserver2 localhost : 57111 "/s_new"
+oscsend s_getserver2 localhost : 57111 "/s_get"
+oscsend s_getnserver2 localhost : 57111 "/s_getn"
+oscsend s_noidserver2 localhost : 57111 "/s_noid"
+oscsend g_newserver2 localhost : 57111 "/g_new"
+oscsend p_newserver2 localhost : 57111 "/p_new"
+oscsend g_headserver2 localhost : 57111 "/g_head"
+oscsend g_tailserver2 localhost : 57111 "/g_tail"
+oscsend g_freeAllserver2 localhost : 57111 "/g_freeAll"
+oscsend g_freeAllserver2 localhost : 57111 "/g_freeAll"
+oscsend g_dumpTreeserver2 localhost : 57111 "/g_dumpTree"
+oscsend g_queryTreeserver2 localhost : 57111 "/g_queryTree"
+oscsend b_allocserver2 localhost : 57111 "/b_alloc"
+oscsend b_allocReadserver2 localhost : 57111 "/b_allocRead"
+oscsend b_allocReadChannelserver2 localhost : 57111 "/b_allocReadChannel"
+oscsend b_readserver2 localhost : 57111 "/b_read"
+oscsend b_readChannelserver2 localhost : 57111 "/b_readChannel"
+oscsend b_writeserver2 localhost : 57111 "/b_write"
+oscsend b_freeserver2 localhost : 57111 "/b_free"
+oscsend b_zeroserver2 localhost : 57111 "/b_zero"
+oscsend b_setserver2 localhost : 57111 "/b_set"
+oscsend b_setnserver2 localhost : 57111 "/b_setn"
+oscsend b_fillserver2 localhost : 57111 "/b_fill"
+oscsend b_genserver2 localhost : 57111 "/b_gen"
+oscsend b_closeserver2 localhost : 57111 "/b_close"
+oscsend b_queryserver2 localhost : 57111 "/b_query"
+oscsend b_getserver2 localhost : 57111 "/b_get"
+oscsend b_getserver2 localhost : 57111 "/b_get"
+
+
+// _ := @system("/usr/bin/touch /tmp/hello.tmp")
+
+// $porte := 57111
+// // _ := @system("/Applications/SuperCollider-3.9/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -i 43 -o 43 -b 1026 -d 2048 -n 16384 -m 1048576 -w 256 -S 48000 >&/dev/null &")
+// _ := @system("/Applications/SuperCollider-3.9/SuperCollider.app/Contents/Resources/scsynth -u "+$porte+" -i 43 -o 43 -b 1026 -d 2048 -n 16384 -m 1048576 -w 256 -S 48000 >&/dev/null &")
+
+// gui SCLang for GUI
+
+oscsend gui_antes "localhost" :7002 "/gui_antes"
+oscsend gui_data "localhost" :7002 "/gui_data"
+
+// server commands falta "Synth Definition Commands"
+$osc_server_commands := ["quit", "notify", "status", "cmd", "dumpOSC", "sync", "clearSched", "error", "version", "n_free", "n_run", "n_set", "n_setn", "n_fill", "n_map", "n_mapn", "n_mapa", "n_mapan", "n_before", "n_after", "n_query", "n_trace", "n_order", "s_new", "s_get", "s_getn", "s_noid", "g_new", "p_new", "g_head", "g_tail", "g_freeAll", "g_freeAll", "g_dumpTree", "g_queryTree", "b_alloc", "b_allocRead", "b_allocReadChannel", "b_read", "b_readChannel", "b_write", "b_free", "b_zero", "b_set", "b_setn", "b_fill", "b_gen", "b_close", "b_query", "b_get", "b_get"]
+
+$SC_Servers := map{}
+$SC_Groups := map{}
+
+$synths_map := map{}
+$track_proc := map{}
+// $sc_group_id := 300
+// $sc_id := 0
+$node_id := 100
+$bus_index := 86 // depende de los IN/out de la carte son
+
+
+@fun_def post($post)
+{
+	print (""+$post)
+}
+
+
+@fun_def map2tab($map)
+{	
+	@local $tab := []
+	forall $k, $v in $map
+	{
+		_ := $tab.push_back($k)
+		_ := $tab.push_back($v) 
+	}
+	return $tab
+}
+
+
+/////SC tree basic MAP
+
+// $sc_struct := map{("localhost", map{(0, [1]), // root tree 0 -> default group 1
+// 				  (1, [])} 
+// 				  )}
+
+$sc_struct := map{}
+
+$sc_server_notifications := 0
+
+@obj_def sc_server($server_name, $port) // _ := obj::sc_server("server1", 57111)
+{
+    @init 
+    {
+    	@local $nom, $server_boot, $serve_exist := true
+
+    	$nom := (""+$server_name+"_"+$port+"")
+    	print nom $nom
+
+    	if($SC_Servers.size == 0)
+    	{
+    		_ := @system("osascript -e 'tell app \"Terminal\" to activate'") // launch Terminal
+    	}
+    	// print server_init (""+$SC_Servers($server_name))
+    	@command("notify_"+$server_name+"max") "/notify" 1
+		whenever ($sc_server_notifications[0] == "/fail") // server boot
+		{
+			if($sc_server_notifications == "/fail"){
+				print "this server is already boot"
+				$serve_exist := false
+			}else{
+				$serve_exist := true
+			}
+
+		}
+    	1 if($SC_Servers($server_name).is_undef && $serve_exist)
+    	{	
+    		// lance un SC server depuis antescofo avec la commande system
+    		
+    		_ := @system("osascript -e 'tell app \"Terminal\" to do script \"/Applications/SuperCollider-3.9/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -i 43 -o 43 -b 1026 -d 2048 -n 16384 -m 1048576 -w 256 -S 48000 -l 10\"' -e 'tell app \"Terminal\" to set custom title of front window to "+$port+"'") //"+($server_name+"_"+$port)+" \"$server_name\"
+
+    		forall $server_c in $osc_server_commands // create all sc_synth osc commands
+			{
+				// oscsend ($server_c+$server_name) : $port ("/"+$server_c) //$server_c //
+				// print oscsend ($server_c+$server_name) : $port ("/"+$server_c) //$server_c //("/"+$server_c)
+			}	
+
+			$server_boot := {
+				loop server 0.2 // interroge le server pour savoir s'il a booté
+				{
+					@command("notify_"+$server_name+"max") "/notify" 1 // changer l'envoie du server 
+				}
+			}
+
+
+			whenever ($sc_server_notifications[0] == "/done") // server boot
+			{
+				// print ($sc_server_notifications[0])
+				abort $server_boot 
+				_ := $THISOBJ.init_server
+			// creation des dictionaires pour chaque serveur
+			// _ := $SC_Groups.insert($server_name, map{}) // creation de dico pour gestion des groups    	
+
+			}
+
+       	}
+       	else
+       	{
+    		print "this server exist"
+       	}
+    }
+
+    @fun_def init_server()
+    {
+		_ := $SC_Servers.insert($server_name, map{("node_id", 100),("bus_index", 86)}) // dico des serveurs avec valeurs init des nodes et bus
+		_ := $synths_map.insert($server_name, map{})
+		_ := $track_proc.insert($server_name, map{})
+		_ := $sc_struct.add_pair($server_name, map{(0, [1]), (1, [])} ) // root tree 0 -> default group 1
+
+		print server $server_name created at port $port
+		@command("g_new"+$server_name) 1 0 0 // create default group 1 on serverX
+	}
+
+    @fun_def quit()
+    {
+    	@command("quit"+$server_name) 1
+    }
+    @fun_def notify($val)
+    {
+    	@command("notify"+$server_name) $val
+    }
+    @fun_def status($val)
+    {
+    	@command("notify"+$server_name) $val
+    }
+    @fun_def dumpOSC($val)
+    {
+    	@command("dumpOSC"+$server_name) $val
+    }
+    @fun_def sync()
+    {
+    	@command("sync"+$server_name) 1
+    }
+    @fun_def error($val)
+    {
+    	@command("error"+$server_name) $val
+    }
+    @fun_def version()
+    {
+    	@command("version"+$server_name) 1
+    }
+    @fun_def g_new_default() // lacer quand le serveur boots
+    {
+    	@command("g_new"+$server_name) 1 0 0
+    }
+}
+
+
+
+@obj_def mix_group($group_name, $server_name)
+{
+	@local $group_id, $bus, $node_id_out, $addmod_index := 0
+	@init 
+    {
+
+    	if($SC_Servers($server_name).is_undef)
+    	{	
+    		print error $server_name "does not exist"
+    	}
+    	else
+    	{
+    		if($SC_Groups($group_name).is_undef)
+    		{
+    			$group_id := $SC_Servers($server_name)("node_id") // current node id for this server
+    			$bus := $SC_Servers($server_name)("bus_index") // current bus index for this server
+
+				_ := $SC_Groups.insert($group_name, map{("server_name", $server_name)}) // creation du dico $group_name dans $SC_Groups
+
+    			@command("g_new"+$server_name) $group_id 0 1 // add group to default group 1 of the $server_name
+
+    			_ := $SC_Servers($server_name).add_pair("node_id", $group_id + 1) // incremente le node_id dans le dico des serveurs
+
+    			$node_id_out := $SC_Servers($server_name)("node_id") // id for audioOut8 Synth
+
+    			@command("s_new"+$server_name) audioOut8 $node_id_out 1 $group_id in $bus out 0 index $bus in_ramp 0.001 amp 0
+    			// $node_id := $node_id + 1 // incremente le node_id
+    			_ := $SC_Servers($server_name).add_pair("node_id", $node_id_out + 1)
+    			_ := $SC_Servers($server_name).insert("bus_index", $bus+8) // inc bus de server  
+
+    			// update dictionaires
+    			_ := $SC_Groups($group_name).insert("main_group_id", $group_id)
+    			_ := $SC_Groups($group_name).insert("main_bus", $bus)
+    			_ := $SC_Groups($group_name).insert("sub_group", map{}) // for store the sub group (crea_track8) object 
+
+    			// creation des dictionaires de synth et proc dans un mix group
+    			_ := $synths_map($server_name).insert($group_name, map{})
+	    		_ := $track_proc($server_name).insert($group_name, map{})
+
+	    		// creation des dictionaires structure generale des nodes
+	    		_ := $sc_struct($server_name)(1).push_back($group_id) // default group 1 -> [group_id]
+	    		_ := $sc_struct($server_name).add_pair($group_id, [$node_id_out]) // crea nueva key group + audioOut
+				_ := $sc_struct($server_name).add_pair($node_id_out, map{("_synth", "audioOut8"), ("in", $bus), ("out", 0), ("index", $bus), ("in_ramp", 0.001), ("amp", 0)}) // crea MAP para nombre_synth + parametros
+
+    			print new "group" created in server $server_name
+    		}
+    		else // add group to specific server g_new
+    		{
+				print "this group exist"
+    		}
+    	}
+    }
+	 
+   @fun_def mod_add($module)
+   {
+   	@local $addmod_index := 0, $params, $fade_in_mod, $node_id_mod
+
+   	$fade_in_mod := 0.01 // deberia ser un argumento opcional!!
+   	// $node_id_mod := $SC_Servers($server_name)("node_id") // last id
+   	// print modulos $module
+    // print groupo $group_id
+    // print node_id $node_id
+    print size ($module.dim)
+    // print params $params
+    if ($module.dim > 1){ // si c'est tab multi
+    print MULTI_
+    	forall $chain in $module // s'il y a plus des modules
+    	{
+    		$node_id_mod := $SC_Servers($server_name)("node_id") // recupère node_id
+    		print $chain
+	    	$params := $chain.cdr
+		   	@command("s_new"+$server_name) ($chain[0]) $node_id_mod 2 $node_id_out in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+	   		_ := $sc_struct($server_name)($group_id).insert(@size($sc_struct($server_name)($group_id))-2, $node_id_mod) // root tree 0
+		   	_ := $sc_struct($server_name).add_pair($node_id_mod, map{("_synth", $chain[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+		   	_ := $track_proc($server_name)($group_name).insert($node_id_mod, map{}) // dictionaire pour les processus
+		   	
+		   	// print params ($synths_map($track_label)($mix_group)($chain[0]))
+
+		   	if(($synths_map($server_name)($group_name)($chain[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+		   	{
+			   	// print ($chain[0]) is not member at $node_id_mod
+		   		_ := $synths_map($server_name)($group_name).insert($chain[0], [$node_id_mod]) // si n'existe pas creer une MAP avec TAB
+		   	}else 
+		   	{
+		   		// print ($chain[0]) is member at $node_id_mod
+			   	_ := $synths_map($server_name)($group_name)($chain[0]).push_back($node_id_mod) // si existe rajouter a la TAB
+
+		   	}
+		   
+		   	loop 
+			{
+				_ := $sc_struct($server_name)($node_id_mod).add_pair($params[$addmod_index], $params[$addmod_index+1])
+				$addmod_index := $addmod_index + 2
+			} while ($addmod_index+2 <= @size($params))
+
+		_ := $SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1) // incremente node_id
+
+
+		}
+   	}else{
+   		if($module.is_tab) // si c'est tab 1 dim
+   		{
+   			$node_id_mod := $SC_Servers($server_name)("node_id") // recupère node_id
+   			$params := $module.cdr
+		   	@command("s_new"+$server_name) ($module[0]) $node_id_mod 2 $node_id_out in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+		   	// _ := $synths_map($server_name)($mix_group)($track_label).insert($module[0], $node_id_mod)
+	   		_ := $sc_struct($server_name)($group_id).insert(@size($sc_struct($server_name)($group_id))-2, $node_id_mod) // root tree 0
+		   	_ := $sc_struct($server_name).add_pair($node_id_mod, map{("_synth", $module[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+		   	_ := $track_proc($server_name)($group_name).insert($node_id_mod, map{}) // dictionaire pour les processus
+
+		   	if(($synths_map($server_name)($group_name)($module[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+		   	{
+			   	// print ($module[0]) is not member at $node_id_mod
+		   		_ := $synths_map($server_name)($group_name).insert($module[0], [$node_id_mod])
+		   	}else 
+		   	{
+		   		// print ($module[0]) is member at $node_id_mod
+			   	_ := $synths_map($server_name)($group_name)($module[0]).push_back($node_id_mod)
+
+		   	}
+		   	loop 
+			{
+				_ := $sc_struct($server_name)($node_id_mod).add_pair($params[$addmod_index], $params[$addmod_index+1])
+				$addmod_index := $addmod_index + 2
+			} while ($addmod_index+2 <= @size($params))
+			
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+
+   		}
+   		else
+   		{
+   			print este
+   			$node_id_mod := $SC_Servers($server_name)("node_id") // recupère node_id
+
+			@command("s_new"+$server_name) ($module) $node_id_mod 2 $node_id_out in $bus out $bus matrix_ramp $fade_in_mod //$params   //target 2 justo despues del nodo 180 audioOut
+			// _ := $synths_map($server_name)($mix_group)($track_label).insert($module, $node_id_mod)
+			_ := $sc_struct($server_name)($group_id).insert(@size($sc_struct($server_name)($group_id))-2, $node_id_mod) // root tree 0
+			_ := $sc_struct($server_name).add_pair($node_id_mod, map{("_synth", $module), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+		   	_ := $track_proc($server_name)($group_name).insert($node_id_mod, map{}) // dictionaire pour les processus
+				
+		   	if(($synths_map($server_name)($group_name)($module)).is_undef) // si la synth existe déjà creer une tab de nodes
+		   	{
+			   	// print ($module) is not member at $node_id_mod
+			   	// _ := ($synths_map($server_name)($group_name).insert($module, [$node_id_mod])).post
+		   		_ := $synths_map($server_name)($group_name).insert($module, [$node_id_mod])
+		   	}else 
+		   	{
+		   		// print ($module) is member at $node_id_mod
+			   	_ := $synths_map($server_name)($group_name)($module).push_back($node_id_mod)
+
+		   	}
+
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+		}
+   	}
+
+  	}
+    @proc_def off_group($t)
+    {
+    	forall $k, $track in $SC_Groups($group_name)("sub_group") // stop all track (sub_group tab) and proc inside this group 
+    	{
+    		_ := $track.off_track($t) // remove all proc from this track
+    	}
+    	($t+0.001) @command("n_set"+$server_name) $group_id "out_ramp" 0.01 "gatee" 0 // stop all modules inside this group in $t time
+
+    	_ := $SC_Groups.remove($group_name) // remove this group form map SC_Groups
+    }
+
+    @fun_def amp($amp)
+    {
+    	@command("n_set"+$server_name) $node_id_out "amp" $amp // 
+    	print $node_id_out "amp" $amp
+    }
+
+    @proc_def pause() // no time for the moment
+	{
+		@command("n_set"+$server_name) $node_id_out amp -120
+		0.01s @command("n_run"+$server_name) $group_id 0 // stop running the entire group after 0.01s to avoid clicks
+		 // matrix_ramp @dur2sec($time) gate 0
+		// @dur2sec($time) n_set $group_id gate 0
+	}
+
+	@proc_def resume() // no time for the moment
+	{	
+		@command("n_run"+$server_name) $group_id 1 // start running the entire group
+		@command("n_set"+$server_name) $node_id_out amp 0
+	}
+	@fun_def set($module, $params)
+	{
+		// print @command("n_set"+$server_name) $module $params
+		// print @command("n_set"+$server_name) ($synths_map($server_name)($mix_group)($track_label)($module)) $params		
+		// @command("n_set"+$server_name) $x $params
+		forall $x in ($synths_map($server_name)($group_name)($module))
+		{
+			@command("n_set"+$server_name) $x $params
+		}
+		// @command("n_set"+$server_name) ($synths_map($server_name)($mix_group)($track_label)($module)) 
+		// _ := $sc_struct($server_name)($synths_map($server_name)($mix_group)($track_label)($module))("modfreq") := 100
+		// print (""+$sc_struct($server_name)($synths_map($server_name)($mix_group)($track_label)($module))("modfreq"))
+		// print node_add_pair (""+$sc_struct($server_name)($synths_map($server_name)($mix_group)($track_label)($module)))
+	}
+
+	// @fun_def set_multi($module, $params)
+	// {
+	// 	forall $x in $params
+	// 	{
+	// 		print (""+$params)
+	// 	}
+	// 	// forall $x in ($synths_map($server_name)($mix_group)($track_label)($module)).size
+	// 	// {
+	// 	// 	@command("n_set"+$server_name) ($synths_map($server_name)($mix_group)($track_label)($module))[$x]
+	// 	// }
+	// }
+
+	@fun_def set_single ($module, $num, $params)
+	{
+		@command("n_set"+$server_name) ($synths_map($server_name)($group_name)($module)[$num]) $params
+	}
+
+
+
+	@fun_def kill_mod($module, $fade_out) // kill module
+	{
+		@command("n_set"+$server_name) ($synths_map($server_name)($group_name)($module)) matrix_ramp $fade_out free 0
+		//remove synth
+		//_ := $sc_struct($server_name)
+		// print (""+$sc_struct($server_name)($synths_map($server_name)($group_name)($module))("modfreq"))
+		// print node_add_pair (""+$sc_struct($server_name)($synths_map($server_name)($group_name)($module)))
+	}
+
+
+
+	@fun_def mod_size($module)
+	{
+		return (($synths_map($server_name)($group_name)($module)).size)
+	}
+
+///// hacer
+
+	@proc_def track_amp_bpf($bpf)  // [-6, 7.5, "circ", 3, 4.5, -118]
+    {
+		@local $nim, $lamp
+		// abort $last_bpf_amp_curve //evita interferencias
+		$nim := @build_nim_from_bpf($bpf)
+		// print $nim
+		$lamp := $bpf[0]
+		$last_bpf_amp_curve := { curve @grain := 0.01, @action {
+			@command("n_set"+$server_name) $node_id_out amp $lamp
+		} 
+			{ $lamp : $nim }
+	    }
+	}
+
+    @proc_def line_amp($lmin1, $lmax1, $dur1, $type) 
+    {
+        @local $lamp
+	// _ := .CheckParam($module, $param, $MYSELF)
+        Curve
+        @grain := 0.01,
+        @action {
+        		forall $x in ($synths_map($server_name)($group_name)($module))
+		{
+			@command("n_set"+$server_name) $x $params
+		}
+        // print @command("n_set"+$server_name) $node_id_out amp $lamp
+	} 
+        { $lamp {            
+                        {$lmin1} @type := $type
+                $dur1   {$lmax1}} 
+        }
+    }
+
+    @proc_def line_param($module, $param, $lmin1, $lmax1, $dur1) 
+    {
+            @local $lparam1
+	// _ := .CheckParam($module, $param, $MYSELF)
+            Curve
+            @grain := 0.01,
+            @action 
+            {
+				forall $node in ($synths_map($server_name)($group_name)($module))
+				{
+					@command("n_set"+$server_name) $node $param $lparam1
+				}
+			} 
+            { $lparam1 {            
+                            {$lmin1} 
+                    $dur1   {$lmax1}} 
+            }
+
+    }
+
+    @proc_def line_param_single($module, $num, $param, $lmin1, $lmax1, $dur1) 
+    {
+            @local $lparam1
+	// _ := .CheckParam($module, $param, $MYSELF)
+            Curve
+            @grain := 0.01,
+            @action 
+            {
+				@command("n_set"+$server_name) ($synths_map($server_name)($group_name)($module)[$num]) $param $lparam1
+			} 
+            { $lparam1 {            
+                            {$lmin1} 
+                    $dur1   {$lmax1}}
+            }
+    }
+
+    @proc_def bpf_param($module, $param, $bpf) 
+    {
+		@local $nim, $lpar
+		$nim := @build_nim_from_bpf($bpf)
+		// _ := .CheckParam($module, $param, $MYSELF)
+		// print $nim
+		$lpar := $bpf[0]
+		curve @grain := 0.01, 
+		@action 
+		{
+			forall $node in ($synths_map($server_name)($group_name)($module))
+			{
+				@command("n_set"+$server_name) $node $param $lpar 
+			}
+		} 
+		{ $lpar : $nim }
+    }
+
+    @proc_def bpf_param_single($module, $num, $param, $bpf) // seulement quand une un track a plusieurs instances du même module
+    {
+		@local $nim, $lpar
+		$nim := @build_nim_from_bpf($bpf)
+		// _ := .CheckParam($module, $param, $MYSELF)
+		// print $nim
+		$lpar := $bpf[0]
+		curve @grain := 0.01, 
+		@action 
+		{
+			@command("n_set"+$server_name) ($synths_map($server_name)($group_name)($module)[$num]) $param $lpar
+		} 
+		{ $lpar : $nim }
+    }
+
+	@fun_def sin_lfo($module, $param, $r_low, $r_hi, $t) 
+    {
+    	forall $x in ($synths_map($server_name)($group_name)($module)) // parcours la liste de node de la même synth
+		{
+	    	if($track_proc($server_name)($group_name)($x).is_defined($module+"_sin")) // si ça existe abort et refait
+	    	{
+	    		print abort_sin
+	    		abort $track_proc($server_name)($group_name)($x)($module+"_sin") 
+	    	} 
+	        _ := $track_proc($server_name)($group_name)($x).insert(($module+"_sin"), ::sin_lfo_proc($group_id, $x, $param, $r_low, $r_hi, $t))                	
+        }
+	}
+
+	@fun_def sin_lfo_single($module, $num, $param, $r_low, $r_hi, $t) 
+    {
+    	@local $node_num
+		$node_num := ($synths_map($server_name)($group_name)($module)[$num])
+
+    	if($track_proc($server_name)($group_name)($node_num).is_defined($module+"_sin")) // si ça existe abort et refait
+    	{
+    		print abort_sin_s
+    		abort $track_proc($server_name)($group_name)($node_num)($module+"_sin") 
+    	} 
+        _ := $track_proc($server_name)($group_name)($node_num).insert(($module+"_sin"), ::sin_lfo_proc($group_id, $node_num, $param, $r_low, $r_hi, $t))                	
+	}
+
+	@fun_def sin_lfo_abort($module, $param)
+	{
+		forall $x in ($synths_map($server_name)($group_name)($module)) // parcours la liste de node de la même synth
+		{
+			abort $track_proc($server_name)($group_name)($x)($module+"_sin")
+		}
+	}
+
+	@fun_def sin_lfo_abort_single($module, $num, $param)
+	{
+		@local $node_num
+		$node_num := ($synths_map($server_name)($group_name)($module)[$num])
+
+		abort $track_proc($server_name)($group_name)($node_num)($module+"_sin")
+	}
+
+
+///// 
+
+//($module, $param, $min, $max, $drunk_step, $init_val, $type, $tpo)
+	@fun_def brown_lfo($module, $param, $min, $max, $drunk_step, $init_val, $type, $tpo) 
+    {
+    	forall $x in ($synths_map($server_name)($group_name)($module)) // parcours la liste de node de la même synth
+		{
+	    	if($track_proc($server_name)($group_name)($x).is_defined($module+"_brown")) // si ça existe abort et refait
+	    	{
+	    		print abort_sin
+	    		abort $track_proc($server_name)($group_name)($x)($module+"_brown") 
+	    	} 
+	        _ := $track_proc($server_name)($group_name)($x).insert(($module+"_brown"), ::brown_lfo_proc($group_id, $x, $param, $min, $max, $drunk_step, $init_val, $type, $tpo))                	
+        }
+	}
+
+	@fun_def brown_lfo_single($module, $num, $param, $min, $max, $drunk_step, $init_val, $type, $tpo) 
+    {
+    	@local $node_num
+		$node_num := ($synths_map($server_name)($group_name)($module)[$num])
+
+    	if($track_proc($server_name)($group_name)($node_num).is_defined($module+"_brown")) // si ça existe abort et refait
+    	{
+    		print abort_sin_s
+    		abort $track_proc($server_name)($group_name)($module+"_brown") 
+    	} 
+        _ := $track_proc($server_name)($group_name)($node_num).insert(($module+"_brown"), ::brown_lfo_proc($group_id, $node_num, $param, $min, $max, $drunk_step, $init_val, $type, $tpo))                	
+	}
+
+	@fun_def brown_lfo_abort($module, $param)
+	{
+		forall $x in ($synths_map($server_name)($group_name)($module)) // parcours la liste de node de la même synth
+		{
+			abort $track_proc($server_name)($group_name)($x)($param+"_brown")
+		}
+	}
+
+	@fun_def brown_lfo_abort_single($module, $num, $param)
+	{
+		@local $node_num
+		$node_num := ($synths_map($server_name)($group_name)($module)[$num])
+
+		abort $track_proc($server_name)($group_name)($node_num)($param+"_brown")
+	}
+
+	@fun_def rand_lfo($module, $param, $min, $max, $init_val, $type, $tpo) 
+	{ 
+		forall $x in ($synths_map($server_name)($group_name)($module)) // parcours la liste de node de la même synth
+		{
+			if($track_proc($server_name)($group_name)($x).is_defined($param+"_rand_lfo")) // si ça existe abort et refait
+	    	{
+	    		print abort_rand
+	    		abort $track_proc($server_name)($group_name)($x)($param+"_rand_lfo") 
+	    	}
+			_ := $track_proc($server_name)($group_name)($x).add_pair(($param+"_rand_lfo"), ::rand_lfo_basic_s($server_name, $group_id, $x, $param, $min, $max, $init_val, $type, $tpo, $gui)) // instantie un le processus dans le dico
+
+		}
+	}
+
+
+	@fun_def rand_lfo_single($module, $num, $param, $min, $max, $init_val, $type, $tpo) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		@local $node_num
+		$node_num := ($synths_map($server_name)($group_name)($module)[$num])
+		// print modulo_id2 ($synths_map($server_name)($group_name)($module))
+		if($track_proc($server_name)($group_name)($node_num).is_defined($param+"_rand_lfo")) // si ça existe abort et refait
+    	{
+    		print abort_rand_s
+    		abort $track_proc($server_name)($group_name)($node_num)($param+"_rand_lfo") 
+    	}
+		_ := $track_proc($server_name)($group_name)($node_num).add_pair(($param+"_rand_lfo"), ::rand_lfo_basic($group_id, $node_num, $param, $min, $max, $init_val, $type, $tpo))		
+	}
+
+	@fun_def rand_lfo_abort($module, $param)
+	{
+		forall $x in ($synths_map($server_name)($group_name)($module)) // parcours la liste de node de la même synth
+		{
+			abort $track_proc($server_name)($group_name)($x)($param+"_rand_lfo") 
+		}
+	}
+
+	@fun_def rand_lfo_abort_single($module, $num, $param)
+	{
+		@local $node_num
+		$node_num := ($synths_map($server_name)($group_name)($module)[$num])
+
+		abort $track_proc($server_name)($group_name)($node_num)($param+"_rand_lfo") 
+	}
+
+	@fun_def gui()
+	{
+		@local $addsynth := [], $tab_ids
+		$tab_ids := $sc_struct($server_name)($group_id).drop(-1)
+		$gui := true
+		// TTracks8.new(track_name.asString, nil, group, bus, outsynth);
+		print $tab_ids
+
+		forall $x in $tab_ids
+		{
+			// print (""+($sc_struct($server_name)($group_id)($x)))
+			// print (""+($sc_struct($server_name)($x)))
+			_ := $addsynth.push_back($x)
+			_ := $addsynth.push_back($sc_struct($server_name)($x)("_synth"))
+			// $addsynth.push_back($sc_struct($server_name)($group_id)($x))
+		}
+		gui_antes $server_name $track_label $group_id $bus $node_id_out $addsynth
+
+		// forall $k, $v in $track_proc($server_name)($group_name) // active envoie OSC vers GUI
+		// {
+		// 	if($v.size > 0) // si la valeur contiens deja un proc avant creation GUI
+		// 	{
+		// 		$v.$gui := true // alors activer l'envoie par l'argument $gui (variable locale) 
+		// 	}
+		// }
+	}
+}
+
+
+
+//////////////////////// fun_defs
+
+@fun_def @midic2hz($x)  {442 * @exp(($x-6900.0) * @log(2.0)/1200.)} // en midicents
+
+@fun_def @dur2sec($val) {$val*(60/$RT_TEMPO)}
+
+@fun_def @dB2a($val) {@pow(10, $val/20)}
+
+@fun_def @a2dB($val) {20*@log10($val)}
+
+
+@fun_def @rand_range($min, $max) {@rand($max-$min)+$min}
+@fun_def @rand_range_int($min, $max) {@rand_int($max-$min)+$min}
+
+
+///////////////////////////
+
+@proc_def sin_lfo_proc($group, $module, $param, $r_low, $r_hi, $t) 
+@abort
+{
+	_ := $sc_struct($group)($module).add_pair($param, $val) // enregistre la dernière valeur dans la main Map
+}
+{
+    @local $x, $val, $amp, $offset, $sin_proc, $grain, $period 
+    $amp := ($r_hi - $r_low)/2
+    $offset := $r_hi - $amp
+    $sin_proc := 0
+    $grain := 0.01
+    $period := (1/$t)
+    loop $period // @tempo := $t
+    {
+            abort $sin_proc
+            $sin_proc := {
+                    curve
+                    @grain := 0.01 //($grain * $period/60.)
+                    @action := {
+                            $val := (@sin($x) * $amp + $offset)  //+ $offset
+                            n_set $module $param $val 
+                            gui_data $group $module $param $val
+                    }                       
+                       { $x{    { 0  }
+                              $period { (2* 3.141516 )}  }  // NON Pi = 3.1415926... d'où 3.1416 pas 3.141516 ????
+                            }
+        }
+
+    }
+}
+
+@proc_def sin_lfo_proc_s($server_name, $group, $module, $param, $r_low, $r_hi, $t) 
+@abort
+{
+	_ := $sc_struct($group)($module).add_pair($param, $val) // enregistre la dernière valeur dans la main Map
+}
+{
+    @local $x, $val, $amp, $offset, $sin_proc, $grain, $period 
+    $amp := ($r_hi - $r_low)/2
+    $offset := $r_hi - $amp
+    $sin_proc := 0
+    $grain := 0.01
+    $period := (1/$t)
+    loop $period // @tempo := $t
+    {
+            abort $sin_proc
+            $sin_proc := {
+                    curve
+                    @grain := 0.01 //($grain * $period/60.)
+                    @action := {
+                            $val := (@sin($x) * $amp + $offset)  //+ $offset
+                            @command("n_set"+$server_name) $module $param $val
+                            // n_set $module $param $val
+                            gui_data $group $module $param $val
+                    }                       
+                       { $x{    { 0  }
+                              $period { (2* 3.141516 )}  }  // NON Pi = 3.1415926... d'où 3.1416 pas 3.141516 ????
+                            }
+        }
+
+    }
+}
+
+
+@proc_def saw_lfo_proc($group, $module, $param, $r_low, $r_hi, $t, $dir) 
+@abort
+{
+	_ := $sc_struct($group)($module).add_pair($param, $val) // enregistre la dernière valeur dans la main Map
+}
+{
+    @local $x, $val, $amp, $offset, $sin_proc, $grain, $period, $init, $end
+    $amp := ($r_hi - $r_low)/2
+    $offset := $r_hi - $amp
+    $sin_proc := 0
+    $grain := 0.01
+    if ($dir == 1)
+    {
+    	$init := 0
+    	$end := 1
+    }
+    else
+    {
+    	$init := 1
+		$end := 0
+    }
+    $period := (1/$t)
+    loop $period // @tempo := $t
+    {
+            abort $sin_proc
+            $sin_proc := {
+                    curve
+                    @grain := 0.01 //($grain * $period/60.)
+                    @action := {
+                           
+                            n_set $module $param $val 
+                            gui_data $group $module $param $val
+                    }                       
+                       	{ $val 	{ 	{ $init }
+                            $period { $end }  } 
+                            }
+        }
+
+    }
+}
+
+
+@proc_def saw_lfo_proc_s($server_name, $group, $module, $param, $r_low, $r_hi, $t, $dir) 
+@abort
+{
+	_ := $sc_struct($group)($module).add_pair($param, $val) // enregistre la dernière valeur dans la main Map
+}
+{
+    @local $x, $val, $amp, $offset, $sin_proc, $grain, $period, $init, $end
+    $amp := ($r_hi - $r_low)/2
+    $offset := $r_hi - $amp
+    $sin_proc := 0
+    $grain := 0.01
+    if ($dir == 1)
+    {
+    	$init := 0
+    	$end := 1
+    }
+    else
+    {
+    	$init := 1
+		$end := 0
+    }
+    $period := (1/$t)
+    loop $period // @tempo := $t
+    {
+            abort $sin_proc
+            $sin_proc := {
+                    curve
+                    @grain := 0.01 //($grain * $period/60.)
+                    @action := {
+                           
+                            // n_set $module $param $val 
+                            @command("n_set"+$server_name) $module $param $val
+
+                            gui_data $group $module $param $val
+                    }                       
+                       	{ $val 	{ 	{ $init }
+                            $period { $end }  } 
+                            }
+        }
+
+    }
+}
+
+@proc_def lfo_tri($group, $module, $param, $r_low, $r_hi, $t) 
+@abort
+{
+	_ := $sc_struct($group)($module).add_pair($param, $val) // enregistre la dernière valeur dans la main Map
+}
+{
+	@local $val, $period, $sin_proc
+	$period := (1/$t)
+
+	loop $period
+	{
+		abort $sin_proc
+            $sin_proc := {
+			curve @Grain := 0.005s, 
+			@Action := {
+
+				n_set $module $param $val 
+				gui_data $group $module $param $val
+
+				}
+			{
+				$val
+				{
+								{ $r_low } /*@type "exp"*/
+				$period * 0.5 	{ $r_hi  } 
+				$period * 0.5 	{ $r_low }
+
+				}
+			}
+		}
+	}
+}
+
+
+@proc_def lfo_tri_s($server_name, $group, $module, $param, $r_low, $r_hi, $t) 
+@abort
+{
+	_ := $sc_struct($group)($module).add_pair($param, $val) // enregistre la dernière valeur dans la main Map
+}
+{
+	@local $val, $period, $sin_proc
+	$period := (1/$t)
+
+	loop $period
+	{
+		abort $sin_proc
+            $sin_proc := {
+			curve @Grain := 0.005s, 
+			@Action := {
+				// @command($command) $x
+						@command("n_set"+$server_name) $module $param $val
+						gui_data $group $module $param $val
+				}
+			{
+				$val
+				{
+								{ $r_low } /*@type "exp"*/
+				$period * 0.5 	{ $r_hi  } 
+				$period * 0.5 	{ $r_low }
+
+				}
+			}
+		}
+	}
+}
+
+
+@proc_def rand_lfo_basic($group, $module, $param, $min, $max, $init_val, $type, $tpo, $gui) 
+@abort
+{
+	_ := $sc_struct($group)($module).add_pair($param, $val) // enregistre la dernière valeur dans la main Map
+}
+{
+	@local $v1, $v2, $duree, $current, $curve_proc, $val, $curve_int_proc 
+
+	$v1 := $init_val
+	$v2 := $init_val
+	$curve_int_proc := 0
+
+	$delay := @rand(1.) + 0.5
+
+	group @tempo := $tpo
+	{
+		Loop $delay @exclusive //@tempo := $tpo
+		{
+			abort $curve_int_proc
+
+			$v1 := $v2
+			$v2 := @rand_range($min, $max) // @rand($max-$min)+$min
+			$delay := @rand(1.) + 0.5
+			$duree := $delay
+
+			$curve_int_proc := {  curve
+			        // @tempo := $tpo
+			        @Grain := 0.005 //0.01s 
+			        @action :=  { 
+			        	// print localsynthset $module $param $val 
+			                n_set $module $param $val 
+			                gui_data $group $module $param $val
+			                // if($gui) 
+			                // {
+			                // 	gui_data $group $module $param $val 
+			                // }
+			              }
+
+			        { $val {
+			                 {$v1} @type := $type
+			            $duree {$v2} 
+			            }
+			        }
+			    }
+		}
+	}
+}
+
+@proc_def rand_lfo_basic_s($server_name, $group, $module, $param, $min, $max, $init_val, $type, $tpo, $gui) 
+@abort
+{
+	_ := $sc_struct($group)($module).add_pair($param, $val) // enregistre la dernière valeur dans la main Map
+}
+{
+	@local $v1, $v2, $duree, $current, $curve_proc, $val, $curve_int_proc, $speedlim_actif := true, $speedlim_time := 0.1 
+
+	$v1 := $init_val
+	$v2 := $init_val
+	$curve_int_proc := 0
+
+	$delay := @rand(1.) + 0.5
+
+	group @tempo := $tpo
+	{
+		Loop $delay @exclusive //@tempo := $tpo
+		{
+			abort $curve_int_proc
+
+			$v1 := $v2
+			$v2 := @rand_range($min, $max) // @rand($max-$min)+$min
+			$delay := @rand(1.) + 0.5
+			$duree := $delay
+
+			$curve_int_proc := {  curve
+			        // @tempo := $tpo
+			        @Grain := 0.005 //0.01s 
+			        @action :=  { 
+			        	// print localsynthset $module $param $val 
+			                // n_set $module $param $val 
+			                @command("n_set"+$server_name) $module $param $val
+			                gui_data $server_name $group $module $param $val
+
+			                // if ($speedlim_actif) { //change dans Max
+			                	
+                   //  			$speedlim_actif := false
+                   //  			($speedlim_time)s $speedlim_actif := true //speedlim                    
+              					// } 			           
+			                // if($gui) 
+			                // {
+			                // 	gui_data $group $module $param $val 
+			                // }
+			              }
+
+			        { $val {
+			                 {$v1} @type := $type
+			            $duree {$v2} 
+			            }
+			        }
+			    }
+		}
+	}
+}
+
+
+@proc_def ::brown_lfo_proc($module, $param, $min, $max, $drunk_step, $init_val, $type, $tpo) 
+@abort
+{
+	_ := $sc_struct($group)($module).add_pair($param, $val) // enregistre la dernière valeur dans la main Map
+}
+{
+	@local $v1, $v2, $duree, $curve_proc, $val, $curve_int_proc, $drunk_val
+
+	$v1 := $init_val
+	$v2 := @drunk($init_val, $min, $max, $drunk_step)
+	$curve_int_proc := 0
+
+	$delay := @rand(1.) + 0.5
+	// $drunk_val := @drunk($drunk_val, -0.062, 1.813, $drunk_step)
+
+	group @tempo := $tpo
+	{
+	Loop $delay @exclusive //@tempo := $tpo
+	{
+		abort $curve_int_proc
+
+		$v1 := $v2
+		$v2 := @drunk($v1, $min, $max, $drunk_step) //@rand_range($min, $max) // @rand($max-$min)+$min
+		$delay := @rand(1.) + 0.5
+		$duree := $delay
+
+		$curve_int_proc := 
+		{  
+			curve
+		        // @tempo := $tpo
+		        @Grain := 0.005 //0.01s 
+		        @action :=  { 
+		        	// print localsynthset $module $param $val 
+		                n_set $module $param $val 
+		                gui_data $group $module $param $val  
+		                // brown_lfo $val
+		              }
+
+		        { $val {
+		                 {$v1} @type := $type
+		            $duree {$v2} 
+		            }
+		        }
+		    }
+		}
+	}
+}
+
+
+@proc_def ::brown_lfo_proc_s($server_name, $module, $param, $min, $max, $drunk_step, $init_val, $type, $tpo) 
+@abort
+{
+	_ := $sc_struct($group)($module).add_pair($param, $val) // enregistre la dernière valeur dans la main Map
+}
+{
+	@local $v1, $v2, $duree, $curve_proc, $val, $curve_int_proc, $drunk_val
+
+	$v1 := $init_val
+	$v2 := @drunk($init_val, $min, $max, $drunk_step)
+	$curve_int_proc := 0
+
+	$delay := @rand(1.) + 0.5
+	// $drunk_val := @drunk($drunk_val, -0.062, 1.813, $drunk_step)
+
+	group @tempo := $tpo
+	{
+	Loop $delay @exclusive //@tempo := $tpo
+	{
+		abort $curve_int_proc
+
+		$v1 := $v2
+		$v2 := @drunk($v1, $min, $max, $drunk_step) //@rand_range($min, $max) // @rand($max-$min)+$min
+		$delay := @rand(1.) + 0.5
+		$duree := $delay
+
+		$curve_int_proc := 
+		{  
+			curve
+		        // @tempo := $tpo
+		        @Grain := 0.005 //0.01s 
+		        @action :=  { 
+		        	// print localsynthset $module $param $val 
+		                // n_set $module $param $val 
+		                @command("n_set"+$server_name) $module $param $val 
+		                gui_data $group $module $param $val  
+		                // brown_lfo $val
+		              }
+
+		        { $val {
+		                 {$v1} @type := $type
+		            $duree {$v2} 
+		            }
+		        }
+		    }
+		}
+	}
+}
+
+
+@fun_def build_nim_from_bpf($bpf)  // crea NIM a partir de bpf tab [v0, t0, (type0), v1, t1, (type1), v2, t2, (type2)....]
+{
+         @local $i, $period, $val0, $val1, $type, $duree, $nim
+
+         $i := 0
+         $val1 := $bpf[0]
+         $period := $bpf[1] ; because it appears in the Loop period
+         $nim := NIM{ 0 $val1, 0 $val1 }
+
+         Loop  //@exclusive
+         {
+            $val0 := $bpf[$i]
+            $period := $bpf[$i+1]
+            $duree := $period - 0.001
+
+            if (@is_string($bpf[$i+2]))
+            {
+                $type := $bpf[$i+2]
+                $val1 := $bpf[$i+3]
+                $i := $i + 3;
+            }
+            else
+            {
+                $type := "linear"
+                $val1 := $bpf[$i+2]
+                $i := $i + 2;
+            }
+
+            _ := $nim.push_back($val0, $period, $val1, $type)
+            
+         } while ($i+2 < @size($bpf))
+
+         return $nim
+}
+
+
+
+
+$from_sc_server := 0
+
+@fun_def sc_server_tree($data)  // for Max cellblock visualisation
+{
+	@local $i, $d, $group_n, $synth_n
+
+		$i := 0
+		$group_n := 0
+		$synth_n := 1
+
+		if($data[0] == 0)
+		{
+			$i := 1
+			cellblock clear all
+	    Loop  //@exclusive
+        {
+        	// print ($data[$i]) ($data[$i+1]) //($data[$i+2])
+        	if(($data[$i+1]) == -1)
+        	{
+        		cellblock set ($group_n-1) $synth_n ($data[$i]) ($data[$i+2])
+        		print synth ($data[$i]) ($data[$i+2])
+        		$i := $i + 3
+        		$synth_n := $synth_n + 1
+        	}else{
+        		$synth_n := 1
+        		if($group_n==0)
+        		{
+        			cellblock cols ($data[$i+1] + 1) // cols number
+        		}
+        		if(($group_n>0) && ($data[$i+1]>10))
+        		{
+        			cellblock rows ($data[$i+1] + 1) // rows number
+        		}
+        		
+        		cellblock set $group_n 0 ($data[$i]) groupo   //($data[$i+1])
+        		print groupo ($data[$i])
+        		$i := $i + 2
+        		$group_n := $group_n + 1
+        	}
+            
+        } while ($i+2 <= @size($data))
+    }
+	}
+
+
+
+whenever ($from_sc_server==$from_sc_server)
+{
+
+	// _ := @sc_server_tree($from_sc_server)
+	_ := @sc_server_tree2map($from_sc_server)
+	1 print (""+$sc_struct)
+	1 _ := $sc_struct.sc_build(0)
+
+	// $from_sc_server
+}
+
+
+// print ([[map{("mDust", map{("freq", 100), ("amp", 100)})}], [map{("mDust", map{("freq", 100), ("amp", 100)})}]])
+
+
+// $sc_tree := map{("group1", [["mDust", "freq", 100, "amp", 3], ["tAdCVerb", "revTime", 0.4]]), ("group2", [["windowtest3"], ["windowtest3"]])}
+
+// print (""+$sc_tree("group1"))
+	
+// $map_cues := map{(1, "capta_L_catart"), (2, "off_capta_L"), (126, "kick_ballets"), (3, "off_ballets_traitements"), (4, "off_traitements"), (5, "kick1_partie_jose"), (6, "kick2_partie_jose"), (7, "kick3_partie_jose"), (8, "kick4_partie_jose"), (9, "kick5_partie_jose"), (10, "kick6_partie_jose"), (11, "kick7_partie_jose"), (12, "kick8_partie_jose"), (13, "kick9_partie_jose"), (14, "kick10_partie_jose"), (15, "kick11_partie_jose"), (16, "kick12_partie_jose"), (17, "kick13_partie_jose"), (18, "kick14_partie_jose"), (19, "kick15_partie_jose"), (20, "kick16_partie_jose"), (21, "kick17_partie_jose"), (22, "kick26_partie_jose_18"), (23, "kick28_partie_jose_19"), (24, "kick29_partie_jose_20"), (25, "kick30_partie_jose_21"), (26, "kick31_partie_jose_22"), (27, "kick32_partie_jose_23"), (28, "kick33_trill_24"), (29, "kick34_trill_25"), (30, "kick35_trill_26"), (31, "kick36_partie_jose_27"), (32, "kick38_partie_jose_28"), (33, "kick40_partie_jose_29"), (34, "kick42_partie_jose_30"), (35, "kick44_TRILL_31"), (36, "kick44_TRILL_off"), (37, "kick_sample_claves"), (38, "claves_dels"), (39, "off_claves")}
+$bus_index := 86-8
+$group := 0
+$out_synth := 0
+
+@fun_def sc_build($sc, $key)
+{	
+	if (!$sc.is_defined($key))
+	{ 
+		print no_map_struct
+		return 0 }
+	else
+	{
+		@local $node := $sc($key), $map2list := [] //, $group, $out_synth
+
+		g_new 1 0 0 // create the default group
+
+		if ($node.is_tab())	
+		{
+			if($key != 0)
+			{
+				// print build group $key contains ($node.rotate(1))
+				g_new $key 0 1 // build into default group
+				print g_new $key 0 1
+				$group := $key
+				// $bus_index := $bus_index + 8
+				print bus_index_group $bus_index
+			}
+
+			forall $elem in $node.rotate(1)
+			{
+				// print elem_loop $elem
+				$sc.sc_build($elem)
+				
+			}
+		}
+		else
+		{
+			// print key3 $key
+			
+			// print node3 ($node("synth"))
+
+			if($node("_synth") == "audioOut8") // si c'est la outsynth audioOut8
+			{
+				$bus_index := $bus_index + 8
+				print bus_index_out $bus_index
+				// print build out node ($node("synth")) (" with parameters "+$node) 
+				s_new ($node("_synth")) $key 1 $group in $bus_index out 0 index $bus_index in_ramp 1 amp 0
+				print s_new ($node("_synth")) $key 1 $group in $bus_index out 0 index $bus_index in_ramp 1 amp 0
+				$out_synth := $key
+			}else{
+				// print build leaf node ($node("synth")) (" with parameters "+$node) 
+
+				forall $k, $v in $node //map to tab
+				{
+					_ := $map2list.push_back($k)
+					_ := $map2list.push_back($v)
+				}
+				// print map2list $map2list
+				
+				// _ := $node.remove("in") // enleve la pair key "in"
+				// _ := $node.remove("out") // enleve la pair key "out"
+
+				s_new ($node("_synth")) $key 2 $out_synth in $bus_index out $bus_index $map2list
+				print s_new ($node("_synth")) $key 2 $out_synth in $bus_index out $bus_index $map2list
+				_ := $node.remove("_synth") // enleve la pair key "synth"
+
+				// print node_sin_synth (""+$node)
+
+				// print (@domain($node))
+				// print (@range($node))				
+				// fonction qui transforme les pairs key/values qui resten en tab ou aplatir
+				// lace entre 2 tab
+			}
+			// print node node $key
+		}
+	}
+}
+
+@fun_def sc_server_tree2map($data)
+{	
+	@local $i, $d, $group_n, $synth_n
+
+		$i := 0
+		$group_n := 0
+		$synth_n := 1
+
+		if($data[0] == 0) //global group
+		{
+		
+			print global index ($data[0])
+			$i := 5 //offset
+			
+	    Loop
+        {
+        	print index_index $i
+        	// print ($data[$i]) ($data[$i+1]) //($data[$i+2])
+        	if(($data[$i+1]) != -1)
+        	{
+        		$synth_n := 1
+
+        		// cellblock set $group_n 0 ($data[$i]) groupo   //($data[$i+1])
+        		print groupo ($data[$i])
+        		_ := $sc_struct(1).push_back($data[$i]) 
+        		_ := $sc_struct.add_pair($data[$i], []) // crea nueva key group
+        		$group_n := $data[$i]
+        		$i := $i + 2
+        		// $group_n := $group_n + 1
+        		// cellblock set ($group_n-1) $synth_n ($data[$i]) ($data[$i+2])
+
+        	}else{
+        		print synth ($data[$i]) ($data[$i+2])
+        		_ := $sc_struct($group_n).push_back($data[$i]) // llena tab de index
+        		_ := $sc_struct.add_pair($data[$i], map{("_synth", $data[$i+2])})
+        		$i := $i + 3
+        		$synth_n := $synth_n + 1
+        	}
+            
+        } while ($i+2 <= @size($data))
+    }
+}
+
+
+@fun_def sc_server_tree2map($data)
+{	
+	@local $i, $d, $group_n, $synth_n
+
+		$i := 0
+		$group_n := 0
+		$synth_n := 1
+
+		if($data[0] == 0) //global group
+		{
+		
+			print global index ($data[0])
+			$i := 5 //offset
+			
+	    Loop
+        {
+        	print index_index $i
+        	// print ($data[$i]) ($data[$i+1]) //($data[$i+2])
+        	if(($data[$i+1]) != -1)
+        	{
+        		$synth_n := 1
+
+        		// cellblock set $group_n 0 ($data[$i]) groupo   //($data[$i+1])
+        		print groupo ($data[$i])
+        		_ := $sc_struct(1).push_back($data[$i]) 
+        		_ := $sc_struct.add_pair($data[$i], []) // crea nueva key group
+        		$group_n := $data[$i]
+        		$i := $i + 2
+        		// $group_n := $group_n + 1
+        		// cellblock set ($group_n-1) $synth_n ($data[$i]) ($data[$i+2])
+
+        	}else{
+        		print synth ($data[$i]) ($data[$i+2])
+        		_ := $sc_struct($group_n).push_back($data[$i]) // llena tab de index
+        		_ := $sc_struct.add_pair($data[$i], map{("_synth", $data[$i+2])})
+        		$i := $i + 3
+        		$synth_n := $synth_n + 1
+        	}
+            
+        } while ($i+2 <= @size($data))
+    }
+}
+
+whenever ($from_sc_server2==$from_sc_server2)
+{
+
+	// _ := @sc_server_tree($from_sc_server)
+	_ := @sc_server_tree2map2($from_sc_server2)
+	1 print (""+$sc_struct)
+	_ := @savevalue("/Users/jose/Documents/Doctorado/sc_struct.asco.txt", $sc_struct.remove(0)) //.listify)
+	1 _ := $sc_struct.sc_build(0)
+	print (@min_key($sc_struct))
+	print ($sc_struct(1))
+	print (@min_val($sc_struct(1)))
+	print (@max_key($sc_struct))
+
+	// $from_sc_server
+}
+
+@fun_def sc_server_tree2map2($data)
+{	
+	@local $i, $d, $group_n, $synth_n, $synth_node
+
+		$i := 0
+		$group_n := 0
+		$synth_n := 1
+		$synth_node := 0
+
+		print sc_server_tree2map2
+
+		if($data[0] == 0) //default group
+		{
+			$i := 2
+			print global index ($data[0])
+	    Loop
+        {
+        	// print ($data[$i]) ($data[$i+1]) //($data[$i+2])
+        	if(($data[$i+1]) != -1)
+        	{
+        		$synth_n := 1
+
+        		// cellblock set $group_n 0 ($data[$i]) groupo   //($data[$i+1])
+        		print groupo ($data[$i])
+        		print groupo_fils ($data[$i+1])
+        		_ := $sc_struct(1).push_back($data[$i]) // root tree 0
+        		_ := $sc_struct.add_pair($data[$i], []) // crea nueva key group
+
+        		$group_n := $data[$i]
+        		$i := $i + 2
+        		// $group_n := $group_n + 1
+        		// cellblock set ($group_n-1) $synth_n ($data[$i]) ($data[$i+2])
+
+        	}else{
+        		print synth ($data[$i]) ($data[$i+2])
+        		print number_params ($data[$i+3])
+        		$synth_node := $data[$i] // node number for MAP en forall
+
+        		_ := $sc_struct($group_n).push_back($data[$i]) // llena tab de index
+        		_ := $sc_struct.add_pair($data[$i], map{("_synth", $data[$i+2])}) // crea MAP para nombre_synth + parametros
+
+        		forall $params in $data[$i+3] // loop recorre lista de parametros
+        		{
+        			print params ($data[$i+4]) ($data[$i+5])
+        			if($data[$i+4] != "in" && $data[$i+4] != "out") // enleve les in/out
+        			{
+        				_ := $sc_struct($synth_node).add_pair($data[$i+4], $data[$i+5]) // llena map node_synth con parametros
+        			}
+        			$i := $i + 2
+        		}
+
+        		$i := $i + 4 //offset (node_index, -1, synth_name, number_params)
+        		$synth_n := $synth_n + 1
+        	}
+            
+        } while ($i+2 <= @size($data))
+    }
+}
+
+
+$sc_group_struct := map{ } // 
+
+@fun_def sc_server_tree2map2_group($data) //reduce index from 0 to n
+{	
+	@local $i, $d, $group_n, $synth_n, $synth_node
+
+		$i := 0
+		$group_n := 0
+		$synth_n := 1
+		$synth_node := 0
+
+		print sc_server_tree2map2
+
+		if($data[0] == 0) //default group
+		{
+			$i := 2
+			print global index ($data[0])
+	    Loop
+        {
+        	// print ($data[$i]) ($data[$i+1]) //($data[$i+2])
+        	if(($data[$i+1]) != -1)
+        	{
+        		$synth_n := 1
+
+        		// cellblock set $group_n 0 ($data[$i]) groupo   //($data[$i+1])
+        		print groupo ($data[$i])
+        		print groupo_fils ($data[$i+1])
+        		_ := $sc_group_struct(1).push_back($data[$i]) // root tree 0
+        		_ := $sc_group_struct.add_pair($data[$i], []) // crea nueva key group
+
+        		$group_n := $data[$i]
+        		$i := $i + 2
+        		// $group_n := $group_n + 1
+        		// cellblock set ($group_n-1) $synth_n ($data[$i]) ($data[$i+2])
+
+        	}else{
+        		print synth ($data[$i]) ($data[$i+2])
+        		print number_params ($data[$i+3])
+        		$synth_node := $data[$i] // node number for MAP en forall
+
+        		_ := $sc_group_struct($group_n).push_back($data[$i]) // llena tab de index
+        		_ := $sc_group_struct.add_pair($data[$i], map{("_synth", $data[$i+2])}) // crea MAP para nombre_synth + parametros
+
+        		forall $params in $data[$i+3] // loop recorre lista de parametros
+        		{
+        			print params ($data[$i+4]) ($data[$i+5])
+        			if($data[$i+4] != "in" && $data[$i+4] != "out") // enleve les in/out
+        			{
+        				_ := $sc_group_struct($synth_node).add_pair($data[$i+4], $data[$i+5]) // llena map node_synth con parametros
+        			}
+        			$i := $i + 2
+        		}
+
+        		$i := $i + 4 //offset (node_index, -1, synth_name, number_params)
+        		$synth_n := $synth_n + 1
+        	}
+            
+        } while ($i+2 <= @size($data))
+    }
+}
+
+@obj_def crea_track8($chnl, $fade_in, $amp, $synth_collection) // recuperar el nombre de la variable
+{
+    @init 
+    {
+	    @local $group_id, $bus, $node_id_out, $track_label, $gui, $server_name := "localhost"
+
+	    $group_id := $SC_Servers($server_name)("node_id")
+	    $bus := $SC_Servers($server_name)("bus_index")
+
+	    $gui := false
+
+	    $track_label := ("group_"+$group_id)
+
+	    print track_label $track_label
+
+	    _ := $synths_map($server_name).insert($track_label, map{})
+	    _ := $track_proc($server_name).insert($track_label, map{})
+
+	    g_newlocalhost $group_id 0 1 // group_id, add group to the head, into group 0 (default in command line) 1 from SClang
+	    // $node_id := $node_id + 1
+	    _ := $SC_Servers($server_name).add_pair("node_id", $group_id + 1)
+
+	    // print $node_id
+	    // $node_id_out := $node_id
+		$node_id_out := $SC_Servers($server_name)("node_id")
+
+	    s_newlocalhost audioOut8 $node_id_out 1 $group_id in $bus out $chnl index $bus in_ramp $fade_in amp $amp
+
+	    _ := $synths_map($server_name)($track_label).insert("group", $group_id)
+	   	_ := $synths_map($server_name)($track_label).insert("audioOut8", $node_id_out)
+
+	   	_ := $sc_struct($server_name)(1).push_back($group_id) // root tree 0
+	    _ := $sc_struct($server_name).add_pair($group_id, [$node_id_out]) // crea nueva key group + audioOut
+		_ := $sc_struct($server_name).add_pair($node_id_out, map{("_synth", "audioOut8"), ("in", $bus), ("out", $chnl), ("index", $bus), ("in_ramp", $fade_in), ("amp", $amp)}) // crea MAP para nombre_synth + parametros
+
+	   	// $bus_index := $bus_index + 8 // incremente en 8 bus pour le suivant group
+	   	_ := $SC_Servers($server_name).insert("bus_index", $bus+8) // incrementa bus de server
+	    // $node_id := $node_id + 1 // incremente de 1 la variable $node_id pour le prochain node
+	    _ := $SC_Servers($server_name).insert("node_id", $node_id_out + 1)
+
+
+	   	forall $x in $synth_collection
+	    {
+	            _ := $THISOBJ.mod_add($x)
+	    } 
+   }
+
+   @fun_def mod_add($module)
+   {
+   	@local $addmod_index := 0, $params, $fade_in_mod, $node_id
+
+   	$fade_in_mod := 1 // deberia ser un argumento opcional!!
+   	print modulos $module
+    // print groupo $group_id
+    // print node_id $node_id
+    print ADD_MOD TOTO
+    print size ($module.dim)
+    // print params $params
+    if ($module.dim > 1){ // si c'est tab multi
+    print MULTI_
+    	forall $chain in $module // s'il y a plus des modules
+    	{
+    		// print $chain
+    		$node_id := $SC_Servers($server_name)("node_id") // last id
+
+	    	$params := $chain.cdr
+		   	s_newlocalhost ($chain[0]) $node_id 2 $node_id_out in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+	   		_ := $sc_struct($server_name)($group_id).insert(@size($sc_struct($server_name)($group_id))-2, $node_id) // root tree 0
+		   	_ := $sc_struct($server_name).add_pair($node_id, map{("_synth", $chain[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+		   	_ := $track_proc($server_name)($track_label).insert($node_id, map{}) // dictionaire pour les processus
+		   	
+		   	// print params ($synths_map($track_label)($chain[0]))
+
+		   	if(($synths_map($track_label)($chain[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+		   	{
+			   	print ($chain[0]) is not member at $node_id
+		   		_ := $synths_map($server_name)($track_label).insert($chain[0], [$node_id])
+		   	}else 
+		   	{
+		   		print ($chain[0]) is member at $node_id
+			   	_ := $synths_map($server_name)($track_label)($chain[0]).push_back($node_id)
+
+		   	}
+		   
+		   	loop 
+			{
+				_ := $sc_struct($server_name)($node_id).add_pair($params[$addmod_index], $params[$addmod_index+1])
+				$addmod_index := $addmod_index + 2
+			} while ($addmod_index+2 <= @size($params))
+
+		// $node_id := $node_id + 1
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+
+
+		}
+   	}else{
+   		if($module.is_tab) // si c'est tab 1 dim
+   		{
+   			print TAB_
+   			$node_id := $SC_Servers($server_name)("node_id") // last id
+   			print node_id $node_id
+   			$params := $module.cdr
+   			print s_newlocalhost ($module[0]) $node_id 2 $node_id_out in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+
+		   	s_newlocalhost ($module[0]) $node_id 2 $node_id_out in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+		   	// _ := $synths_map($server_name)($track_label).insert($module[0], $node_id)
+	   		_ := $sc_struct($server_name)($group_id).insert(@size($sc_struct($server_name)($group_id))-2, $node_id) // root tree 0
+		   	_ := $sc_struct($server_name).add_pair($node_id, map{("_synth", $module[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+		   	_ := $track_proc($server_name)($track_label).insert($node_id, map{}) // dictionaire pour les processus
+
+		   	if(($synths_map($server_name)($track_label)($module[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+		   	{
+			   	print ($module[0]) is not member at $node_id
+		   		_ := $synths_map($server_name)($track_label).insert($module[0], [$node_id])
+		   	}else 
+		   	{
+		   		print ($module[0]) is member at $node_id
+			   	_ := $synths_map($server_name)($track_label)($module[0]).push_back($node_id)
+
+		   	}
+		   	loop 
+			{
+				_ := $sc_struct($server_name)($node_id).add_pair($params[$addmod_index], $params[$addmod_index+1])
+				$addmod_index := $addmod_index + 2
+			} while ($addmod_index+2 <= @size($params))
+			
+			// $node_id := $node_id + 1
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id + 1)
+
+
+   		}
+   		else
+   		{
+   			$node_id := $SC_Servers($server_name)("node_id") // last id
+			s_newlocalhost ($module) $node_id 2 $node_id_out in $bus out $bus matrix_ramp $fade_in_mod //$params   //target 2 justo despues del nodo 180 audioOut
+			// _ := $synths_map($server_name)($track_label).insert($module, $node_id)
+			_ := $sc_struct($server_name)($group_id).insert(@size($sc_struct($server_name)($group_id))-2, $node_id) // root tree 0
+			_ := $sc_struct($server_name).add_pair($node_id, map{("_synth", $module), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+		   	_ := $track_proc($server_name)($track_label).insert($node_id, map{}) // dictionaire pour les processus
+				
+		   	if(($synths_map($server_name)($track_label)($module)).is_undef) // si la synth existe déjà creer une tab de nodes
+		   	{
+			   	print ($module) is not member at $node_id
+		   		_ := $synths_map($server_name)($track_label).insert($module, [$node_id])
+		   	}else 
+		   	{
+		   		print ($module) is member at $node_id
+			   	_ := $synths_map($server_name)($track_label)($module).push_back($node_id)
+
+		   	}
+
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id + 1)
+
+		}
+		
+   	}
+
+   	
+  	}
+
+	@fun_def mod_add_top($module)
+	{
+		@local $addmod_index := 0, $params, $fade_in_mod
+
+	   	$fade_in_mod := 1 // deberia ser un argumento opcional!!
+	   	// print modulos $module
+	    // print groupo $group_id
+	    // print node_id $node_id
+	    print size ($module.dim)
+	    // print params $params
+	    if ($module.dim > 1){ // si c'est tab multi
+	    print MULTI_
+	    	forall $chain in $module // s'il y a plus des modules
+	    	{
+	    		// print $chain
+	    		$node_id := $SC_Servers($server_name)("node_id") // last id
+		    	$params := $chain.cdr
+			   	s_newlocalhost ($chain[0]) $node_id 0 $group_id in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+			   	// _ := $synths_map($server_name)($track_label).insert($chain[0], $node_id)
+		   		_ := $sc_struct($server_name)($group_id).insert(-1, $node_id) // root tree 0
+			   	_ := $sc_struct($server_name).add_pair($node_id, map{("_synth", $chain[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+			   	_ := $track_proc($server_name)($track_label).insert($node_id, map{}) // dictionaire pour les processus
+
+			   	if(($synths_map($server_name)($track_label)($chain[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+			   	{
+				   	print ($chain[0]) is not member at $node_id
+			   		_ := $synths_map($server_name)($track_label).insert($chain[0], [$node_id])
+			   	}else 
+			   	{
+			   		print ($chain[0]) is member at $node_id
+				   	_ := $synths_map($server_name)($track_label)($chain[0]).push_back($node_id)
+
+			   	}
+
+			   	loop // rajoute params au dico
+				{
+					_ := $sc_struct($server_name)($node_id).add_pair($params[$addmod_index], $params[$addmod_index+1])
+					$addmod_index := $addmod_index + 2
+				} while ($addmod_index+2 <= @size($params))
+
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id + 1)
+
+
+			}
+	   	}else{ 
+	   		if($module.is_tab) // si c'est tab 1 dim
+	   		{
+	   			$node_id := $SC_Servers($server_name)("node_id") // last id
+	   			$params := $module.cdr
+			   	s_newlocalhost ($module[0]) $node_id 0 $group_id in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+			   	// _ := $synths_map($server_name)($track_label).insert($module[0], $node_id)
+		   		_ := $sc_struct($server_name)($group_id).insert(-1, $node_id) // root tree 0
+			   	_ := $sc_struct($server_name).add_pair($node_id, map{("_synth", $module[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+			   	_ := $track_proc($server_name)($track_label).insert($node_id, map{}) // dictionaire pour les processus
+
+			   	if(($synths_map($server_name)($track_label)($module[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+			   	{
+				   	print ($module[0]) is not member at $node_id
+			   		_ := $synths_map($server_name)($track_label).insert($module[0], [$node_id])
+			   	}else 
+			   	{
+			   		print ($module[0]) is member at $node_id
+				   	_ := $synths_map($server_name)($track_label)($module[0]).push_back($node_id)
+
+			   	}
+			   	loop // rajoute params au dico
+				{
+					_ := $sc_struct($server_name)($node_id).add_pair($params[$addmod_index], $params[$addmod_index+1])
+					$addmod_index := $addmod_index + 2
+				} while ($addmod_index+2 <= @size($params))
+
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id + 1)
+
+
+	   	}else{
+	   		   	$node_id := $SC_Servers($server_name)("node_id") // last id
+				s_newlocalhost ($module) $node_id 0 $group_id in $bus out $bus matrix_ramp $fade_in_mod //$params   //target 2 justo despues del nodo 180 audioOut
+				// _ := $synths_map($server_name)($track_label).insert($module, $node_id)
+				_ := $sc_struct($server_name)($group_id).insert(-1, $node_id) // root tree 0
+				_ := $sc_struct($server_name).add_pair($node_id, map{("_synth", $module), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+			   	_ := $track_proc($server_name)($track_label).insert($node_id, map{}) // dictionaire pour les processus
+
+				if(($synths_map($server_name)($track_label)($module)).is_undef) // si la synth existe déjà creer une tab de nodes
+			   	{
+				   	print ($module) is not member at $node_id
+			   		_ := $synths_map($server_name)($track_label).insert($module, [$node_id])
+			   	}else 
+			   	{
+			   		print ($module) is member at $node_id
+				   	_ := $synths_map($server_name)($track_label)($module).push_back($node_id)
+
+			   	}
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id + 1)
+
+			}
+	   	}
+	}
+
+	@fun_def mod_after($module, $mod_after)
+	{
+	   	@local $addmod_index := 0, $params, $fade_in_mod, $mod_after_id
+
+	   	$fade_in_mod := 1 // deberia ser un argumento opcional!!
+
+	    $mod_after_id := $synths_map($server_name)($track_label)($mod_after)[0] // recupera $mod_after id
+
+	    // print mod_after_id (""+$mod_after_id)
+	    // print groupo (""+$sc_struct($server_name)($group_id))
+	    // print (""+$synths_map($server_name)($track_label))
+	    // print size ($module.dim)
+	    // print params $params
+	    if ($module.dim > 1){ // si c'est tab multi
+	    print MULTI_
+	    	forall $chain in $module // s'il y a plus des modules
+	    	{
+	    		$node_id := $SC_Servers($server_name)("node_id") // last id
+	    		print $chain
+		    	$params := $chain.cdr
+			   	s_newlocalhost ($chain[0]) $node_id 3 $mod_after_id in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+		   		_ := $sc_struct($server_name)($group_id).insert($sc_struct($server_name)($group_id).occurs($mod_after_id), $node_id) // root tree 0
+			   	_ := $sc_struct($server_name).add_pair($node_id, map{("_synth", $chain[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+			   	_ := $track_proc($server_name)($track_label).insert($node_id, map{}) // dictionaire pour les processus
+
+			   	// print params ($synths_map($server_name)($track_label)($chain[0]))
+
+			   	if(($synths_map($server_name)($track_label)($chain[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+			   	{
+				   	print ($chain[0]) is not member at $node_id
+			   		_ := $synths_map($server_name)($track_label).insert($chain[0], [$node_id])
+			   	}else 
+			   	{
+			   		print ($chain[0]) is member at $node_id
+				   	_ := $synths_map($server_name)($track_label)($chain[0]).push_back($node_id)
+
+			   	}
+			   
+			   	loop 
+				{
+					_ := $sc_struct($server_name)($node_id).add_pair($params[$addmod_index], $params[$addmod_index+1])
+					$addmod_index := $addmod_index + 2
+				} while ($addmod_index+2 <= @size($params))
+
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id + 1)
+
+
+			}
+	   	}
+	   	else
+	   	{
+			if($module.is_tab) // si c'est tab 1 dim
+			{
+				$node_id := $SC_Servers($server_name)("node_id") // last id
+				$params := $module.cdr
+			   	s_newlocalhost ($module[0]) $node_id 3 $mod_after_id in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+			   	// _ := $synths_map($server_name)($track_label).insert($module[0], $node_id)
+		   		_ := $sc_struct($server_name)($group_id).insert($sc_struct($server_name)($group_id).occurs($mod_after_id), $node_id) // root tree 0
+			   	_ := $sc_struct($server_name).add_pair($node_id, map{("_synth", $module[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+	   			_ := $track_proc($server_name)($track_label).insert($node_id, map{}) // dictionaire pour les processus
+
+			   	if(($synths_map($server_name)($track_label)($module[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+			   	{
+				   	print ($module[0]) is not member at $node_id
+			   		_ := $synths_map($server_name)($track_label).insert($module[0], [$node_id])
+			   	}else 
+			   	{
+			   		print ($module[0]) is member at $node_id
+				   	_ := $synths_map($server_name)($track_label)($module[0]).push_back($node_id)
+
+			   	}
+			   	loop 
+				{
+					_ := $sc_struct($server_name)($node_id).add_pair($params[$addmod_index], $params[$addmod_index+1])
+					$addmod_index := $addmod_index + 2
+				} while ($addmod_index+2 <= @size($params))
+				
+				_ := $SC_Servers($server_name).add_pair("node_id", $node_id + 1)
+
+
+			}
+			else
+			{
+				$node_id := $SC_Servers($server_name)("node_id") // last id
+				s_newlocalhost ($module) $node_id 3 $mod_after_id in $bus out $bus matrix_ramp $fade_in_mod //$params   //target 2 justo despues del nodo 180 audioOut
+				// _ := $synths_map($server_name)($track_label).insert($module, $node_id)
+		   		_ := $sc_struct($server_name)($group_id).insert($sc_struct($server_name)($group_id).occurs($mod_after_id), $node_id) // root tree 0
+				_ := $sc_struct($server_name).add_pair($node_id, map{("_synth", $module), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+				_ := $track_proc($server_name)($track_label).insert($node_id, map{}) // dictionaire pour les processus
+
+			   	if(($synths_map($server_name)($track_label)($module)).is_undef) // si la synth existe déjà creer une tab de nodes
+			   	{
+				   	print ($module) is not member at $node_id
+			   		_ := $synths_map($server_name)($track_label).insert($module, [$node_id])
+			   	}else 
+			   	{
+			   		print ($module) is member at $node_id
+				   	_ := $synths_map($server_name)($track_label)($module).push_back($node_id)
+
+			   	}
+
+				_ := $SC_Servers($server_name).add_pair("node_id", $node_id + 1)
+
+			}
+				
+		}
+	}
+
+	@fun_def mod_before($module, $mod_before)
+	{
+   	@local $addmod_index := 0, $params, $fade_in_mod, $mod_before_id
+   	$fade_in_mod := 1 // deberia ser un argumento opcional!!
+
+    $mod_before_id := $synths_map($server_name)($track_label)($mod_before)[0] // recupera $mod_after id
+    // print (""+$synths_map($server_name)($track_label))
+    // print size ($module.dim)
+    // print params $params
+    if ($module.dim > 1){ // si c'est tab multi
+    print MULTI_
+    	forall $chain in $module // s'il y a plus des modules
+    	{
+    		// print $chain
+    		$node_id := $SC_Servers($server_name)("node_id") // last id
+	    	$params := $chain.cdr
+		   	s_newlocalhost ($chain[0]) $node_id 2 $mod_before_id in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+	   		_ := $sc_struct($server_name)($group_id).insert($sc_struct($server_name)($group_id).occurs($mod_before_id)-1, $node_id) // root tree 0
+		   	_ := $sc_struct($server_name).add_pair($node_id, map{("_synth", $chain[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+		   	_ := $track_proc($server_name)($track_label).insert($node_id, map{}) // dictionaire pour les processus
+		   	
+		   	// print params ($synths_map($server_name)($track_label)($chain[0]))
+
+		   	if(($synths_map($server_name)($track_label)($chain[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+		   	{
+			   	print ($chain[0]) is not member at $node_id
+		   		_ := $synths_map($server_name)($track_label).insert($chain[0], [$node_id])
+		   	}else 
+		   	{
+		   		print ($chain[0]) is member at $node_id
+			   	_ := $synths_map($server_name)($track_label)($chain[0]).push_back($node_id)
+
+		   	}
+		   
+		   	loop 
+			{
+				_ := $sc_struct($server_name)($node_id).add_pair($params[$addmod_index], $params[$addmod_index+1])
+				$addmod_index := $addmod_index + 2
+			} while ($addmod_index+2 <= @size($params))
+
+		_ := $SC_Servers($server_name).add_pair("node_id", $node_id + 1)
+
+
+		}
+   	}
+   	else
+   	{
+		if($module.is_tab) // si c'est tab 1 dim
+		{
+		   	$node_id := $SC_Servers($server_name)("node_id") // last id
+			$params := $module.cdr
+		   	s_newlocalhost ($module[0]) $node_id 2 $mod_before_id in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+		   	// _ := $synths_map($server_name)($track_label).insert($module[0], $node_id)
+	   		_ := $sc_struct($server_name)($group_id).insert($sc_struct($server_name)($group_id).occurs($mod_before_id)-1, $node_id) // root tree 0
+		   	_ := $sc_struct($server_name).add_pair($node_id, map{("_synth", $module[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+		   	_ := $track_proc($server_name)($track_label).insert($node_id, map{}) // dictionaire pour les processus
+
+		   	if(($synths_map($server_name)($track_label)($module[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+		   	{
+			   	print ($module[0]) is not member at $node_id
+		   		_ := $synths_map($server_name)($track_label).insert($module[0], [$node_id])
+		   	}else 
+		   	{
+		   		print ($module[0]) is member at $node_id
+			   	_ := $synths_map($server_name)($track_label)($module[0]).push_back($node_id)
+
+		   	}
+		   	loop 
+			{
+				_ := $sc_struct($server_name)($node_id).add_pair($params[$addmod_index], $params[$addmod_index+1])
+				$addmod_index := $addmod_index + 2
+			} while ($addmod_index+2 <= @size($params))
+			
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id + 1)
+
+
+		}
+		else
+		{
+		   	$node_id := $SC_Servers($server_name)("node_id") // last id
+			s_newlocalhost ($module) $node_id 2 $mod_before_id in $bus out $bus matrix_ramp $fade_in_mod //$params   //target 2 justo despues del nodo 180 audioOut
+			// _ := $synths_map($server_name)($track_label).insert($module, $node_id)
+	   		_ := $sc_struct($server_name)($group_id).insert($sc_struct($server_name)($group_id).occurs($mod_before_id)-1, $node_id) // root tree 0
+			_ := $sc_struct($server_name).add_pair($node_id, map{("_synth", $module), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+		   	_ := $track_proc($server_name)($track_label).insert($node_id, map{}) // dictionaire pour les processus
+			
+		   	if(($synths_map($server_name)($track_label)($module)).is_undef) // si la synth existe déjà creer une tab de nodes
+		   	{
+			   	print ($module) is not member at $node_id
+		   		_ := $synths_map($server_name)($track_label).insert($module, [$node_id]) // tab dans le cas de plusieurs instances du même module
+		   	}else 
+		   	{
+		   		print ($module) is member at $node_id
+			   	_ := $synths_map($server_name)($track_label)($module).push_back($node_id)
+
+		   	}
+
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+
+		}
+			
+	}
+	}
+
+
+	@proc_def mod_remove($module, $time_off)
+	{
+		forall $node in ($synths_map($server_name)($track_label)($module))
+		{
+			n_setlocalhost $node matrix_ramp $time_off free 0
+			_ := $sc_struct($server_name).remove($node)
+			_ := $sc_struct($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($node))
+			if($track_proc($server_name)($track_label)($node).size != 0) // abort proc des modules
+			{	
+				$time_off forall $k, $proc in $track_proc($server_name)($track_label)($node) // parcours le dico de proc
+				{
+					abort $proc 
+				}
+			}
+			// ($time_off+0.01) _ := $track_proc($server_name)($track_label).remove($node)
+		}
+		_ := $synths_map($server_name)($track_label).remove($module)
+	}
+
+	@proc_def mod_remove_id($nodes, $time_off)
+	{
+		if($nodes.is_tab)
+		{
+			forall $x in $nodes
+			{
+				n_setlocalhost $x matrix_ramp $time_off free 0
+				_ := $synths_map($server_name)($track_label).remove($sc_struct($server_name)($group_id)($x)("_synth"))
+				_ := $sc_struct($server_name).remove($x)
+				_ := $sc_struct($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($x))
+				if($track_proc($server_name)($track_label)($x).size != 0) // abort proc des modules
+				{	
+					$time_off forall $k, $proc in $track_proc($server_name)($track_label)($x) // parcours le dico de proc
+					{
+						abort $proc 
+					}
+				}	
+			}
+		}
+		else
+		{
+			n_setlocalhost $nodes matrix_ramp $time_off free 0
+			_ := $synths_map($server_name)($track_label).remove($sc_struct($server_name)($group_id)($nodes)("_synth"))
+			_ := $sc_struct($server_name).remove($nodes)
+			_ := $sc_struct($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($nodes))
+			if($track_proc($server_name)($track_label)($nodes).size != 0) // abort proc des modules
+			{	
+				$time_off forall $k, $proc in $track_proc($server_name)($track_label)($nodes) // parcours le dico de proc
+				{
+					abort $proc 
+				}
+			}
+		}	
+	}
+
+	@proc_def mod_remove_single($module, $num, $time_off) // quand il y a plusieurs instances d'un même module, sinon utiliser la methode mod_remove
+	{
+		@local $node
+		$node := $synths_map($server_name)($track_label)($module)[$num]
+		n_setlocalhost $node matrix_ramp $time_off free 0
+		_ := $sc_struct($server_name).remove($node)
+		_ := $sc_struct($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($node))
+		_ := $synths_map($server_name)($track_label)($module).remove($synths_map($server_name)($track_label)($module).occurs($node))
+		
+		$time_off forall $k, $proc in $track_proc($server_name)($track_label)($node) // parcours le dico de proc
+		{
+			abort $proc 
+		}
+	_ := $synths_map($server_name)($track_label).remove($node)	
+	}
+
+	@proc_def mod_move_before($module, $mod_mov_before)
+	{
+		n_beforelocalhost ($synths_map($server_name)($track_label)($module)) ($synths_map($server_name)($track_label)($mod_mov_before)[0])
+
+		print n_before ($synths_map($server_name)($track_label)($module)) ($synths_map($server_name)($track_label)($mod_mov_before)[0])
+
+		// forall $node in ($synths_map($server_name)($track_label)($module))
+		// {
+		// 	n_setlocalhost $node matrix_ramp $time_off free 0
+		// 	_ := $sc_struct($server_name).remove($node)
+		// 	_ := $sc_struct($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($node))
+		// 	if($track_proc($server_name)($track_label)($node).size != 0) // abort proc des modules
+		// 	{	
+		// 		$time_off forall $k, $proc in $track_proc($server_name)($track_label)($node) // parcours le dico de proc
+		// 		{
+		// 			abort $proc 
+		// 		}
+		// 	}
+		// 	// ($time_off+0.01) _ := $track_proc($server_name)($track_label).remove($node)
+		// }
+		// _ := $synths_map($server_name)($track_label).remove($module)
+	}
+
+	@proc_def mod_move_before_id($module_id, $mod_mov_before_id)
+	{
+		n_beforelocalhost $module_id $mod_mov_before_id
+
+		print n_before $module_id $mod_mov_before_id
+
+		// forall $node in ($synths_map($server_name)($track_label)($module))
+		// {
+		// 	n_setlocalhost $node matrix_ramp $time_off free 0
+		// 	_ := $sc_struct($server_name).remove($node)
+		// 	_ := $sc_struct($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($node))
+		// 	if($track_proc($server_name)($track_label)($node).size != 0) // abort proc des modules
+		// 	{	
+		// 		$time_off forall $k, $proc in $track_proc($server_name)($track_label)($node) // parcours le dico de proc
+		// 		{
+		// 			abort $proc 
+		// 		}
+		// 	}
+		// 	// ($time_off+0.01) _ := $track_proc($server_name)($track_label).remove($node)
+		// }
+		// _ := $synths_map($server_name)($track_label).remove($module)
+	}
+
+	@proc_def mod_move_after($module, $mod_mov_after)
+	{
+		n_afterlocalhost ($synths_map($server_name)($track_label)($module)) ($synths_map($server_name)($track_label)($mod_mov_after)[0])
+
+		print n_after ($synths_map($server_name)($track_label)($module)) ($synths_map($server_name)($track_label)($mod_mov_after)[0])
+
+		// forall $node in ($synths_map($server_name)($track_label)($module))
+		// {
+		// 	n_setlocalhost $node matrix_ramp $time_off free 0
+		// 	_ := $sc_struct($server_name).remove($node)
+		// 	_ := $sc_struct($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($node))
+		// 	if($track_proc($server_name)($track_label)($node).size != 0) // abort proc des modules
+		// 	{	
+		// 		$time_off forall $k, $proc in $track_proc($server_name)($track_label)($node) // parcours le dico de proc
+		// 		{
+		// 			abort $proc 
+		// 		}
+		// 	}
+		// 	// ($time_off+0.01) _ := $track_proc($server_name)($track_label).remove($node)
+		// }
+		// _ := $synths_map($server_name)($track_label).remove($module)
+	}
+
+	@proc_def mod_move_after_id($module_id, $mod_mov_after_id)
+	{
+		n_afterlocalhost $module_id $mod_mov_after_id
+
+		print n_after $module_id $mod_mov_after_id
+
+		// forall $node in ($synths_map($server_name)($track_label)($module))
+		// {
+		// 	n_setlocalhost $node matrix_ramp $time_off free 0
+		// 	_ := $sc_struct($server_name).remove($node)
+		// 	_ := $sc_struct($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($node))
+		// 	if($track_proc($server_name)($track_label)($node).size != 0) // abort proc des modules
+		// 	{	
+		// 		$time_off forall $k, $proc in $track_proc($server_name)($track_label)($node) // parcours le dico de proc
+		// 		{
+		// 			abort $proc 
+		// 		}
+		// 	}
+		// 	// ($time_off+0.01) _ := $track_proc($server_name)($track_label).remove($node)
+		// }
+		// _ := $synths_map($server_name)($track_label).remove($module)
+	}
+
+	@fun_def set($module, $params)
+	{
+		// print n_setlocalhost $module $params
+		// print n_setlocalhost ($synths_map($server_name)($track_label)($module)) $params
+
+		forall $x in ($synths_map($server_name)($track_label)($module))
+		{
+			n_setlocalhost $x $params
+		}
+		// n_setlocalhost ($synths_map($server_name)($track_label)($module)) 
+		// _ := $sc_struct($server_name)($synths_map($server_name)($track_label)($module))("modfreq") := 100
+		// print (""+$sc_struct($server_name)($synths_map($server_name)($track_label)($module))("modfreq"))
+		// print node_add_pair (""+$sc_struct($server_name)($synths_map($server_name)($track_label)($module)))
+	}
+
+	@fun_def set_multi($module, $params)
+	{
+		forall $x in $params
+		{
+			print (""+$params)
+		}
+		// forall $x in ($synths_map($server_name)($track_label)($module)).size
+		// {
+		// 	n_setlocalhost ($synths_map($server_name)($track_label)($module))[$x]
+		// }
+	}
+
+	@fun_def set_single ($module, $num, $params)
+	{
+		n_setlocalhost ($synths_map($server_name)($track_label)($module)[$num]) $params
+	}
+
+	@fun_def amp($group_amp)
+	{
+			// {msg[2] == \amp} {~synth[msg[1]].outsynth.set(\amp, msg[3])}
+		n_setlocalhost $node_id_out amp $group_amp
+	}
+
+	@fun_def kill_mod($module, $fade_out) // kill module
+	{
+		n_setlocalhost ($synths_map($server_name)($track_label)($module)) matrix_ramp $fade_out free 0
+		//remove synth
+		//_ := $sc_struct($server_name)
+		// print (""+$sc_struct($server_name)($synths_map($server_name)($track_label)($module))("modfreq"))
+		// print node_add_pair (""+$sc_struct($server_name)($synths_map($server_name)($track_label)($module)))
+	}
+
+	@fun_def pause($time)
+	{
+		n_setlocalhost $group_id matrix_ramp @dur2sec($time) gate 0
+		// @dur2sec($time) n_setlocalhost $group_id gate 0
+	}
+
+	@fun_def resume($time)
+	{	
+		n_runlocalhost $group_id 1
+		n_setlocalhost $group_id matrix_ramp @dur2sec($time) gate 1
+		forall $x in $sc_struct($server_name)($group_id) //
+		{
+			n_runlocalhost $x 1
+		}	
+	}
+
+
+	@fun_def mod_size($module)
+	{
+		return (($synths_map($server_name)($track_label)($module)).size)
+	}
+
+///// hacer
+
+	@proc_def track_amp_bpf($bpf)  // [-6, 7.5, "circ", 3, 4.5, -118]
+    {
+		@local $nim, $lamp
+		// abort $last_bpf_amp_curve //evita interferencias
+		$nim := @build_nim_from_bpf($bpf)
+		// print $nim
+		$lamp := $bpf[0]
+		$last_bpf_amp_curve := { curve @grain := 0.01, @action {
+			n_setlocalhost $node_id_out amp $lamp
+		} 
+			{ $lamp : $nim }
+	    }
+	}
+
+    @proc_def line_amp($lmin1, $lmax1, $dur1, $type) 
+    {
+        @local $lamp
+	// _ := .CheckParam($module, $param, $MYSELF)
+        Curve
+        @grain := 0.01,
+        @action {
+        		forall $x in ($synths_map($server_name)($track_label)($module))
+		{
+			n_setlocalhost $x $params
+		}
+        // print n_setlocalhost $node_id_out amp $lamp
+	} 
+        { $lamp {            
+                        {$lmin1} @type := $type
+                $dur1   {$lmax1}} 
+        }
+    }
+
+    @proc_def line_param($module, $param, $lmin1, $lmax1, $dur1) 
+    {
+            @local $lparam1
+	// _ := .CheckParam($module, $param, $MYSELF)
+            Curve
+            @grain := 0.01,
+            @action 
+            {
+				forall $node in ($synths_map($server_name)($track_label)($module))
+				{
+					n_setlocalhost $node $param $lparam1
+				}
+			} 
+            { $lparam1 {            
+                            {$lmin1} 
+                    $dur1   {$lmax1}} 
+            }
+
+    }
+
+    @proc_def line_param_single($module, $num, $param, $lmin1, $lmax1, $dur1) 
+    {
+            @local $lparam1
+	// _ := .CheckParam($module, $param, $MYSELF)
+            Curve
+            @grain := 0.01,
+            @action 
+            {
+				n_setlocalhost ($synths_map($server_name)($track_label)($module)[$num]) $param $lparam1
+			} 
+            { $lparam1 {            
+                            {$lmin1} 
+                    $dur1   {$lmax1}}
+            }
+    }
+
+    @proc_def bpf_param($module, $param, $bpf) 
+    {
+		@local $nim, $lpar
+		$nim := @build_nim_from_bpf($bpf)
+		// _ := .CheckParam($module, $param, $MYSELF)
+		// print $nim
+		$lpar := $bpf[0]
+		curve @grain := 0.01, 
+		@action 
+		{
+			forall $node in ($synths_map($server_name)($track_label)($module))
+			{
+				n_setlocalhost $node $param $lpar 
+			}
+		} 
+		{ $lpar : $nim }
+    }
+
+    @proc_def bpf_param_single($module, $num, $param, $bpf) // seulement quand une un track a plusieurs instances du même module
+    {
+		@local $nim, $lpar
+		$nim := @build_nim_from_bpf($bpf)
+		// _ := .CheckParam($module, $param, $MYSELF)
+		// print $nim
+		$lpar := $bpf[0]
+		curve @grain := 0.01, 
+		@action 
+		{
+			n_setlocalhost ($synths_map($server_name)($track_label)($module)[$num]) $param $lpar
+		} 
+		{ $lpar : $nim }
+    }
+
+	@fun_def sin_lfo($module, $param, $r_low, $r_hi, $t) 
+    {
+    	forall $x in ($synths_map($server_name)($track_label)($module)) // parcours la liste de node de la même synth
+		{
+	    	if($track_proc($server_name)($track_label)($x).is_defined($module+"_sin")) // si ça existe abort et refait
+	    	{
+	    		print abort_sin
+	    		abort $track_proc($server_name)($track_label)($x)($module+"_sin") 
+	    	} 
+	        _ := $track_proc($server_name)($track_label)($x).insert(($module+"_sin"), ::sin_lfo_proc_s($server_name, $group_id, $x, $param, $r_low, $r_hi, $t))                	
+        }
+	}
+
+	@fun_def sin_lfo_single($module, $num, $param, $r_low, $r_hi, $t) 
+    {
+    	@local $node_num
+		$node_num := ($synths_map($server_name)($track_label)($module)[$num])
+
+    	if($track_proc($server_name)($track_label)($node_num).is_defined($module+"_sin")) // si ça existe abort et refait
+    	{
+    		print abort_sin_s
+    		abort $track_proc($server_name)($track_label)($node_num)($module+"_sin") 
+    	} 
+        _ := $track_proc($server_name)($track_label)($node_num).insert(($module+"_sin"), ::sin_lfo_proc_s($server_name, $group_id, $node_num, $param, $r_low, $r_hi, $t))                	
+	}
+
+	@fun_def sin_lfo_abort($module, $param)
+	{
+		forall $x in ($synths_map($server_name)($track_label)($module)) // parcours la liste de node de la même synth
+		{
+			abort $track_proc($server_name)($track_label)($x)($module+"_sin")
+		}
+	}
+
+	@fun_def sin_lfo_abort_single($module, $num, $param)
+	{
+		@local $node_num
+		$node_num := ($synths_map($server_name)($track_label)($module)[$num])
+
+		abort $track_proc($server_name)($track_label)($node_num)($module+"_sin")
+	}
+
+
+///// 
+
+//($module, $param, $min, $max, $drunk_step, $init_val, $type, $tpo)
+	@fun_def brown_lfo($module, $param, $min, $max, $drunk_step, $init_val, $type, $tpo) 
+    {
+    	forall $x in ($synths_map($server_name)($track_label)($module)) // parcours la liste de node de la même synth
+		{
+	    	if($track_proc($server_name)($track_label)($x).is_defined($module+"_brown")) // si ça existe abort et refait
+	    	{
+	    		print abort_sin
+	    		abort $track_proc($server_name)($track_label)($x)($module+"_brown") 
+	    	} 
+	        _ := $track_proc($server_name)($track_label)($x).insert(($module+"_brown"), ::brown_lfo_proc_s($server_name, $group_id, $x, $param, $min, $max, $drunk_step, $init_val, $type, $tpo))                	
+        }
+	}
+
+	@fun_def brown_lfo_single($module, $num, $param, $min, $max, $drunk_step, $init_val, $type, $tpo) 
+    {
+    	@local $node_num
+		$node_num := ($synths_map($server_name)($track_label)($module)[$num])
+
+    	if($track_proc($server_name)($track_label)($node_num).is_defined($module+"_brown")) // si ça existe abort et refait
+    	{
+    		print abort_sin_s
+    		abort $track_proc($server_name)($track_label)($module+"_brown") 
+    	} 
+        _ := $track_proc($server_name)($track_label)($node_num).insert(($module+"_brown"), ::brown_lfo_proc_s($server_name, $group_id, $node_num, $param, $min, $max, $drunk_step, $init_val, $type, $tpo))                	
+	}
+
+	@fun_def brown_lfo_abort($module, $param)
+	{
+		forall $x in ($synths_map($server_name)($track_label)($module)) // parcours la liste de node de la même synth
+		{
+			abort $track_proc($server_name)($track_label)($x)($param+"_brown")
+		}
+	}
+
+	@fun_def brown_lfo_abort_single($module, $num, $param)
+	{
+		@local $node_num
+		$node_num := ($synths_map($server_name)($track_label)($module)[$num])
+
+		abort $track_proc($server_name)($track_label)($node_num)($param+"_brown")
+	}
+
+	@fun_def rand_lfo($module, $param, $min, $max, $init_val, $type, $tpo) 
+	{ 
+		forall $x in ($synths_map($server_name)($track_label)($module)) // parcours la liste de node de la même synth
+		{
+			if($track_proc($server_name)($track_label)($x).is_defined($param+"_rand_lfo")) // si ça existe abort et refait
+	    	{
+	    		print abort_rand
+	    		abort $track_proc($server_name)($track_label)($x)($param+"_rand_lfo") 
+	    	}
+			_ := $track_proc($server_name)($track_label)($x).add_pair(($param+"_rand_lfo"), ::rand_lfo_basic_s($server_name, $group_id, $x, $param, $min, $max, $init_val, $type, $tpo, $gui)) // instantie un le processus dans le dico
+
+		}
+	}
+
+
+	@fun_def rand_lfo_single($module, $num, $param, $min, $max, $init_val, $type, $tpo) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		@local $node_num
+		$node_num := ($synths_map($server_name)($track_label)($module)[$num])
+		// print modulo_id2 ($synths_map($server_name)($track_label)($module))
+		if($track_proc($server_name)($track_label)($node_num).is_defined($param+"_rand_lfo")) // si ça existe abort et refait
+    	{
+    		print abort_rand_s
+    		abort $track_proc($server_name)($track_label)($node_num)($param+"_rand_lfo") 
+    	}
+		_ := $track_proc($server_name)($track_label)($node_num).add_pair(($param+"_rand_lfo"), ::rand_lfo_basic_s($server_name, $group_id, $node_num, $param, $min, $max, $init_val, $type, $tpo))		
+	}
+
+	@fun_def rand_lfo_abort($module, $param)
+	{
+		forall $x in ($synths_map($server_name)($track_label)($module)) // parcours la liste de node de la même synth
+		{
+			abort $track_proc($server_name)($track_label)($x)($param+"_rand_lfo") 
+		}
+	}
+
+	@fun_def rand_lfo_abort_single($module, $num, $param)
+	{
+		@local $node_num
+		$node_num := ($synths_map($server_name)($track_label)($module)[$num])
+
+		abort $track_proc($server_name)($track_label)($node_num)($param+"_rand_lfo") 
+	}
+
+	@fun_def gui()
+	{
+		@local $addsynth := [], $tab_ids
+		$tab_ids := $sc_struct($server_name)($group_id).drop(-1)
+		$gui := true
+		// TTracks8.new(track_name.asString, nil, group, bus, outsynth);
+		print $tab_ids
+
+		forall $x in $tab_ids
+		{
+			// print (""+($sc_struct($server_name)($group_id)($x)))
+			// print (""+($sc_struct($server_name)($x)))
+			_ := $addsynth.push_back($x)
+			_ := $addsynth.push_back($sc_struct($server_name)($x)("_synth"))
+			// $addsynth.push_back($sc_struct($server_name)($group_id)($x))
+		}
+		gui_antes $track_label $group_id $bus $node_id_out $addsynth
+
+		// forall $k, $v in $track_proc($server_name)($track_label) // active envoie OSC vers GUI
+		// {
+		// 	if($v.size > 0) // si la valeur contiens deja un proc avant creation GUI
+		// 	{
+		// 		$v.$gui := true // alors activer l'envoie par l'argument $gui (variable locale) 
+		// 	}
+		// }
+	}
+	
+	
+	@proc_def off_track($time) // @proc_def parce qu'il y a un delay pour arrter les proc
+	{
+		n_setlocalhost $node_id_out out_ramp @dur2sec($time) gatee 0 // free group in $time
+
+		(@dur2sec($time-0.001)) forall $k, $v in $track_proc($server_name)($track_label) // abort all processus
+		{
+			forall $key, $proc in $v // parcours le dico de proc
+				{
+					abort $proc 
+				}	
+		}
+		_ := $sc_struct($server_name).remove($group_id) // enleve group key de la MAP $sc_struct 
+	}
+
+   	@abort
+	{
+	    _ := $THISOBJ.off_track(1) // 
+	 //    forall $k, $v in $track_proc($server_name)($track_label) // abort processus
+		// {
+		// 	abort $v
+		// }
+	}
+}
+
+
+@obj_def crea_track8s($chnl, $fade_in, $amp, $synth_collection, $mix_group) // recuperar el nombre de la variable
+{
+    @init 
+    {
+	    @local $group_id, $bus, $gbus, $node_id_out, $track_label, $gui, $server_name, $main_group_id
+
+		// if($mix_group.is_tab) 
+		// {
+		// 	$server_name := $SC_Groups($mix_group[1])
+		// 	$server_group_id := $SC_Groups($mix_group[0])
+		// }
+		// else
+		// {
+		if($SC_Groups($mix_group).is_undef) // si le groupe n'existe pas
+		{
+			print this "group" does not exist
+		} 
+		else
+		{
+			if($mix_group == "default")
+			{
+				print default
+				// $server := $SC_Servers($mix_group[0])
+				$main_group_id := 1
+			}
+			else
+			{
+				print no_default
+				$server_name := $SC_Groups($mix_group)("server_name")
+				$main_group_id := $SC_Groups($mix_group)("main_group_id")
+				$gbus := $SC_Groups($mix_group)("main_bus")
+			}
+
+		    $group_id := $SC_Servers($server_name)("node_id")
+		    $bus := $SC_Servers($server_name)("bus_index")
+
+		    print bus $bus
+		    print group_id $group_id
+		    print server_name $server_name
+		    print main_group_id $main_group_id
+
+		    $gui := false
+
+		    $track_label := ("group_"+$group_id)
+
+		    print track_label $track_label
+			print $server_name
+			print synths_map (""+$synths_map)
+
+		    _ := $synths_map($server_name)($mix_group).insert($track_label, map{}) // map pour synth à reemplacer par sc_struct plus tard
+		    _ := $track_proc($server_name)($mix_group).insert($track_label, map{}) // map des processus pour chaque track
+		    
+		    print synths_map (""+$synths_map)
+		    print track_proc (""+$track_proc)
+		    print toto
+
+		    @command("g_new"+$server_name) $group_id 0 $main_group_id // group_id, add group to the head [0], into group $main_group_id
+		    _ := $SC_Servers($server_name).add_pair("node_id", $group_id + 1)
+		    // $node_id := $node_id + 1
+		    // print $node_id
+		    $node_id_out := $SC_Servers($server_name)("node_id")
+		    // $node_id_out := $node_id
+		    @command("s_new"+$server_name) audioOut8 $node_id_out 1 $group_id in $bus out ($gbus+$chnl) index $bus in_ramp $fade_in amp $amp
+
+		    _ := $synths_map($server_name)($mix_group)($track_label).insert("group", $group_id)
+		   	_ := $synths_map($server_name)($mix_group)($track_label).insert("audioOut8", $node_id_out)
+
+		   	////// 
+
+		   	_ := $sc_struct($server_name)($main_group_id).push_front($group_id) // !!!!!! !!!!! root tree 0
+		    _ := $sc_struct($server_name).add_pair($group_id, [$node_id_out]) // crea nueva key group + audioOut
+			_ := $sc_struct($server_name).add_pair($node_id_out, map{("_synth", "audioOut8"), ("in", $bus), ("out", $chnl), ("index", $bus), ("in_ramp", $fade_in), ("amp", $amp)}) // crea MAP para nombre_synth + parametros
+			
+		   	_ := $SC_Servers($server_name).insert("bus_index", $bus+8) // incrementa bus de server
+
+		    // $node_id := $node_id + 1 // incremente de 1 la variable $node_id pour le prochain node
+			_ := $SC_Servers($server_name).insert("node_id", $node_id_out + 1)
+		    
+		    _ := $SC_Groups($mix_group)("sub_group").add_pair($track_label, $THISOBJ) // store thisobject in TAB of SC_Groups(mix_group)
+
+		   	forall $x in $synth_collection
+		    {
+		            _ := $THISOBJ.mod_add($x)
+		    } 
+	    }
+   }
+
+   @fun_def mod_add($module)
+   {
+   	@local $addmod_index := 0, $params, $fade_in_mod, $node_id_mod, $mod_name, $json_file, $json_map
+
+   	$fade_in_mod := 0.01 // deberia ser un argumento opcional!!
+   	// $node_id_mod := $SC_Servers($server_name)("node_id") // last id
+   	// print modulos $module
+    // print groupo $group_id
+    // print node_id $node_id
+    print size ($module.dim)
+    // print params $params
+    if ($module.dim > 1){ // si c'est tab multi
+    print MULTI_
+    	forall $chain in $module // s'il y a plus des modules
+    	{
+    		$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+    		print $chain
+	    	$params := $chain.cdr
+		   	@command("s_new"+$server_name) ($chain[0]) $node_id_mod 2 $node_id_out in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+	   		_ := $sc_struct($server_name)($group_id).insert(@size($sc_struct($server_name)($group_id))-2, $node_id_mod) // root tree 0
+		   	_ := $sc_struct($server_name).add_pair($node_id_mod, map{("_synth", $chain[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+		   	_ := $track_proc($server_name)($mix_group)($track_label).insert($node_id_mod, map{}) // dictionaire pour les processus
+		   	
+		   	// print params ($synths_map($track_label)($mix_group)($chain[0]))
+
+		   	if(($synths_map($server_name)($mix_group)($track_label)($chain[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+		   	{
+			   	// print ($chain[0]) is not member at $node_id_mod
+		   		_ := $synths_map($server_name)($mix_group)($track_label).insert($chain[0], [$node_id_mod]) // si n'existe pas creer une MAP avec TAB
+		   	}else 
+		   	{
+		   		// print ($chain[0]) is member at $node_id_mod
+			   	_ := $synths_map($server_name)($mix_group)($track_label)($chain[0]).push_back($node_id_mod) // si existe rajouter a la TAB
+
+		   	}
+		   
+		   	loop 
+			{
+				_ := $sc_struct($server_name)($node_id_mod).add_pair($params[$addmod_index], $params[$addmod_index+1])
+				$addmod_index := $addmod_index + 2
+			} while ($addmod_index+2 <= @size($params))
+
+		_ := $SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+
+
+		}
+   	}else{
+   		if($module.is_tab) // si c'est tab 1 dim
+   		{
+   			// print DIM 1
+   			$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+   			$params := $module.cdr
+   			$mod_name := $module.car
+   			print $params
+   			if($params.car == "preset"){
+
+   				// print preset $mod_name 
+	   			// $json_file := "~/Library/Application\ Support/SuperCollider/TSupport/fxPresets/"+$mod_name+".json"
+	   			$json_file := "/Users/jose/Library/Application\ Support/SuperCollider/TSupport/fxPresets/"+$mod_name+".json"
+
+				$json_file := @json_read($json_file)
+	   			// print ($json_file.post)
+	   			// $params := $json_file($mod_name)($params[1])
+	   			// print (($json_file($mod_name)($params[1]).map2tab).post)
+	   			$params := $json_file($mod_name)($params[1]).map2tab // recupere les donnees du present json
+
+			}
+		   	@command("s_new"+$server_name) ($module[0]) $node_id_mod 2 $node_id_out in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+		   	// _ := $synths_map($server_name)($mix_group)($track_label).insert($module[0], $node_id_mod)
+	   		_ := $sc_struct($server_name)($group_id).insert(@size($sc_struct($server_name)($group_id))-2, $node_id_mod) // root tree 0
+		   	_ := $sc_struct($server_name).add_pair($node_id_mod, map{("_synth", $module[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+		   	_ := $track_proc($server_name)($mix_group)($track_label).insert($node_id_mod, map{}) // dictionaire pour les processus
+
+		   	if(($synths_map($server_name)($mix_group)($track_label)($module[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+		   	{
+			   	// print ($module[0]) is not member at $node_id_mod
+		   		_ := $synths_map($server_name)($mix_group)($track_label).insert($module[0], [$node_id_mod])
+		   	}else 
+		   	{
+		   		// print ($module[0]) is member at $node_id_mod
+			   	_ := $synths_map($server_name)($mix_group)($track_label)($module[0]).push_back($node_id_mod)
+
+		   	}
+		   	loop 
+			{
+				_ := $sc_struct($server_name)($node_id_mod).add_pair($params[$addmod_index], $params[$addmod_index+1])
+				$addmod_index := $addmod_index + 2
+			} while ($addmod_index+2 <= @size($params))
+			
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+
+   		}
+   		else
+   		{
+   			// print este
+   			$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+			@command("s_new"+$server_name) ($module) $node_id_mod 2 $node_id_out in $bus out $bus matrix_ramp $fade_in_mod //$params   //target 2 justo despues del nodo 180 audioOut
+			// _ := $synths_map($server_name)($mix_group)($track_label).insert($module, $node_id_mod)
+			_ := $sc_struct($server_name)($group_id).insert(@size($sc_struct($server_name)($group_id))-2, $node_id_mod) // root tree 0
+			_ := $sc_struct($server_name).add_pair($node_id_mod, map{("_synth", $module), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+		   	_ := $track_proc($server_name)($mix_group)($track_label).insert($node_id_mod, map{}) // dictionaire pour les processus
+				
+		   	if(($synths_map($server_name)($mix_group)($track_label)($module)).is_undef) // si la synth existe déjà creer une tab de nodes
+		   	{
+			   	// print ($module) is not member at $node_id_mod
+			   	// _ := ($synths_map($server_name)($mix_group)($track_label).insert($module, [$node_id_mod])).post
+		   		_ := $synths_map($server_name)($mix_group)($track_label).insert($module, [$node_id_mod])
+		   	}else 
+		   	{
+		   		// print ($module) is member at $node_id_mod
+			   	_ := $synths_map($server_name)($mix_group)($track_label)($module).push_back($node_id_mod)
+
+		   	}
+
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+		}
+		
+   	}
+
+   	
+  	}
+
+	@fun_def mod_add_top($module)
+	{
+		@local $addmod_index := 0, $params, $fade_in_mod, $node_id_mod
+
+	   	$fade_in_mod := 1 // deberia ser un argumento opcional!!
+	   	// $node_id_mod := $SC_Servers($server_name)("node_id") // last id
+	   	// print modulos $module
+	    // print groupo $group_id
+	    // print node_id $node_id
+	    print size ($module.dim)
+	    // print params $params
+	    if ($module.dim > 1){ // si c'est tab multi
+	    print MULTI_
+	    	forall $chain in $module // s'il y a plus des modules
+	    	{
+	    		$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+	    		// print $chain
+		    	$params := $chain.cdr
+			   	@command("s_new"+$server_name) ($chain[0]) $node_id_mod 0 $group_id in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+			   	// _ := $synths_map($server_name)($mix_group)($track_label).insert($chain[0], $node_id_mod)
+		   		_ := $sc_struct($server_name)($group_id).insert(-1, $node_id_mod) // root tree 0
+			   	_ := $sc_struct($server_name).add_pair($node_id_mod, map{("_synth", $chain[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+			   	_ := $track_proc($server_name)($mix_group)($track_label).insert($node_id_mod, map{}) // dictionaire pour les processus
+
+			   	if(($synths_map($server_name)($mix_group)($track_label)($chain[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+			   	{
+				   	print ($chain[0]) is not member at $node_id_mod
+			   		_ := $synths_map($server_name)($mix_group)($track_label).insert($chain[0], [$node_id_mod])
+			   	}else 
+			   	{
+			   		print ($chain[0]) is member at $node_id_mod
+				   	_ := $synths_map($server_name)($mix_group)($track_label)($chain[0]).push_back($node_id_mod)
+
+			   	}
+
+			   	loop // rajoute params au dico
+				{
+					_ := $sc_struct($server_name)($node_id_mod).add_pair($params[$addmod_index], $params[$addmod_index+1])
+					$addmod_index := $addmod_index + 2
+				} while ($addmod_index+2 <= @size($params))
+
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+
+			}
+	   	}else{ 
+	   		if($module.is_tab) // si c'est tab 1 dim
+	   		{
+	   			$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+	   			$params := $module.cdr
+			   	@command("s_new"+$server_name) ($module[0]) $node_id_mod 0 $group_id in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+			   	// _ := $synths_map($server_name)($mix_group)($track_label).insert($module[0], $node_id_mod)
+		   		_ := $sc_struct($server_name)($group_id).insert(-1, $node_id_mod) // root tree 0
+			   	_ := $sc_struct($server_name).add_pair($node_id_mod, map{("_synth", $module[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+			   	_ := $track_proc($server_name)($mix_group)($track_label).insert($node_id_mod, map{}) // dictionaire pour les processus
+
+			   	if(($synths_map($server_name)($mix_group)($track_label)($module[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+			   	{
+				   	// print ($module[0]) is not member at $node_id_mod
+			   		_ := $synths_map($server_name)($mix_group)($track_label).insert($module[0], [$node_id_mod])
+			   	}else 
+			   	{
+			   		// print ($module[0]) is member at $node_id_mod
+				   	_ := $synths_map($server_name)($mix_group)($track_label)($module[0]).push_back($node_id_mod)
+
+			   	}
+			   	loop // rajoute params au dico
+				{
+					_ := $sc_struct($server_name)($node_id_mod).add_pair($params[$addmod_index], $params[$addmod_index+1])
+					$addmod_index := $addmod_index + 2
+				} while ($addmod_index+2 <= @size($params))
+
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+
+	   	}else{
+	   			$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+				@command("s_new"+$server_name)($module) $node_id_mod 0 $group_id in $bus out $bus matrix_ramp $fade_in_mod //$params   //target 2 justo despues del nodo 180 audioOut
+				// _ := $synths_map($server_name)($mix_group)($track_label).insert($module, $node_id_mod)
+				_ := $sc_struct($server_name)($group_id).insert(-1, $node_id_mod) // root tree 0
+				_ := $sc_struct($server_name).add_pair($node_id_mod, map{("_synth", $module), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+			   	_ := $track_proc($server_name)($mix_group)($track_label).insert($node_id_mod, map{}) // dictionaire pour les processus
+
+				if(($synths_map($server_name)($mix_group)($track_label)($module)).is_undef) // si la synth existe déjà creer une tab de nodes
+			   	{
+				   	print ($module) is not member at $node_id_mod
+			   		_ := $synths_map($server_name)($mix_group)($track_label).insert($module, [$node_id_mod])
+			   	}else 
+			   	{
+			   		print ($module) is member at $node_id_mod
+				   	_ := $synths_map($server_name)($mix_group)($track_label)($module).push_back($node_id_mod)
+
+			   	}
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+			}
+	   	}
+	}
+
+	@fun_def mod_after($module, $mod_after)
+	{
+	   	@local $addmod_index := 0, $params, $fade_in_mod, $mod_after_id, $node_id_mod
+
+	   	$fade_in_mod := 1 // deberia ser un argumento opcional!!
+	   	// $node_id_mod := $SC_Servers($server_name)("node_id") // last id
+
+	    $mod_after_id := $synths_map($server_name)($mix_group)($track_label)($mod_after)[0] // recupera $mod_after id
+
+	    _ := "post".post
+		_ := $node_id_mod.post
+		_ := $mod_after_id.post
+		_ := "post".post
+
+	    if ($module.dim > 1){ // si c'est tab multi
+	    print MULTI_
+	    	forall $chain in $module // s'il y a plus des modules
+	    	{
+	    		$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+	    		// print $chain
+		    	$params := $chain.cdr
+			   	@command("s_new"+$server_name) ($chain[0]) $node_id_mod 3 $mod_after_id in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+		   		_ := $sc_struct($server_name)($group_id).insert($sc_struct($server_name)($group_id).occurs($mod_after_id), $node_id_mod) // root tree 0
+			   	_ := $sc_struct($server_name).add_pair($node_id_mod, map{("_synth", $chain[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+			   	_ := $track_proc($server_name)($mix_group)($track_label).insert($node_id_mod, map{}) // dictionaire pour les processus
+
+			   	// print params ($synths_map($server_name)($mix_group)($track_label)($chain[0]))
+
+			   	if(($synths_map($server_name)($mix_group)($track_label)($chain[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+			   	{
+				   	print ($chain[0]) is not member at $node_id_mod
+			   		_ := $synths_map($server_name)($mix_group)($track_label).insert($chain[0], [$node_id_mod])
+			   	}else 
+			   	{
+			   		print ($chain[0]) is member at $node_id_mod
+				   	_ := $synths_map($server_name)($mix_group)($track_label)($chain[0]).push_back($node_id_mod)
+
+			   	}
+			   
+			   	loop 
+				{
+					_ := $sc_struct($server_name)($node_id_mod).add_pair($params[$addmod_index], $params[$addmod_index+1])
+					$addmod_index := $addmod_index + 2
+				} while ($addmod_index+2 <= @size($params))
+
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+
+			}
+	   	}
+	   	else
+	   	{
+			if($module.is_tab) // si c'est tab 1 dim
+			{
+				$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+				$params := $module.cdr
+			   	@command("s_new"+$server_name) ($module[0]) $node_id_mod 3 $mod_after_id in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+			   	// _ := $synths_map($server_name)($mix_group)($track_label).insert($module[0], $node_id_mod)
+		   		_ := $sc_struct($server_name)($group_id).insert($sc_struct($server_name)($group_id).occurs($mod_after_id), $node_id_mod) // root tree 0
+			   	_ := $sc_struct($server_name).add_pair($node_id_mod, map{("_synth", $module[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+	   			_ := $track_proc($server_name)($mix_group)($track_label).insert($node_id_mod, map{}) // dictionaire pour les processus
+
+			   	if(($synths_map($server_name)($mix_group)($track_label)($module[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+			   	{
+				   	print ($module[0]) is not member at $node_id_mod
+			   		_ := $synths_map($server_name)($mix_group)($track_label).insert($module[0], [$node_id_mod])
+			   	}else 
+			   	{
+			   		print ($module[0]) is member at $node_id_mod
+				   	_ := $synths_map($server_name)($mix_group)($track_label)($module[0]).push_back($node_id_mod)
+
+			   	}
+			   	loop 
+				{
+					_ := $sc_struct($server_name)($node_id_mod).add_pair($params[$addmod_index], $params[$addmod_index+1])
+					$addmod_index := $addmod_index + 2
+				} while ($addmod_index+2 <= @size($params))
+				
+				_ := $SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+
+			}
+			else
+			{
+				$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+				@command("s_new"+$server_name) ($module) $node_id_mod 3 $mod_after_id in $bus out $bus matrix_ramp $fade_in_mod //$params   //target 2 justo despues del nodo 180 audioOut
+				// _ := $synths_map($server_name)($mix_group)($track_label).insert($module, $node_id_mod)
+		   		_ := $sc_struct($server_name)($group_id).insert($sc_struct($server_name)($group_id).occurs($mod_after_id), $node_id_mod) // root tree 0
+				_ := $sc_struct($server_name).add_pair($node_id_mod, map{("_synth", $module), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+				_ := $track_proc($server_name)($mix_group)($track_label).insert($node_id_mod, map{}) // dictionaire pour les processus
+
+			   	if(($synths_map($server_name)($mix_group)($track_label)($module)).is_undef) // si la synth existe déjà creer une tab de nodes
+			   	{
+				   	print ($module) is not member at $node_id_mod
+			   		_ := $synths_map($server_name)($mix_group)($track_label).insert($module, [$node_id_mod])
+			   	}else 
+			   	{
+			   		print ($module) is member at $node_id_mod
+				   	_ := $synths_map($server_name)($mix_group)($track_label)($module).push_back($node_id_mod)
+
+			   	}
+
+				_ := $SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+			}
+				
+		}
+	}
+
+	@fun_def mod_before($module, $mod_before)
+	{
+   	@local $addmod_index := 0, $params, $fade_in_mod, $mod_before_id, $node_id_mod
+   	$fade_in_mod := 1 // deberia ser un argumento opcional!!
+	// $node_id_mod := $SC_Servers($server_name)("node_id") // last id
+    $mod_before_id := $synths_map($server_name)($mix_group)($track_label)($mod_before)[0] // recupera $mod_after id
+    // print (""+$synths_map($server_name)($mix_group)($track_label))
+    // print size ($module.dim)
+    // print params $params
+    if ($module.dim > 1){ // si c'est tab multi
+    print MULTI_
+    	forall $chain in $module // s'il y a plus des modules
+    	{
+    		$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+    		// print $chain
+	    	$params := $chain.cdr
+		   	@command("s_new"+$server_name) ($chain[0]) $node_id_mod 2 $mod_before_id in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+	   		_ := $sc_struct($server_name)($group_id).insert($sc_struct($server_name)($group_id).occurs($mod_before_id)-1, $node_id_mod) // root tree 0
+		   	_ := $sc_struct($server_name).add_pair($node_id_mod, map{("_synth", $chain[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+		   	_ := $track_proc($server_name)($mix_group)($track_label).insert($node_id_mod, map{}) // dictionaire pour les processus
+		   	
+		   	// print params ($synths_map($server_name)($mix_group)($track_label)($chain[0]))
+
+		   	if(($synths_map($server_name)($mix_group)($track_label)($chain[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+		   	{
+			   	print ($chain[0]) is not member at $node_id_mod
+		   		_ := $synths_map($server_name)($mix_group)($track_label).insert($chain[0], [$node_id_mod])
+		   	}else 
+		   	{
+		   		print ($chain[0]) is member at $node_id_mod
+			   	_ := $synths_map($server_name)($mix_group)($track_label)($chain[0]).push_back($node_id_mod)
+
+		   	}
+		   
+		   	loop 
+			{
+				_ := $sc_struct($server_name)($node_id_mod).add_pair($params[$addmod_index], $params[$addmod_index+1])
+				$addmod_index := $addmod_index + 2
+			} while ($addmod_index+2 <= @size($params))
+
+		_ := $SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+
+		}
+   	}
+   	else
+   	{
+		if($module.is_tab) // si c'est tab 1 dim
+		{
+			$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+			$params := $module.cdr
+		   	@command("s_new"+$server_name) ($module[0]) $node_id_mod 2 $mod_before_id in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+		   	// _ := $synths_map($server_name)($mix_group)($track_label).insert($module[0], $node_id_mod)
+	   		_ := $sc_struct($server_name)($group_id).insert($sc_struct($server_name)($group_id).occurs($mod_before_id)-1, $node_id_mod) // root tree 0
+		   	_ := $sc_struct($server_name).add_pair($node_id_mod, map{("_synth", $module[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+		   	_ := $track_proc($server_name)($mix_group)($track_label).insert($node_id_mod, map{}) // dictionaire pour les processus
+
+		   	if(($synths_map($server_name)($mix_group)($track_label)($module[0])).is_undef) // si la synth existe déjà creer une tab de nodes
+		   	{
+			   	print ($module[0]) is not member at $node_id_mod
+		   		_ := $synths_map($server_name)($mix_group)($track_label).insert($module[0], [$node_id_mod])
+		   	}else 
+		   	{
+		   		print ($module[0]) is member at $node_id_mod
+			   	_ := $synths_map($server_name)($mix_group)($track_label)($module[0]).push_back($node_id_mod)
+
+		   	}
+		   	loop 
+			{
+				_ := $sc_struct($server_name)($node_id_mod).add_pair($params[$addmod_index], $params[$addmod_index+1])
+				$addmod_index := $addmod_index + 2
+			} while ($addmod_index+2 <= @size($params))
+			
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+
+		}
+		else
+		{
+			$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+			@command("s_new"+$server_name)($module) $node_id_mod 2 $mod_before_id in $bus out $bus matrix_ramp $fade_in_mod //$params   //target 2 justo despues del nodo 180 audioOut
+			// _ := $synths_map($server_name)($mix_group)($track_label).insert($module, $node_id_mod)
+	   		_ := $sc_struct($server_name)($group_id).insert($sc_struct($server_name)($group_id).occurs($mod_before_id)-1, $node_id_mod) // root tree 0
+			_ := $sc_struct($server_name).add_pair($node_id_mod, map{("_synth", $module), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
+		   	_ := $track_proc($server_name)($mix_group)($track_label).insert($node_id_mod, map{}) // dictionaire pour les processus
+			
+		   	if(($synths_map($server_name)($mix_group)($track_label)($module)).is_undef) // si la synth existe déjà creer une tab de nodes
+		   	{
+			   	print ($module) is not member at $node_id_mod
+		   		_ := $synths_map($server_name)($mix_group)($track_label).insert($module, [$node_id_mod]) // tab dans le cas de plusieurs instances du même module
+		   	}else 
+		   	{
+		   		print ($module) is member at $node_id_mod
+			   	_ := $synths_map($server_name)($mix_group)($track_label)($module).push_back($node_id_mod)
+
+		   	}
+
+			_ := $SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+		}
+			
+	}
+	}
+
+
+	@proc_def mod_remove($module, $time_off)
+	{
+		forall $node in ($synths_map($server_name)($mix_group)($track_label)($module))
+		{			
+			@command("n_set"+$server_name) $node matrix_ramp $time_off free 0
+			_ := $sc_struct($server_name).remove($node)
+			_ := $sc_struct($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($node))
+			if($track_proc($server_name)($mix_group)($track_label)($node).size != 0) // abort proc des modules
+			{	
+				$time_off forall $k, $proc in $track_proc($server_name)($mix_group)($track_label)($node) // parcours le dico de proc
+				{
+					abort $proc 
+				}
+			}
+			// ($time_off+0.01) _ := $track_proc($server_name)($mix_group)($track_label).remove($node)
+		}
+		_ := $synths_map($server_name)($mix_group)($track_label).remove($module)
+	}
+
+	@proc_def mod_remove_id($nodes, $time_off)
+	{
+		if($nodes.is_tab)
+		{
+			forall $x in $nodes
+			{
+				@command("n_set"+$server_name) $x matrix_ramp $time_off free 0
+				_ := $synths_map($server_name)($mix_group)($track_label).remove($sc_struct($server_name)($group_id)($x)("_synth"))
+				_ := $sc_struct($server_name)($server_name).remove($x)
+				_ := $sc_struct($server_name)($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($x))
+				if($track_proc($server_name)($mix_group)($track_label)($x).size != 0) // abort proc des modules
+				{	
+					$time_off forall $k, $proc in $track_proc($server_name)($mix_group)($track_label)($x) // parcours le dico de proc
+					{
+						abort $proc 
+					}
+				}	
+			}
+		}
+		else
+		{
+			@command("n_set"+$server_name) $nodes matrix_ramp $time_off free 0
+			_ := $synths_map($server_name)($mix_group)($track_label).remove($sc_struct($server_name)($group_id)($nodes)("_synth"))
+			_ := $sc_struct($server_name).remove($nodes)
+			_ := $sc_struct($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($nodes))
+			if($track_proc($server_name)($mix_group)($track_label)($nodes).size != 0) // abort proc des modules
+			{	
+				$time_off forall $k, $proc in $track_proc($server_name)($mix_group)($track_label)($nodes) // parcours le dico de proc
+				{
+					abort $proc 
+				}
+			}
+		}	
+	}
+
+	@proc_def mod_remove_single($module, $num, $time_off) // quand il y a plusieurs instances d'un même module, sinon utiliser la methode mod_remove
+	{
+		@local $node
+		$node := $synths_map($server_name)($mix_group)($track_label)($module)[$num]
+		@command("n_set"+$server_name) $node matrix_ramp $time_off free 0
+		_ := $sc_struct($server_name).remove($node)
+		_ := $sc_struct($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($node))
+		_ := $synths_map($server_name)($mix_group)($track_label)($module).remove($synths_map($server_name)($mix_group)($track_label)($module).occurs($node))
+		
+		$time_off forall $k, $proc in $track_proc($server_name)($mix_group)($track_label)($node) // parcours le dico de proc
+		{
+			abort $proc 
+		}
+	_ := $synths_map($server_name)($mix_group)($track_label).remove($node)	
+	}
+
+	@proc_def mod_move_before($module, $mod_mov_before)
+	{
+		n_before ($synths_map($server_name)($mix_group)($track_label)($module)) ($synths_map($server_name)($mix_group)($track_label)($mod_mov_before)[0])
+
+		print n_before ($synths_map($server_name)($mix_group)($track_label)($module)) ($synths_map($server_name)($mix_group)($track_label)($mod_mov_before)[0])
+
+		// forall $node in ($synths_map($server_name)($mix_group)($track_label)($module))
+		// {
+		// 	@command("n_set"+$server_name) $node matrix_ramp $time_off free 0
+		// 	_ := $sc_struct($server_name).remove($node)
+		// 	_ := $sc_struct($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($node))
+		// 	if($track_proc($server_name)($mix_group)($track_label)($node).size != 0) // abort proc des modules
+		// 	{	
+		// 		$time_off forall $k, $proc in $track_proc($server_name)($mix_group)($track_label)($node) // parcours le dico de proc
+		// 		{
+		// 			abort $proc 
+		// 		}
+		// 	}
+		// 	// ($time_off+0.01) _ := $track_proc($server_name)($mix_group)($track_label).remove($node)
+		// }
+		// _ := $synths_map($server_name)($mix_group)($track_label).remove($module)
+	}
+
+	@proc_def mod_move_before_id($module_id, $mod_mov_before_id)
+	{
+		n_before $module_id $mod_mov_before_id
+
+		print n_before $module_id $mod_mov_before_id
+
+		// forall $node in ($synths_map($server_name)($mix_group)($track_label)($module))
+		// {
+		// 	@command("n_set"+$server_name) $node matrix_ramp $time_off free 0
+		// 	_ := $sc_struct($server_name).remove($node)
+		// 	_ := $sc_struct($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($node))
+		// 	if($track_proc($server_name)($mix_group)($track_label)($node).size != 0) // abort proc des modules
+		// 	{	
+		// 		$time_off forall $k, $proc in $track_proc($server_name)($mix_group)($track_label)($node) // parcours le dico de proc
+		// 		{
+		// 			abort $proc 
+		// 		}
+		// 	}
+		// 	// ($time_off+0.01) _ := $track_proc($server_name)($mix_group)($track_label).remove($node)
+		// }
+		// _ := $synths_map($server_name)($mix_group)($track_label).remove($module)
+	}
+
+	@proc_def mod_move_after($module, $mod_mov_after)
+	{
+		n_after ($synths_map($server_name)($mix_group)($track_label)($module)) ($synths_map($server_name)($mix_group)($track_label)($mod_mov_after)[0])
+
+		print n_after ($synths_map($server_name)($mix_group)($track_label)($module)) ($synths_map($server_name)($mix_group)($track_label)($mod_mov_after)[0])
+
+		// forall $node in ($synths_map($server_name)($mix_group)($track_label)($module))
+		// {
+		// 	@command("n_set"+$server_name) $node matrix_ramp $time_off free 0
+		// 	_ := $sc_struct($server_name).remove($node)
+		// 	_ := $sc_struct($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($node))
+		// 	if($track_proc($server_name)($mix_group)($track_label)($node).size != 0) // abort proc des modules
+		// 	{	
+		// 		$time_off forall $k, $proc in $track_proc($server_name)($mix_group)($track_label)($node) // parcours le dico de proc
+		// 		{
+		// 			abort $proc 
+		// 		}
+		// 	}
+		// 	// ($time_off+0.01) _ := $track_proc($server_name)($mix_group)($track_label).remove($node)
+		// }
+		// _ := $synths_map($server_name)($mix_group)($track_label).remove($module)
+	}
+
+	@proc_def mod_move_after_id($module_id, $mod_mov_after_id)
+	{
+		n_after $module_id $mod_mov_after_id
+
+		print n_after $module_id $mod_mov_after_id
+
+		// forall $node in ($synths_map($server_name)($mix_group)($track_label)($module))
+		// {
+		// 	@command("n_set"+$server_name) $node matrix_ramp $time_off free 0
+		// 	_ := $sc_struct($server_name).remove($node)
+		// 	_ := $sc_struct($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($node))
+		// 	if($track_proc($server_name)($mix_group)($track_label)($node).size != 0) // abort proc des modules
+		// 	{	
+		// 		$time_off forall $k, $proc in $track_proc($server_name)($mix_group)($track_label)($node) // parcours le dico de proc
+		// 		{
+		// 			abort $proc 
+		// 		}
+		// 	}
+		// 	// ($time_off+0.01) _ := $track_proc($server_name)($mix_group)($track_label).remove($node)
+		// }
+		// _ := $synths_map($server_name)($mix_group)($track_label).remove($module)
+	}
+
+	@fun_def set($module, $params)
+	{
+		// print @command("n_set"+$server_name) $module $params
+		// print @command("n_set"+$server_name) ($synths_map($server_name)($mix_group)($track_label)($module)) $params
+
+		forall $x in ($synths_map($server_name)($mix_group)($track_label)($module))
+		{
+			@command("n_set"+$server_name) $x $params
+		}
+		// @command("n_set"+$server_name) ($synths_map($server_name)($mix_group)($track_label)($module)) 
+		// _ := $sc_struct($server_name)($synths_map($server_name)($mix_group)($track_label)($module))("modfreq") := 100
+		// print (""+$sc_struct($server_name)($synths_map($server_name)($mix_group)($track_label)($module))("modfreq"))
+		// print node_add_pair (""+$sc_struct($server_name)($synths_map($server_name)($mix_group)($track_label)($module)))
+	}
+
+	@fun_def set_multi($module, $params)
+	{
+		forall $x in $params
+		{
+			print (""+$params)
+		}
+		// forall $x in ($synths_map($server_name)($mix_group)($track_label)($module)).size
+		// {
+		// 	@command("n_set"+$server_name) ($synths_map($server_name)($mix_group)($track_label)($module))[$x]
+		// }
+	}
+
+	@fun_def set_single ($module, $num, $params)
+	{
+		@command("n_set"+$server_name) ($synths_map($server_name)($mix_group)($track_label)($module)[$num]) $params
+	}
+
+	@fun_def preset($module, $preset)
+	{
+		@local $json_file, $params
+		print prestsss
+		// $json_file := @json_read("~/Library/Application\ Support/SuperCollider/TSupport/fxPresets/"+$module+".json")
+		$json_file := @json_read("/Users/jose/Library/Application\ Support/SuperCollider/TSupport/fxPresets/"+$module+".json")
+
+						// "/Users/jose/Library/Application\ Support/SuperCollider/TSupport/fxPresets/"+$mod_name+".json"
+		// print ($json_file.post)
+
+		$params := $json_file($module)($preset).map2tab // recupere les donnees du present json
+		// print $params
+
+		forall $x in ($synths_map($server_name)($mix_group)($track_label)($module)) // pour toute les instances du Module
+		{
+			@command("n_set"+$server_name) $x $params
+		}
+	}
+
+	@fun_def preset_single($module, $num, $preset)
+	{
+		@local $json_file, $params
+		print prestsss
+		// $json_file := @json_read("~/Library/Application\ Support/SuperCollider/TSupport/fxPresets/"+$module+".json")
+		$json_file := @json_read("/Users/jose/Library/Application\ Support/SuperCollider/TSupport/fxPresets/"+$module+".json")
+
+
+		$params := $json_file($module)($preset).map2tab // recupere les donnees du present json
+		// print $params
+		@command("n_set"+$server_name) ($synths_map($server_name)($mix_group)($track_label)($module)[$num]) $params
+
+	}
+
+	@proc_def preset_interpol($module, $preset1, $preset2, $dur)
+	{
+		@local $json_file, $params, $params1, $params2, $nim, $val //, $id
+		// print prestsss
+		// $nim := @build_nim_from_bpf($bpf)
+		// $id := ($synths_map($server_name)($mix_group)($track_label)($module))
+
+		
+		// $json_file := @json_read("/Users/jose/Library/Application\ Support/SuperCollider/TSupport/fxPresets/"+$module+".json")
+		// $json_file := @json_read("~/Library/Application\ Support/SuperCollider/TSupport/fxPresets/"+$module+".json")
+		$json_file := @json_read("/Users/jose/Library/Application\ Support/SuperCollider/TSupport/fxPresets/"+$module+".json")
+
+
+		// $params1 := $json_file($module)($preset1).map2tab // recupere les donnees du present json
+		// $params2 := $json_file($module)($preset2).map2tab // recupere les donnees du present json
+
+		$params := $json_file($module)($preset2).domain // recupere les keys des presets
+
+		$preset1 := $json_file($module)($preset1).range // recupere les donnees du present json
+		$preset2 := $json_file($module)($preset2).range // recupere les donnees du present json
+
+		
+        Curve 	@Grain := 0.01,
+        		@Action {
+					forall $node in ($synths_map($server_name)($mix_group)($track_label)($module))
+					{
+						@command("n_set"+$server_name) $node ([$params, ($preset1*$val)+($preset2*(1-$val))].lace($params.size*2))
+					}
+				} 
+        { $val 	{            
+                       	{0} 
+                $dur  	{1}
+            	} 
+        }
+
+        // Curve   @Grain := 0.01,  
+        //         @Action {
+
+        //             @command("n_set"+$server_name) $id ([$params, ($preset1*$val)+($preset2*(1-$val))].lace($params.size*2))
+        //         }            
+        //         { $val : $nim }
+
+	}
+
+	@proc_def preset_interpol_tab($module, $presets_durs_tab)
+	{
+		@local $dur, $json_file, $params, $preset1, $preset2, $nim, $inc := 0, $curve := 0, $type := "linear" //, $id
+		// print prestsss
+		$json_file := @json_read("/Users/jose/Library/Application\ Support/SuperCollider/TSupport/fxPresets/"+$module+".json")
+
+		$params := $json_file($module)($presets_durs_tab[0]).domain // recupere les keys des presets
+
+		// $preset1 := $presets_durs_tab[$inc]
+		// $preset2 := $presets_durs_tab[$inc+2]
+		$dur := $presets_durs_tab[$inc+1]
+
+		$preset2 := $json_file($module)($presets_durs_tab[$inc]).range // recupere les donnees du present json
+		// $preset2 := $json_file($module)($preset2).range // recupere les donnees du present json
+
+		// print preset1_1 $preset2
+		// // print preset2_1 $preset2
+		// print params_1 $params
+		// print inc_1 $inc
+		print dur_1 $dur
+
+		$inc := $inc + 1 // start from dur
+
+		Loop $dur
+		{	
+			@local $val
+			print durloop $dur
+			$preset1 := $preset2 
+			// if($inc <= @size($presets_durs_tab)-2)
+			// {
+				if ($presets_durs_tab[$inc+2].is_string)
+			    {
+			        $type := $presets_durs_tab[$inc+1]
+			        // $preset2 := 
+			        $preset2 := $json_file($module)($presets_durs_tab[$inc+2]).range // recupere les donnees du present json
+			        $dur := $presets_durs_tab[$inc]
+
+			        $inc := $inc + 3;
+			    }
+			    else
+			    {
+			        $type := "linear"
+			        // $preset2 := 
+			        $preset2 := $json_file($module)($presets_durs_tab[$inc+1]).range // recupere les donnees du present json
+			        $dur := $presets_durs_tab[$inc]
+			        $inc := $inc + 2;
+			    }
+			// }
+		  //   	print preset1 $preset1
+				// print preset2 $preset2
+				// print params $params
+				// print inc $inc
+
+
+			abort $curve
+	        $curve := {
+
+	        Curve 	@Grain := 0.01,
+		        		@Action {
+		        			
+							forall $node in ($synths_map($server_name)($mix_group)($track_label)($module))
+							{
+								@command("n_set"+$server_name) $node ([$params, ($preset2*$val)+($preset1*(1-$val))].lace($params.size*2))
+								// print $node ([$params, ($preset2*$val)+($preset1*(1-$val))].lace($params.size*2))
+							}
+						} 
+		        		{ $val 	{            
+		                       	{0} @type $type
+		                $dur  	{1}
+		            	} 
+	            }
+	        }
+	
+
+    	}while ($inc < @size($presets_durs_tab)) //($inc < (@size($presets_durs_tab)-2))
+	}
+
+	// preset_interpol_tab("TestSynth3", ["preset1", 3, "", "preset2", 2, "preset3", 3.4, "preset4"])
+
+	@proc_def preset_interpol_bpf($module, $preset1, $preset2, $bpf)
+	{
+		@local $json_file, $params, $params1, $params2, $nim, $val, $id
+		// print prestsss
+		$nim := @build_nim_from_bpf($bpf)
+		$id := ($synths_map($server_name)($mix_group)($track_label)($module))
+
+		// $json_file := @json_read("/Users/jose/Library/Application\ Support/SuperCollider/TSupport/fxPresets/"+$module+".json")
+		$json_file := @json_read("/Users/jose/Library/Application\ Support/SuperCollider/TSupport/fxPresets/"+$module+".json")
+
+		
+		$params1 := $json_file($module)($preset1).map2tab // recupere les donnees du present json
+		$params2 := $json_file($module)($preset2).map2tab // recupere les donnees du present json
+
+		$params := $json_file($module)($preset2).domain // recupere les keys des presets
+
+		$preset1 := $json_file($module)($preset1).range // recupere les duonnees du present json
+		$preset2 := $json_file($module)($preset2).range // recupere les donnees du present json
+
+		// $params := $json_file($module)($preset).map2tab // recupere les donnees du present json
+		// print $params1
+		// print $params2
+		// print $params
+		// print $preset1
+		// print $preset2
+
+		print ([$params, $preset2].lace($params.size*2))
+		
+
+        Curve   @Grain := 0.01,  
+                @Action 
+                {
+                    @command("n_set"+$server_name) $id ([$params, ($preset1*$val)+($preset2*(1-$val))].lace($params.size*2))                    
+                }          
+
+                { $val : $nim }
+
+	}
+
+
+	@fun_def amp($group_amp)
+	{
+			// {msg[2] == \amp} {~synth[msg[1]].outsynth.set(\amp, msg[3])}
+		@command("n_set"+$server_name) $node_id_out amp $group_amp
+	}
+
+	@fun_def kill_mod($module, $fade_out) // kill module
+	{
+		@command("n_set"+$server_name) ($synths_map($server_name)($mix_group)($track_label)($module)) matrix_ramp $fade_out free 0
+		//remove synth
+		//_ := $sc_struct($server_name)
+		// print (""+$sc_struct($server_name)($synths_map($server_name)($mix_group)($track_label)($module))("modfreq"))
+		// print node_add_pair (""+$sc_struct($server_name)($synths_map($server_name)($mix_group)($track_label)($module)))
+	}
+
+	@fun_def pause($time)
+	{
+		@command("n_set"+$server_name) $group_id matrix_ramp @dur2sec($time) gate 0
+		// @dur2sec($time) @command("n_set"+$server_name) $group_id gate 0
+	}
+
+	@fun_def resume($time)
+	{	
+		@command("n_run"+$server_name) $group_id 1
+
+		@command("n_set"+$server_name) $group_id matrix_ramp @dur2sec($time) gate 1
+		forall $x in $sc_struct($server_name)($group_id) //
+		{
+			@command("n_run"+$server_name) $x 1
+		}	
+	}
+
+
+	@fun_def mod_size($module)
+	{
+		return (($synths_map($server_name)($mix_group)($track_label)($module)).size)
+	}
+
+///// hacer
+
+	@proc_def track_amp_bpf($bpf)  // [-6, 7.5, "circ", 3, 4.5, -118]
+    {
+		@local $nim, $lamp
+		// abort $last_bpf_amp_curve //evita interferencias
+		$nim := @build_nim_from_bpf($bpf)
+		// print $nim
+		$lamp := $bpf[0]
+		$last_bpf_amp_curve := { curve @grain := 0.01, @action {
+			@command("n_set"+$server_name) $node_id_out amp $lamp
+		} 
+			{ $lamp : $nim }
+	    }
+	}
+
+    @proc_def line_amp($lmin1, $lmax1, $dur1, $type) 
+    {
+        @local $lamp
+	// _ := .CheckParam($module, $param, $MYSELF)
+        Curve
+        @grain := 0.01,
+        @action {
+        		forall $x in ($synths_map($server_name)($mix_group)($track_label)($module))
+		{
+			@command("n_set"+$server_name) $x $params
+		}
+        // print @command("n_set"+$server_name) $node_id_out amp $lamp
+	} 
+        { $lamp {            
+                        {$lmin1} @type := $type
+                $dur1   {$lmax1}} 
+        }
+    }
+
+    @proc_def line_param($module, $param, $lmin1, $lmax1, $dur1) 
+    {
+            @local $lparam1
+	// _ := .CheckParam($module, $param, $MYSELF)
+            Curve
+            @grain := 0.01,
+            @action 
+            {
+				forall $node in ($synths_map($server_name)($mix_group)($track_label)($module))
+				{
+					@command("n_set"+$server_name) $node $param $lparam1
+				}
+			} 
+            { $lparam1 {            
+                            {$lmin1} 
+                    $dur1   {$lmax1}} 
+            }
+
+    }
+
+    @proc_def line_param_single($module, $num, $param, $lmin1, $lmax1, $dur1) 
+    {
+            @local $lparam1
+	// _ := .CheckParam($module, $param, $MYSELF)
+            Curve
+            @grain := 0.01,
+            @action 
+            {
+				@command("n_set"+$server_name) ($synths_map($server_name)($mix_group)($track_label)($module)[$num]) $param $lparam1
+			} 
+            { $lparam1 {            
+                            {$lmin1} 
+                    $dur1   {$lmax1}}
+            }
+    }
+
+    @proc_def bpf_param($module, $param, $bpf) 
+    {
+		@local $nim, $lpar
+		$nim := @build_nim_from_bpf($bpf)
+		// _ := .CheckParam($module, $param, $MYSELF)
+		// print $nim
+		$lpar := $bpf[0]
+		curve @grain := 0.01, 
+		@action 
+		{
+			forall $node in ($synths_map($server_name)($mix_group)($track_label)($module))
+			{
+				@command("n_set"+$server_name) $node $param $lpar 
+			}
+		} 
+		{ $lpar : $nim }
+    }
+
+    @proc_def bpf_param_single($module, $num, $param, $bpf) // seulement quand une un track a plusieurs instances du même module
+    {
+		@local $nim, $lpar
+		$nim := @build_nim_from_bpf($bpf)
+		// _ := .CheckParam($module, $param, $MYSELF)
+		// print $nim
+		$lpar := $bpf[0]
+		curve @grain := 0.01, 
+		@action 
+		{
+			@command("n_set"+$server_name) ($synths_map($server_name)($mix_group)($track_label)($module)[$num]) $param $lpar
+		} 
+		{ $lpar : $nim }
+    }
+
+	@fun_def sin_lfo($module, $param, $r_low, $r_hi, $t) 
+    {
+    	forall $x in ($synths_map($server_name)($mix_group)($track_label)($module)) // parcours la liste de node de la même synth
+		{
+	    	if($track_proc($server_name)($mix_group)($track_label)($x).is_defined($module+"_sin")) // si ça existe abort et refait
+	    	{
+	    		print abort_sin
+	    		abort $track_proc($server_name)($mix_group)($track_label)($x)($module+"_sin") 
+	    	} 
+	        _ := $track_proc($server_name)($mix_group)($track_label)($x).insert(($module+"_sin"), ::sin_lfo_proc($server_name, $group_id, $x, $param, $r_low, $r_hi, $t))                	
+        }
+	}
+
+	@fun_def sin_lfo_single($module, $num, $param, $r_low, $r_hi, $t) 
+    {
+    	@local $node_num
+		$node_num := ($synths_map($server_name)($mix_group)($track_label)($module)[$num])
+
+    	if($track_proc($server_name)($mix_group)($track_label)($node_num).is_defined($module+"_sin")) // si ça existe abort et refait
+    	{
+    		print abort_sin_s
+    		abort $track_proc($server_name)($mix_group)($track_label)($node_num)($module+"_sin") 
+    	} 
+        _ := $track_proc($server_name)($mix_group)($track_label)($node_num).insert(($module+"_sin"), ::sin_lfo_proc($server_name, $group_id, $node_num, $param, $r_low, $r_hi, $t))                	
+	}
+
+	@fun_def sin_lfo_abort($module, $param)
+	{
+		forall $x in ($synths_map($server_name)($mix_group)($track_label)($module)) // parcours la liste de node de la même synth
+		{
+			abort $track_proc($server_name)($mix_group)($track_label)($x)($module+"_sin")
+		}
+	}
+
+	@fun_def sin_lfo_abort_single($module, $num, $param)
+	{
+		@local $node_num
+		$node_num := ($synths_map($server_name)($mix_group)($track_label)($module)[$num])
+
+		abort $track_proc($server_name)($mix_group)($track_label)($node_num)($module+"_sin")
+	}
+
+
+///// 
+
+//($module, $param, $min, $max, $drunk_step, $init_val, $type, $tpo)
+	@fun_def brown_lfo($module, $param, $min, $max, $drunk_step, $init_val, $type, $tpo) 
+    {
+    	forall $x in ($synths_map($server_name)($mix_group)($track_label)($module)) // parcours la liste de node de la même synth
+		{
+	    	if($track_proc($server_name)($mix_group)($track_label)($x).is_defined($module+"_brown")) // si ça existe abort et refait
+	    	{
+	    		print abort_sin
+	    		abort $track_proc($server_name)($mix_group)($track_label)($x)($module+"_brown") 
+	    	} 
+	        _ := $track_proc($server_name)($mix_group)($track_label)($x).insert(($module+"_brown"), ::brown_lfo_proc($server_name, $group_id, $x, $param, $min, $max, $drunk_step, $init_val, $type, $tpo))                	
+        }
+	}
+
+	@fun_def brown_lfo_single($module, $num, $param, $min, $max, $drunk_step, $init_val, $type, $tpo) 
+    {
+    	@local $node_num
+		$node_num := ($synths_map($server_name)($mix_group)($track_label)($module)[$num])
+
+    	if($track_proc($server_name)($mix_group)($track_label)($node_num).is_defined($module+"_brown")) // si ça existe abort et refait
+    	{
+    		print abort_sin_s
+    		abort $track_proc($server_name)($mix_group)($track_label)($module+"_brown") 
+    	} 
+        _ := $track_proc($server_name)($mix_group)($track_label)($node_num).insert(($module+"_brown"), ::brown_lfo_proc($server_name, $group_id, $node_num, $param, $min, $max, $drunk_step, $init_val, $type, $tpo))                	
+	}
+
+	@fun_def brown_lfo_abort($module, $param)
+	{
+		forall $x in ($synths_map($server_name)($mix_group)($track_label)($module)) // parcours la liste de node de la même synth
+		{
+			abort $track_proc($server_name)($mix_group)($track_label)($x)($param+"_brown")
+		}
+	}
+
+	@fun_def brown_lfo_abort_single($module, $num, $param)
+	{
+		@local $node_num
+		$node_num := ($synths_map($server_name)($mix_group)($track_label)($module)[$num])
+
+		abort $track_proc($server_name)($mix_group)($track_label)($node_num)($param+"_brown")
+	}
+
+	@fun_def rand_lfo($module, $param, $min, $max, $init_val, $type, $tpo) 
+	{ 
+		forall $x in ($synths_map($server_name)($mix_group)($track_label)($module)) // parcours la liste de node de la même synth
+		{
+			if($track_proc($server_name)($mix_group)($track_label)($x).is_defined($param+"_rand_lfo")) // si ça existe abort et refait
+	    	{
+	    		print abort_rand
+	    		abort $track_proc($server_name)($mix_group)($track_label)($x)($param+"_rand_lfo") 
+	    	}
+			_ := $track_proc($server_name)($mix_group)($track_label)($x).add_pair(($param+"_rand_lfo"), ::rand_lfo_basic_s($server_name, $group_id, $x, $param, $min, $max, $init_val, $type, $tpo, $gui)) // instantie un le processus dans le dico
+
+		}
+	}
+
+
+	@fun_def rand_lfo_single($module, $num, $param, $min, $max, $init_val, $type, $tpo) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		@local $node_num
+		$node_num := ($synths_map($server_name)($mix_group)($track_label)($module)[$num])
+		// print modulo_id2 ($synths_map($server_name)($mix_group)($track_label)($module))
+		if($track_proc($server_name)($mix_group)($track_label)($node_num).is_defined($param+"_rand_lfo")) // si ça existe abort et refait
+    	{
+    		print abort_rand_s
+    		abort $track_proc($server_name)($mix_group)($track_label)($node_num)($param+"_rand_lfo") 
+    	}
+		_ := $track_proc($server_name)($mix_group)($track_label)($node_num).add_pair(($param+"_rand_lfo"), ::rand_lfo_basic($server_name, $group_id, $node_num, $param, $min, $max, $init_val, $type, $tpo))		
+	}
+
+	@fun_def rand_lfo_abort($module, $param)
+	{
+		forall $x in ($synths_map($server_name)($mix_group)($track_label)($module)) // parcours la liste de node de la même synth
+		{
+			abort $track_proc($server_name)($mix_group)($track_label)($x)($param+"_rand_lfo") 
+		}
+	}
+
+	@fun_def rand_lfo_abort_single($module, $num, $param)
+	{
+		@local $node_num
+		$node_num := ($synths_map($server_name)($mix_group)($track_label)($module)[$num])
+
+		abort $track_proc($server_name)($mix_group)($track_label)($node_num)($param+"_rand_lfo") 
+	}
+
+	@fun_def gui()
+	{
+		@local $addsynth := [], $tab_ids
+		$tab_ids := $sc_struct($server_name)($group_id).drop(-1)
+		$gui := true
+		// TTracks8.new(track_name.asString, nil, group, bus, outsynth);
+		print $tab_ids
+
+		forall $x in $tab_ids
+		{
+			// print (""+($sc_struct($server_name)($group_id)($x)))
+			// print (""+($sc_struct($server_name)($x)))
+			_ := $addsynth.push_back($x)
+			_ := $addsynth.push_back($sc_struct($server_name)($x)("_synth"))
+			// $addsynth.push_back($sc_struct($server_name)($group_id)($x))
+		}
+		gui_antes $server_name $track_label $group_id $bus $node_id_out $addsynth
+
+		// forall $k, $v in $track_proc($server_name)($mix_group)($track_label) // active envoie OSC vers GUI
+		// {
+		// 	if($v.size > 0) // si la valeur contiens deja un proc avant creation GUI
+		// 	{
+		// 		$v.$gui := true // alors activer l'envoie par l'argument $gui (variable locale) 
+		// 	}
+		// }
+	}
+	
+	
+	@proc_def off_track($time) // @proc_def parce qu'il y a un delay pour arrter les proc
+	{
+		@command("n_set"+$server_name) $node_id_out out_ramp @dur2sec($time) gatee 0 // free group in $time
+
+		// _ := ("abort track "+ $THISOBJ).post
+		// _ := ("server_name "+ $server_name).post
+		// _ := ("mix_group "+ $mix_group).post
+		// _ := ("track_label "+ $track_label).post
+		// _ := ($track_proc($server_name)($mix_group)($track_label)).post
+		if(($track_proc($server_name)($mix_group)($track_label)).is_undef)
+		{
+			_ := $track_proc($server_name)($mix_group).remove($track_label) // delete track_proc from map
+			_ := $SC_Groups($mix_group)("sub_group").remove($track_label) // delete sub_group objects
+
+			
+		}
+		else
+		{
+			($time-0.01) forall $k, $v in $track_proc($server_name)($mix_group)($track_label) // parcours liste de nodes
+			{
+				forall $proc_name, $proc in $v // parcours liste de proc en route
+					{
+						// _ := ("abort proc_name " + $proc_name).post
+						// _ := ("abort proc " + $proc_name).post
+						abort $proc
+
+					}
+			}
+
+			_ := $track_proc($server_name)($mix_group).remove($track_label) // delete track_proc from map
+			_ := $SC_Groups($mix_group)("sub_group").remove($track_label) // delete sub_group objects
+		}
+		_ := $sc_struct($server_name).remove($group_id) // enleve group key de la MAP $sc_struct 
+		_ := $synths_map($server_name)($mix_group).remove($track_label) // delete synths_map from map
+	}
+
+   	@abort
+	{
+	    _ := $THISOBJ.off_track(0.01) // 
+	 //    forall $k, $v in $track_proc($server_name)($track_label) // abort processus
+		// {
+		// 	abort $v
+		// }
+	}
+}
+
+
+
+
+// $sc_struct := map { 
+// 	(0, [104, 100]), // group 0 == top group
+// 	(104, [106, 107, 108, 105]),
+// 	(100, [102, 103, 101]),
+// 	(102, MAP{ ("synth", "mDust"), ("freq", 100), ("amp", 3)}),
+// 	(103, MAP{ ("synth", "tAdCVerb")}),
+// 	(101, MAP{ ("synth", "audioOut8")}),
+// 	(105, MAP{ ("synth", "audioOut8")}), 
+// 	(106, MAP{ ("synth", "windowtest3"), ("freq", 111)}), 
+// 	(107, MAP{ ("synth", "windowtest3"), ("freq", 222)}), 
+// 	(108, MAP{ ("synth", "windowtest3"), ("freq", 333)}) 
+// }
+
+
+
+
+// _ := @push_back($sc_struct("top"),"group1") 
+// _ := @push_back($sc_struct("top"),"group2") 
+// $sc_struct := map { 
+// 	(0, [104, 100]), // group 0 == top group
+// 	(104, [106, 107, 108, 105]),
+// 	(100, [102, 103, 101]),
+// 	(102, MAP{ ("synth", "mDust"), ("freq", 100), ("amp", 3) }),
+// 	(103, MAP{ ("synth", "tAdCVerb"), ("amp", 3) }),
+// 	(101, MAP{ ("synth", "audioOut8")}),
+// 	(105, MAP{ ("synth", "audioOut8")}), 
+// 	(106, MAP{ ("synth", "windowtest3")}), 
+// 	(107, MAP{ ("synth", "windowtest3")}), 
+// 	(108, MAP{ ("synth", "windowtest3")}) 
+// }
+
+// $sc_struct := map { 
+// 	("top", ["group1", "group2"]),
+// 	("group1", [101, 100]),
+// 	("group2", [104, 105, 106, 103]),
+
+// 	(101, MAP{ ("kind", "mDust"), ("freq", 100), ("amp", 3) }),
+// 	(100, MAP{ ("kind", "audioOut8_100")}),
+// 	(104, MAP{ ("kind", "audioOut8_104")}), 
+// 	(103, MAP{ ("kind", "windowOut_103")}), 
+// 	(105, MAP{ ("kind", "windowOut_105")}), 
+// 	(106, MAP{ ("kind", "windowOut_106")}) 
+// }
+
+whenever ($from_file==$from_file)
+{	
+	$sc_struct := @loadvalue("/Users/jose/Documents/Doctorado/sc_struct.asco.txt")
+	_ := $sc_struct.sc_build(0)
+	1 print (""+$sc_struct)
+}
+
+whenever ($test_map==$test_map)
+{
+	// print (""+$sc_struct.range)
+	forall $k, $v in $sc_struct
+	{
+		if($v.is_tab)
+		{
+			print $k (""+$v)
+			if($k>0)
+			{
+				forall $x in $v
+				{
+					print groupo $k node $x synth (""+$sc_struct($x)("_synth")) //$x (""+$v) //(""+$v("_synth"))
+					// print (""+$sc_struct($x)("_synth"))
+				}
+			}
+		
+		}
+	}
+}
+
+// print (""+$sc_struct)
+
+1 print (""+@domain($sc_struct))
+print (""+@range($sc_struct))
+print (""+($sc_struct))
+// print (""+$track_proc("group_100")(104))
+print (""+$synths_map)	
+
+// notifyserver2 1
+// dumpOSCserver2 1
+
+NOTE 60 1 test_multiserver0
+	$server1 := obj::sc_server("localhost", 57110)
+
+NOTE 60 1 test_multiserver
+
+	$server1 := obj::sc_server("localhost", 57110)
+	$server2 := obj::sc_server("server2", 57111)
+
+$sc_group1 := obj::mix_group("group1", "localhost")
+$sc_group2 := obj::mix_group("group2", "localhost")
+$sc_group1_s2 := obj::mix_group("group1_s2", "server2")
+$sc_group1_s3 := obj::mix_group("group1_s3", "server2")
+
+$sc_track1 := obj::crea_track8s(0, 5, 0, [["TestSynth3", "freq", 111, "amp", 1]], "group1")
+$sc_track2 := obj::crea_track8s(0, 5, 0, [["TestSynth3", "freq", 333, "amp", 1]], "group1")
+$sc_track3 := obj::crea_track8s(0, 5, 0, [["TestSynth3", "freq", 555, "amp", 1]], "group1")
+$sc_track4 := obj::crea_track8s(0, 5, 0, [["TestSynth3", "freq", 777, "amp", 1]], "group2")
+
+$sc_track1_s2 := obj::crea_track8s(1, 5, 0, [["TestSynth3", "freq", 1000, "amp", 1]], "group1_s2")
+$sc_track2_s2 := obj::crea_track8s(1, 5, 0, [["TestSynth3", "freq", 888, "amp", 1]], "group1_s2")
+$sc_track3_s2 := obj::crea_track8s(1, 5, 0, [["TestSynth3", "freq", 222, "amp", 1], ["TestSynth3", "freq", 333, "amp", 1], ["TestSynth3", "freq", 444, "amp", 1], ["TestSynth3", "freq", 555, "amp", 1]], "group1_s3")
+
+
+_ := $sc_group1.amp(0)
+_ := $sc_group2.amp(0)
+_ := $sc_group1_s2.amp(0)
+
+_ := $sc_track1.rand_lfo("TestSynth3", "fc", 200, 3000, 200, "linear", 60) 
+_ := $sc_track2.rand_lfo("TestSynth3", "fc", 200, 3000, 200, "linear", 60) 
+_ := $sc_track3.rand_lfo("TestSynth3", "fc", 200, 3000, 200, "linear", 60) 
+_ := $sc_track4.rand_lfo("TestSynth3", "fc", 200, 3000, 200, "linear", 60) 
+_ := $sc_track1_s2.rand_lfo("TestSynth3", "fc", 200, 3000, 200, "linear", 60) 
+_ := $sc_track2_s2.rand_lfo("TestSynth3", "fc", 200, 3000, 200, "linear", 60) 
+
+_ := $sc_track1.gui
+
+_ := $sc_track1.off_track(1)
+_ := $sc_track2.off_track(1)
+_ := $sc_track3.off_track(1)
+_ := $sc_track4.off_track(1)
+_ := $sc_track1_s2.off_track(1)
+_ := $sc_track2_s2.off_track(1)
+
+_ := $sc_group1.off_group(1)
+_ := $sc_group2.off_group(1)
+_ := $sc_group1_s2.off_group(1)
+
+_ := $sc_track1.id
+
+_ := $server1.quit
+_ := $server2.quit
+// sacar los obj de los dicos !!
+
+// print (""+$server1.$server_name)
+// print (""+$SC_Groups("group1")("server_name"))
+// print (""+$SC_Groups)
+// print (""+$SC_Servers("server1")("node_id"))
+// print (""+$SC_Servers)
+
+NOTE 60 1 mod_add1
+
+_ := $sc_track1.mod_add(["TestSynth3", "freq", 111, "amp", 1])
+_ := $sc_track1.mod_add("TestSynth3")
+_ := $sc_track1.mod_before(["TAdCVerb", "revTime", 0.4], "audioOut8")
+		
+
+_ := $sc_track1_s2.mod_after(["tRingMod1", "modfreq", 164.4, "ampmod", 0, "lpfilt", 3822.5, "hpfilt", 50, "amp", -2.6], "TestSynth3")
+_ := $sc_track2_s2.rand_lfo("tRingMod1", "modfreq", 150, 3000, 164.4, "linear", 200)
+
+
+_ := $sc_group1.mod_add("TPFshift")
+
+_ := $sc_group1.mod_add([["TMFxShift2"], ["TAdCVerb", "revTime", 0.1]])
+_ := $sc_group1_s3.mod_add([["TMFxShift2"], ["TAdCVerb", "revTime", 0.1]])
+
+
+_ := $sc_group1.set("TAdCVerb", ["revTime", 6])
+
+_ := $sc_group1.rand_lfo("TMFxShift2", "modfreq", -1000, 1000, 0, "linear", 2000)
+
+_ := $sc_track1.mod_add([["TestSynth3", "freq", 222, "amp", 1], ["TestSynth3", "freq", 333, "amp", 1], ["TestSynth3", "freq", 444, "amp", 1], ["TestSynth3", "freq", 555, "amp", 1]])
+
+_ := $sc_group1.rand_lfo_abort("TMFxShift2", "modfreq")
+
+_ := $sc_group1.set("TMFxShift2", ["modfreq", -500])
+
+
+_ := $sc_group1.sin_lfo("TMFxShift2", "modfreq", -1000, 1000, 0, "linear", 2000)
+
+
+_ := $sc_group1.rand_lfo("TAdCVerb", "revTime", 0.1, 1, 0.4, "linear", 30)
+
+_ := $sc_group1.mod_before("TFreqShift", "TAdCVerb")
+
+_ := $sc_group1.mod_after("TFreqShift", "TAdCVerb")
+
+_ := $sc_group1.rand_lfo("TFreqShift", "modfreq", -300, 300, 0, "linear", 120)
+
+
+1 print (""+$sc_struct)
+
+NOTE 60 1 gui
+
+_ := $sc_track4.gui
+
+_ := $sc_track1_s2.gui
+
+
+NOTE 60 1 test_crea_group1
+print (""+$sc_struct)
+// $sc_group1 := obj::crea_track8(0, 1, 0, [["mDust", "freq", 10, "amp", 3], ["tAdCVerb", "revTime", 0.4]])
+$sc_track1_default := obj::crea_track8(0, 1, 0, [["TestSynth3", "freq", 111, "amp", 1], ["TestSynth3", "freq", 111, "amp", 1], ["TAdCVerb", "revTime", 0.4]])
+1 print (""+$sc_struct)
+print (""+$track_proc)
+
+
+
+
+
+// _ := $sc_group1.rand_lfo_abort("TAdCVerb", "revTime")
+
+NOTE 60 1 group1_change_amp
+
+_ := $sc_group1.amp(-10) // controle de l'amplitude du group
+
+NOTE 60 1 group1_line_amp
+
+_ := $sc_group1.line_amp(-10, 0, 5, "linear")
+
+
+NOTE 60 1 group1_bpf_amp
+
+// [v0, t0, (type0), v1, t1, (type1), v2, t2, (type2)....]
+_ := $sc_group1.track_amp_bpf([0, 5, "exp", -6, 3, -12, 10, "exp_out", 0])
+
+NOTE 60 1 mod_add1
+
+_ := $sc_group1.mod_add("TestSynth3")
+1 print (""+$sc_struct)		
+
+
+NOTE 60 1 mod_add2
+
+_ := $sc_group1.mod_add(["TestSynth3", "freq", 111, "amp", 1])
+1 print (""+$sc_struct)	
+
+
+NOTE 60 1 mod_add_multi
+
+_ := $sc_group1.mod_add_top([["TestSynth3", "freq", 222, "amp", 1], ["TestSynth3", "freq", 333, "amp", 1], ["TestSynth3", "freq", 444, "amp", 1], ["TestSynth3", "freq", 555, "amp", 1]])
+
+1 print (""+$sc_struct)	
+
+NOTE 60 1 move_mod_after_before // not yet implemented in antescofo MAP
+_ := $sc_group1.mod_move_before("TAdCVerb", "TFreqShift")
+_ := $sc_group1.mod_move_after("TAdCVerb", "TFreqShift")
+
+NOTE 60 1 set_multi1
+
+_ := $sc_group1.set("TestSynth3", ["fc", 500, "amp", 6]) // change toutes les instances
+
+NOTE 60 1 set_multi2 // TODO!
+
+$n := ($sc_group1.mod_size("TestSynth3"))
+
+$tab_fc := (@iota($n)*103+100)
+
+_ := $sc_group1.set_multi("TestSynth3", ["fc", $tab_fc, "amp", -6]) // change chaque instances à partir des tab
+
+NOTE 60 1 set_single
+
+_ := $sc_group1.set_single("TestSynth3", 2, ["fc", 2000, "amp", 6]) // change chaque instances par index
+
+NOTE 60 1 line_param
+
+_ := $sc_group1.line_param("TestSynth3", "fc", 1000, 2000, 5) // change pour toutes les instances de "TestSynth3"
+
+
+NOTE 60 1 bpf_param
+
+_ := $sc_group1.bpf_param("TestSynth3", "fc", [2000, 5, "exp", 20, 3, 3000, 10, "exp_out", 20]) // change pour toutes les instances de "TestSynth3"
+
+NOTE 60 1 line_param_single
+
+_ := $sc_group1.line_param_single("TestSynth3", 0, "fc", 2000, 300, 6) // change chaque instances par index
+_ := $sc_group1.line_param_single("TestSynth3", 1, "fc", 2000, 400, 5)
+_ := $sc_group1.line_param_single("TestSynth3", 2, "fc", 2000, 500, 4)
+_ := $sc_group1.line_param_single("TestSynth3", 3, "fc", 2000, 600, 3)
+
+NOTE 60 1 bpf_param_single
+
+_ := $sc_group1.bpf_param_single("TestSynth3", 0, "fc", [300, 5, "exp", 20, 3, 3000, 10, "exp_out", 600]) // change pour toutes les instances de "TestSynth3"
+_ := $sc_group1.bpf_param_single("TestSynth3", 1, "fc", [400, 5, "exp", 20, 4, 3000, 10, "exp_out", 500]) // change pour toutes les instances de "TestSynth3"
+_ := $sc_group1.bpf_param_single("TestSynth3", 2, "fc", [500, 5, "exp", 20, 5, 3000, 10, "exp_out", 400]) // change pour toutes les instances de "TestSynth3"
+_ := $sc_group1.bpf_param_single("TestSynth3", 3, "fc", [600, 5, "exp", 20, 6, 3000, 10, "exp_out", 300]) // change pour toutes les instances de "TestSynth3"
+
+NOTE 60 1 sin_lfo
+
+//($module, $param, $r_low, $r_hi, $t) 
+_ := $sc_group1.sin_lfo("TestSynth3", "freq", 200, 400, 1)
+
+NOTE 60 1 sin_lfo_single
+
+//($module, $param, $r_low, $r_hi, $t) 
+_ := $sc_group1.sin_lfo_single("TestSynth3", 0, "freq", 200, 400, 1)
+_ := $sc_group1.sin_lfo_single("TestSynth3", 1, "freq", 200, 500, 1)
+_ := $sc_group1.sin_lfo_single("TestSynth3", 2, "freq", 400, 600, 1.4)
+_ := $sc_group1.sin_lfo_single("TestSynth3", 3, "freq", 500, 700, 1.6)
+
+NOTE 60 1 rand_lfo // applique à toutes les instances
+
+_ := $sc_group1.rand_lfo("TestSynth3", "fc", 200, 3000, 200, "linear", 60) 
+
+NOTE 60 1 brown_lfo
+
+_ := $sc_group1.brown_lfo("TestSynth3", "fc", 200, 3000, 100, 200, "linear", 200)
+
+NOTE 60 1 mod_remove
+
+_ := $sc_group1.mod_remove("TFreqShift", 3) // [mod, fade_out] remove toutes les instances de TFreqShift + proc
+// _ := $sc_group1.mod_remove("TestSynth3", 3)
+// _ := $sc_group1.mod_remove("TAdCVerb", 3)
+
+NOTE 60 1 mod_remove_single
+
+_ := $sc_group1.mod_remove_single("TestSynth3", 0, 3) // [mod, num_instance, fade_out]
+
+NOTE 60 1 mod_remove_id // valeur seule ou tab
+
+_ := $sc_group1.mod_remove_id(103, 3)  //[mod_id, fade_out]
+
+_ := $sc_group1.mod_remove_id([102, 105, 107], 3) // [tab de mod_id, fade_out]
+
+NOTE 60 1 gui
+
+_ := $sc_group1.gui
+
+
+NOTE 60 1 test_crea_group2
+
+$sc_group2 := obj::crea_track8(0, 1, 0, [["am2", "modfreq", 10, "amp", 0], ["synthbasic", "rq", 0.2]])
+1 print (""+$sc_struct)	
+
+NOTE 60 1 test_set_group2
+
+_ := $sc_group2.set("am2", ["modfreq", 100, "amp", -6])
+1 print (""+$sc_struct)	
+
+NOTE 60 1 test_set_group2_2
+
+// not yet
+_ := $sc_group2.set([["am2", "modfreq", 50, "amp", -6], ["synthbasic", "rq", 0.1]])
+1 print (""+$sc_struct)	
+
+NOTE 60 1 test_rand_lfo_group2
+
+_ := $sc_group2.rand_lfo("am2", "modfreq", 1, 20, 1, "linear", 60)
+
+NOTE 60 1 pause
+
+_ := $sc_group1.pause(1)
+_ := $sc_group2.pause(1)
+
+NOTE 60 1 resume
+
+_ := $sc_group1.resume(1)
+_ := $sc_group2.resume(1)
+
+
+NOTE 60 1 off_tracks
+
+_ := $sc_group1.off_track(5)
+// _ := $sc_group2.off_track(5)
+
+NOTE 60 1 test_crea_group3
+
+$sc_group3 := obj::crea_track8(0, 1, 0, [["bassSynth1", "freq", 35.9, "fmrange", 1.5, "fmfreq", 7.85, "lpf", 214., "hpf", 51.2, "rq", 0.35, "amp", -10], ["tpan8", "pos", 0., "width", 2, "lag", 0, "amp", 0]])
+
+NOTE 60 1 group3_insert_after
+
+_ := $sc_group3.mod_after(["tRingMod1", "modfreq", 164.4, "ampmod", 0, "lpfilt", 3822.5, "hpfilt", 50, "amp", -2.6], "bassSynth1")
+
+
+NOTE 60 1 group3_insert_before
+
+_ := $sc_group3.mod_before(["tflanger", "flangefreq", 1.822], "tRingMod1")
+
+
+
+NOTE 60 1 test_multi_control1
+
+$tab_freqs := (@iota(20)*103+333) // [333 436 539 642 745 848 951 1054 1157 1260]
+$sc_group3 := obj::crea_track8(0, 1, 0, [])
+
+forall $x in $tab_freqs.size
+{
+	_ := $sc_group3.mod_add(["TestSynth3", "freq", $tab_freqs[$x], "amp", 0])
+}
+
+_ := $sc_group3.off_track(2)
+
+NOTE 60 1 test_multisynth
+
+group
+{
+	@local $x
+	$x := 0 
+	$tab_freqs := (@iota(10)*103+333) // [333 436 539 642 745 848 951 1054 1157 1260]
+	$multi_synths := obj::crea_track8(0, 1, 0, [["tAdCVerb", "revTime", 0.4]])
+
+	loop 1
+	{		
+		print freqs ($tab_freqs[$x])
+		_ := $multi_synths.mod_add_top(["TestSynth3", "freq", ($tab_freqs[$x]), "amp", 0])
+		$x := $x + 1
+
+	} until ($x>=10)
+}
+
+NOTE 60 1 test_multisynth_lfo
+
+$tempo2 := 133
+
+group rand_lfo2 //tempo $tempo2
+{
+	_ := $multi_synths.rand_lfo("TestSynth3", "fc", 200, 3000, 1000, "linear", 100) 
+}
+
+NOTE 60 1 test_multisynth_off
+
+abort $multi_synths // off all synth and procs in 1 time
+// or
+
+_ := $multi_synths.off_track(5) //off all synth and procs in 5
+
+NOTE 60 1 print_synths_map
+
+print (""+$synths_map)
+
+NOTE 60 1 read_buffer
+
+b_allocRead 0 "/Users/jose/Library/Application Support/SuperCollider/TSupport/octa_sounds/ecrase-derriere-chevalet.aif"  //0 -1 0 0 12
+b_allocRead 1 "/Users/jose/Library/Application Support/SuperCollider/TSupport/octa_sounds/ecrase-derriere-chevalet.aif" 
+
+NOTE 60 1 play_buffer_rev
+// s_new play_buf2 100 1 1 buf 1 out 0 amp 0 
+
+$sc_group_play_samp := obj::crea_track8(0, 1, 0, ["tAdCVerb", "revTime", 0.4])
+
+NOTE 60 1 play_buffer1
+
+_ := $sc_group_play_samp.mod_add_top(["play_buf2", "buf", 1, "amp", 0])
+
+NOTE 60 1 b_query
+b_query 1
+
+NOTE 60 1 b_get
+b_get 1 100
+
+
+NOTE 60 1 JSON_preset
+
+$file := "/Users/jose/Library/Application\ Support/SuperCollider/TSupport/fxPresets/TAddic_15_8.json"
+$json_file := @json_read($file)
+
+print ($json_file("TAddic_15_8")("cp_1").post)
+
+$sc_track1 := obj::crea_track8s(0, 5, 0, [["TestSynth3", "preset", "titi"]], "group1")
+
+// _ := $sc_track1.off_track(1)
+
+NOTE 60 1 JSON_preset_change
+
+_ := $sc_track1.preset("TestSynth3", "preset2")
+_ := $sc_track1.preset("TestSynth3", "preset3")
+
+NOTE 60 1 JSON_preset_interpolation
+
+_ := $sc_track1.preset_interpol("TestSynth3", "test2", "titi", 1)
+
+_ := $sc_track1.preset_interpol("TestSynth3", "tete", "test2", 0.3)
+
+NOTE 60 1 JSON_preset_interpolation-TAB
+
+$sc_track1 := obj::crea_track8s(0, 5, 0, [["TestSynth3", "preset", "titi"]], "group1")
+
+_ := $sc_track1.preset_interpol_tab("TestSynth3", ["titi", 1, "test2"	, 2	, "tete", 1.4, "test2", 2, "preset1", 1, "preset2", 2.6, "preset3"])
+
+
+NOTE 60 1 JSON_preset_interpolation-test
+
+$sc_group1 := obj::mix_group("group1", "localhost")
+
+$sc_track1 := obj::crea_track8s(0, 5, 0, [["TestSynth3", "preset", "titi"]], "group1")
+
+// _ := $sc_track1.preset_interpol_tab("TestSynth3", ["titi", 1, "test2"	, 2	, "tete", 1.4, "test2", 2, "preset1", 1, "preset2", 2.6, "preset3"])
+// _ := $sc_track1.preset_interpol_tab("TestSynth3", ["titi", 1, "linear", "test2", 2, "exp", "tete", 1.4, "cubic", "test2", 2, "cubic", "preset1", 1, "quart", "preset2", 2.6, "quint", "preset3"])
+_ := $sc_track1.preset_interpol_tab("TestSynth3", ["titi", 1, "test2", 2, "exp", "tete", 1.4, "cubic", "test2", 2, "preset1", 1, "quart", "preset2", 2.6, "quint", "preset3"])
+
+NOTE 60 1 JSON_preset_test2
+
+$sc_group1 := obj::mix_group("group1", "localhost")
+$sc_track2 := obj::crea_track8s(0, 5, 0, [["TAddic_15_8", "preset", "inter1"]], "group1")
+
+
+

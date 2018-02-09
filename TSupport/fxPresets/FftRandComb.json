@@ -1,0 +1,9 @@
+{
+		"FftRandComb"	: {
+			"preset0"	: {
+				"trig"	: 0,
+				"wipe"	: 0,
+				"amp"	: 0
+			}
+		}
+	}

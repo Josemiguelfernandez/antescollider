@@ -1,0 +1,22 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(1),  Array.prNew(4),  Array.prNew(9),  
+	List.prNew,  Array.prNew(3)
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2] ],  
+	// Array
+	2, [ 'TAddic_8c2',  1,  o[3],  o[4] ],  
+	// Array
+	3, [ 0.447000,  -3.523057,  34.800000,  0.000000,  
+		0.000000,  9.512000,  1.000000,  2.000000,  
+		0.200000 ],  
+	// List
+	4, [ array: o[5] ],  
+	// Array
+	5, [ nil,  nil,  nil ]
+];
+prUnarchive(o,p);

@@ -1,0 +1,48 @@
+{
+			"TMFxShift2"	: {
+				"init-R"	: {
+					"modfreq"	: -158.980892,
+					"amp"	: 0
+				},
+				"fl-diagonal"	: {
+					"modfreq"	: 40.440805,
+					"amp"	: 3.397624
+				},
+				"preset1"	: {
+					"modfreq"	: 60.564149,
+					"amp"	: 0
+				},
+				"MR5"	: {
+					"modfreq"	: -1117.9132544738,
+					"amp"	: 0
+				},
+				"fl-mes316"	: {
+					"modfreq"	: -142.545749,
+					"amp"	: 6.0206
+				},
+				"piano_virt_p2"	: {
+					"modfreq"	: 81.205135982206,
+					"amp"	: -5.0368764477113
+				},
+				"preset0"	: {
+					"modfreq"	: 0,
+					"amp"	: 0
+				},
+				"test2"	: {
+					"modfreq"	: -2173.385906,
+					"amp"	: 0
+				},
+				"MR1"	: {
+					"modfreq"	: -1018.0729956526,
+					"amp"	: 0
+				},
+				"init_z_in"	: {
+					"modfreq"	: -1358.940451,
+					"amp"	: 1.116586
+				},
+				"gekipe_medio1"	: {
+					"modfreq"	: -385.061167,
+					"amp"	: 0
+				}
+			}
+		}

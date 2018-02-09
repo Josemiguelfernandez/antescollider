@@ -1,0 +1,44 @@
+{
+			"TGreyhole"	: {
+				"cb-mes170"	: {
+					"dtime"	: 0.17,
+					"damp"	: 0.02,
+					"size"	: 0.565,
+					"diff"	: 0.106,
+					"fb"	: 0.06,
+					"modDepth"	: 1.928,
+					"modFreq"	: 3.212,
+					"amp"	: 0
+				},
+				"freeze2"	: {
+					"dtime"	: 0.1,
+					"damp"	: 0,
+					"size"	: 2.102,
+					"diff"	: 0.055,
+					"fb"	: 1,
+					"modDepth"	: 3.839,
+					"modFreq"	: 0.852,
+					"amp"	: 3.319559
+				},
+				"preset0"	: {
+					"dtime"	: 0,
+					"damp"	: 0,
+					"size"	: 0,
+					"diff"	: 0,
+					"fb"	: 0,
+					"modDepth"	: 0,
+					"modFreq"	: 0,
+					"amp"	: 0
+				},
+				"freeze_mod"	: {
+					"dtime"	: 0.13,
+					"damp"	: 0,
+					"size"	: 0.681,
+					"diff"	: 0.055,
+					"fb"	: 1,
+					"modDepth"	: 38.447,
+					"modFreq"	: 1.617,
+					"amp"	: 3.319559
+				}
+			}
+		}

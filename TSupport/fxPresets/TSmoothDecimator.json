@@ -1,0 +1,9 @@
+{
+			"TSmoothDecimator"	: {
+				"preset0"	: {
+					"rate"	: 0,
+					"smoothing"	: 0,
+					"amp"	: 0
+				}
+			}
+		}

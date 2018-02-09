@@ -1,0 +1,27 @@
+{
+		"FftBinDemand"	: {
+			"preset0"	: {
+				"speed"	: 0,
+				"binfac"	: 0,
+				"oscilfreq"	: 0,
+				"oscilIn"	: 0,
+				"oscilEnd"	: 0
+			},
+			"mes187_2"	: {
+				"speed"	: 0.893,
+				"binfac"	: 1.002,
+				"oscilfreq"	: 1,
+				"oscilIn"	: 1,
+				"oscilEnd"	: 1319,
+				"amp"	: 2.24846
+			},
+			"mes187"	: {
+				"speed"	: 0.198,
+				"binfac"	: 1.631,
+				"oscilfreq"	: 50,
+				"oscilIn"	: 200,
+				"oscilEnd"	: 800,
+				"amp"	: 2.253115
+			}
+		}
+	}

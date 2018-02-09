@@ -1,0 +1,56 @@
+{
+		"TGVerb_8"	: {
+			"MR1"	: {
+				"inlev"	: -12,
+				"roomsize"	: 6.6,
+				"revtime"	: 7.8,
+				"damping"	: 0.047,
+				"inputbw"	: 0.5,
+				"spread"	: 15,
+				"drylevel"	: 3.1618153574679,
+				"earlylevel"	: -3,
+				"taillevel"	: -6,
+				"maxroomsize"	: 300,
+				"amp"	: 0
+			},
+			"test1"	: {
+				"inlev"	: -6.60402,
+				"roomsize"	: 20.6,
+				"revtime"	: 3,
+				"damping"	: 0.5,
+				"inputbw"	: 0.5,
+				"spread"	: 15,
+				"drylevel"	: 0,
+				"earlylevel"	: -3,
+				"taillevel"	: -6,
+				"maxroomsize"	: 300,
+				"amp"	: 0
+			},
+			"preset0"	: {
+				"inlev"	: 0,
+				"roomsize"	: 0,
+				"revtime"	: 0,
+				"damping"	: 0,
+				"inputbw"	: 0,
+				"spread"	: 0,
+				"drylevel"	: 0,
+				"earlylevel"	: 0,
+				"taillevel"	: 0,
+				"maxroomsize"	: 0,
+				"amp"	: 0
+			},
+			"test2"	: {
+				"inlev"	: -1.505204,
+				"roomsize"	: 6.6,
+				"revtime"	: 3,
+				"damping"	: 0.5,
+				"inputbw"	: 0.5,
+				"spread"	: 15,
+				"drylevel"	: 0,
+				"earlylevel"	: -3,
+				"taillevel"	: -6,
+				"maxroomsize"	: 300,
+				"amp"	: 0
+			}
+		}
+	}

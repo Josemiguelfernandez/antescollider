@@ -1,0 +1,94 @@
+{
+	"TGranIn"	: {
+		"Lara-percu_noise2"	: {
+			"panDev"	: 0.001,
+			"dur"	: 0.001,
+			"ampDev"	: 0.001,
+			"pan"	: 0,
+			"trigRate"	: 4.6,
+			"amp"	: 0,
+			"trigRateDev"	: 0.001,
+			"durDev"	: 0.001
+		},
+		"octa1"	: {
+			"panDev"	: 0.98963030364304,
+			"dur"	: 0.023,
+			"ampDev"	: 0.001,
+			"pan"	: 0,
+			"trigRate"	: 10.9,
+			"amp"	: 0,
+			"trigRateDev"	: 47.157348431234,
+			"durDev"	: 0.068186566912682
+		},
+		"trb-mes164"	: {
+			"panDev"	: 1,
+			"dur"	: 0.15,
+			"ampDev"	: 0.001,
+			"pan"	: 0,
+			"trigRate"	: 47,
+			"amp"	: 0,
+			"trigRateDev"	: 161.375661,
+			"durDev"	: 0.001
+		},
+		"kubus_gran1"	: {
+			"panDev"	: 1,
+			"dur"	: 0.023,
+			"ampDev"	: 0.71736932564958,
+			"pan"	: 0,
+			"trigRate"	: 59.7,
+			"amp"	: -1.9696577590019,
+			"trigRateDev"	: 85.225625989957,
+			"durDev"	: 0.030172210426987
+		},
+		"gran_bajo1"	: {
+			"panDev"	: 0.001,
+			"dur"	: 0.222,
+			"ampDev"	: 0.001,
+			"pan"	: 0,
+			"trigRate"	: 6.7,
+			"amp"	: 0,
+			"trigRateDev"	: 0,
+			"durDev"	: 0.001
+		},
+		"Perc_gran_In_mes382"	: {
+			"panDev"	: 1,
+			"dur"	: 0.018,
+			"ampDev"	: 0.001,
+			"pan"	: 0,
+			"trigRate"	: 10.9,
+			"amp"	: 6.0205999132796,
+			"trigRateDev"	: 55.690358238129,
+			"durDev"	: 0.12775587234186
+		},
+		"MR1"	: {
+			"panDev"	: 1,
+			"dur"	: 0.023,
+			"ampDev"	: 0.71736932564958,
+			"pan"	: 0,
+			"trigRate"	: 19.4,
+			"amp"	: -1.9696577590019,
+			"trigRateDev"	: 0,
+			"durDev"	: 0.030172210426987
+		},
+		"preset0"	: {
+			"panDev"	: 0,
+			"dur"	: 0,
+			"ampDev"	: 0,
+			"pan"	: 0,
+			"trigRate"	: 0,
+			"amp"	: 0,
+			"trigRateDev"	: 0,
+			"durDev"	: 0
+		},
+		"MR2"	: {
+			"panDev"	: 1,
+			"dur"	: 0.023,
+			"ampDev"	: 0.71736932564958,
+			"pan"	: 0,
+			"trigRate"	: 19.4,
+			"amp"	: -1.9696577590019,
+			"trigRateDev"	: 85.225625989957,
+			"durDev"	: 0.030172210426987
+		}
+	}
+}

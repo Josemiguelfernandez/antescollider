@@ -1,0 +1,96 @@
+{
+		"TGranBuf_8c2"	: {
+			"ichiro"	: {
+				"trigRate"	: 6.7,
+				"trigRateDev"	: 64.14248643548,
+				"startPos"	: 0.1,
+				"centerDev"	: 0.001,
+				"dur"	: 0.201,
+				"durDev"	: 0.001,
+				"rate"	: 1.003,
+				"rateDev"	: 0.001,
+				"pan"	: 0,
+				"panDev"	: 0.28918208472349,
+				"amp"	: 0.37209476300744,
+				"ampDev"	: 0.001,
+				"interpol"	: 4
+			},
+			"preset0"	: {
+				,
+				"ichiro2"	: {
+					"trigRate"	: 21.3,
+					"trigRateDev"	: 0,
+					"startPos"	: 0,
+					"centerDev"	: 0,
+					"dur"	: 0.001,
+					"durDev"	: 0,
+					"rate"	: 1.102,
+					"rateDev"	: 0.03015873015873,
+					"pan"	: -0.0084656084656085,
+					"panDev"	: 0.27851919253193,
+					"amp"	: 0.47939971555074,
+					"ampDev"	: 1,
+					"interpol"	: 4
+				},
+				"sec2-161"	: {
+					"trigRate"	: 0.030145,
+					"trigRateDev"	: 0,
+					"startPos"	: 0.263502,
+					"centerDev"	: 0.983793,
+					"dur"	: 0.340111,
+					"durDev"	: 0.233765,
+					"rate"	: 0.55,
+					"rateDev"	: 0.001,
+					"pan"	: 0.5,
+					"panDev"	: 0.133269,
+					"amp"	: 0.804519,
+					"ampDev"	: 0.001,
+					"interpol"	: 1
+				},
+				"pum"	: {
+					"trigRate"	: 4.6,
+					"trigRateDev"	: 47.049506,
+					"startPos"	: 0.1,
+					"centerDev"	: 0.001,
+					"dur"	: 0.001,
+					"durDev"	: 0.001,
+					"rate"	: 1,
+					"rateDev"	: 0.001,
+					"pan"	: 0,
+					"panDev"	: 1,
+					"amp"	: 0.38818,
+					"ampDev"	: 0.001,
+					"interpol"	: 4
+				},
+				"sec2-141"	: {
+					"trigRate"	: 0.123078,
+					"trigRateDev"	: 0.229357,
+					"startPos"	: 0.263502,
+					"centerDev"	: 0.980342,
+					"dur"	: 0.055434,
+					"durDev"	: 0.233765,
+					"rate"	: 0.55,
+					"rateDev"	: 0.001,
+					"pan"	: 0.5,
+					"panDev"	: 0.133269,
+					"amp"	: 0.804519,
+					"ampDev"	: 0.001,
+					"interpol"	: 1
+				},
+				"poema-plato-gran1"	: {
+					"trigRate"	: 23.6,
+					"trigRateDev"	: 263.269639,
+					"startPos"	: 0.1,
+					"centerDev"	: 0.001,
+					"dur"	: 0.001,
+					"durDev"	: 0.001,
+					"rate"	: 1,
+					"rateDev"	: 0.001,
+					"pan"	: 0,
+					"panDev"	: 0.98045,
+					"amp"	: 0.40442,
+					"ampDev"	: 0.001,
+					"interpol"	: 4
+				}
+			}
+		}

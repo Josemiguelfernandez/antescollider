@@ -1,0 +1,16 @@
+{
+		"Prayer_bell_Iana"	: {
+			"preset0"	: {
+				"freqscale"	: 0,
+				"sing_switch"	: 0,
+				"lag"	: 0,
+				"amp"	: 0
+			},
+			"MR1"	: {
+				"freqscale"	: 1.601,
+				"sing_switch"	: 2.19,
+				"lag"	: 1,
+				"amp"	: 2.3401638704134
+			}
+		}
+	}

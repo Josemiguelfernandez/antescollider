@@ -1,0 +1,10 @@
+{
+	"ATK_TransRtt8In"	: {
+		"preset0"	: {
+			"azim"	: 0,
+			"angle"	: 0,
+			"rttFreq"	: 0,
+			"amp"	: 0
+		}
+	}
+}
