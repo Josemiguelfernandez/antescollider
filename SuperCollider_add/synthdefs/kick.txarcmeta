@@ -1,0 +1,28 @@
+var o, p;
+o = [
+	Event.prNew,  Array.prNew(4),  Event.prNew,  Array.prNew(4),  
+	ControlSpec.prNew,  LinearWarp.prNew,  ""
+];
+p = [
+	// Event
+	0, [ array: o[1],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	1, [ 'specs',  o[2],  nil,  nil ],  
+	// Event
+	2, [ array: o[3],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	3, [ nil,  nil,  'timeScale',  o[4] ],  
+	// ControlSpec
+	4, [ minval: 0.001,  maxval: 4,  
+		warp: o[5],  step: 0,  
+		default: 1,  units: o[6],  
+		grid: nil,  clipLo: 0.001,  
+		clipHi: 4.0 ],  
+	// LinearWarp
+	5, [ spec: o[4] ]
+];
+prUnarchive(o,p);

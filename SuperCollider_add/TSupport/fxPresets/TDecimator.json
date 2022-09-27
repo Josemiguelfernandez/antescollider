@@ -1,0 +1,9 @@
+{
+	"TDecimator"	: {
+		"default"	: {
+			"rate"	: 48000,
+			"bits"	: 24,
+			"amp"	: 0
+		}
+	}
+}

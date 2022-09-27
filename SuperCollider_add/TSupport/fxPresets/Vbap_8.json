@@ -1,0 +1,11 @@
+{
+	"Vbap_8"	: {
+		"default"	: {
+			"azi"	: 0,
+			"width"	: 2,
+			"ele"	: 0.2,
+			"vbapBuf"	: 0,
+			"amp"	: 0
+		}
+	}
+}

@@ -1,0 +1,19 @@
+{
+	"Snow"	: {
+		"default"	: {
+			"freq"	: 200,
+			"tone"	: 1,
+			"blur"	: 1,
+			"density"	: 1,
+			"amp"	: 0.3,
+			"speed"	: 1
+		},
+		"note1"	: {
+			"speed"	: 1.0,
+			"tone"	: 1.345,
+			"blur"	: 0.05,
+			"amp"	: 0.0,
+			"density"	: 1.3
+		}
+	}
+}

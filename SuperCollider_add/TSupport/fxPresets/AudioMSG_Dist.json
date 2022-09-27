@@ -1,0 +1,8 @@
+{
+	"AudioMSG_Dist"	: {
+		"default"	: {
+			"index"	: 0,
+			"amp"	: 0
+		}
+	}
+}

@@ -1,0 +1,67 @@
+{
+	"Synth_tw_Moog06"	: {
+		"pintas_serpiente2"	: {
+			"lfomul"	: 7330.0,
+			"lfoadd"	: 7552.66,
+			"roomsize"	: 24.8,
+			"damping"	: 0.81,
+			"amp"	: 1.0209817689518,
+			"lfo"	: 7.443,
+			"revtime"	: 249.6
+		},
+		"preset0"	: {
+			"revtime"	: 0,
+			"roomsize"	: 0,
+			"lfomul"	: 0,
+			"amp"	: 0,
+			"damping"	: 0,
+			"lfo"	: 0,
+			"lfoadd"	: 0
+		},
+		"MR1"	: {
+			"revtime"	: 12.8,
+			"roomsize"	: 51,
+			"lfomul"	: 1534,
+			"amp"	: -0.20242964996072,
+			"damping"	: 0.886,
+			"lfo"	: 4.881,
+			"lfoadd"	: 0
+		},
+		"ritmo2"	: {
+			"lfo"	: 7.443,
+			"roomsize"	: 24.8,
+			"lfomul"	: 7330.0,
+			"amp"	: 1.0209817689518,
+			"lfoadd"	: 7552.66,
+			"damping"	: 0.81,
+			"revtime"	: 249.6
+		},
+		"ritmo1"	: {
+			"revtime"	: 250.6,
+			"roomsize"	: 204.0,
+			"lfomul"	: 3772.0,
+			"lfo"	: 11.691,
+			"amp"	: 1.0209817689518,
+			"lfoadd"	: 2889.42,
+			"damping"	: 0.638
+		},
+		"MR2"	: {
+			"revtime"	: 21.8,
+			"roomsize"	: 125.9,
+			"lfomul"	: 515,
+			"amp"	: 1.0209817689518,
+			"damping"	: 1,
+			"lfo"	: 9.01,
+			"lfoadd"	: 0
+		},
+		"ritmo3"	: {
+			"revtime"	: 0.1,
+			"roomsize"	: 9.2,
+			"lfomul"	: 8746.0,
+			"amp"	: 1.0209817689518,
+			"lfoadd"	: 0.0,
+			"damping"	: 0.198,
+			"lfo"	: 5.153
+		}
+	}
+}

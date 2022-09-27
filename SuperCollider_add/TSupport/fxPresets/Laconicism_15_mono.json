@@ -1,0 +1,13 @@
+{
+	"Laconicism_15_mono"	: {
+		"default"	: {
+			"ampExp"	: 9,
+			"dist"	: 1,
+			"ampRFreq"	: 16,
+			"amp"	: 0,
+			"fbMul"	: 100,
+			"freqMul"	: 1,
+			"numHarm"	: 1
+		}
+	}
+}

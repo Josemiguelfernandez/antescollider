@@ -1,0 +1,9 @@
+{
+	"Clicks_ext"	: {
+		"default"	: {
+			"decay_time"	: 958,
+			"gain"	: 0.05,
+			"amp"	: -20
+		}
+	}
+}

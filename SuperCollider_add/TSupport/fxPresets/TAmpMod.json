@@ -1,0 +1,11 @@
+{
+	"TAmpMod"	: {
+		"default"	: {
+			"amp"	: 0,
+			"modfreq"	: 1,
+			"lpfilt"	: 10000,
+			"ampmod"	: 1,
+			"hpfilt"	: 50
+		}
+	}
+}

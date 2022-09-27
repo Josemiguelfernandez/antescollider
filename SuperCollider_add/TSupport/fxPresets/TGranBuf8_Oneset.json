@@ -1,0 +1,38 @@
+{
+	"TGranBuf8_Oneset"	: {
+		"default"	: {
+			"durDev"	: 0.001,
+			"startPos"	: 0.1,
+			"trigRate"	: 20,
+			"amp"	: 0,
+			"ampDev"	: 0.001,
+			"rateDev"	: 0.001,
+			"dur"	: 0.001,
+			"rate"	: 1.0,
+			"trigRateDev"	: 0.001,
+			"centerDev"	: 0.001,
+			"pan"	: 0,
+			"reset"	: 0,
+			"panDev"	: 0.001,
+			"thresh"	: 0.5,
+			"interpol"	: 4
+		},
+		"gran_one_mes173"	: {
+			"startPos"	: 0.0,
+			"panDev"	: 1.0,
+			"dur"	: 1.0,
+			"pan"	: 0.0,
+			"centerDev"	: 0.225,
+			"rate"	: 1.0,
+			"trigRateDev"	: 30.0,
+			"reset"	: 0.0,
+			"thresh"	: 0.5,
+			"amp"	: 0.0,
+			"interpol"	: 4.0,
+			"ampDev"	: 0.94025208101641,
+			"trigRate"	: 0.8,
+			"rateDev"	: 0.05,
+			"durDev"	: 0.001
+		}
+	}
+}

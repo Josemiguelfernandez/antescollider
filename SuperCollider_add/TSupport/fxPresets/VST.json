@@ -1,0 +1,10 @@
+{
+	"VST"	: {
+		"default"	: {
+			"amp"	: 0,
+			"freedamp"	: 0.5,
+			"freeroom"	: 0.5,
+			"freemul"	: 1.0
+		}
+	}
+}

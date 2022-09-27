@@ -1,0 +1,14 @@
+{
+	"TGranIn_mono"	: {
+		"default"	: {
+			"panDev"	: 0.001,
+			"dur"	: 0.001,
+			"ampDev"	: 0.001,
+			"pan"	: 0,
+			"trigRate"	: 20,
+			"amp"	: 0,
+			"trigRateDev"	: 0.001,
+			"durDev"	: 0.001
+		}
+	}
+}

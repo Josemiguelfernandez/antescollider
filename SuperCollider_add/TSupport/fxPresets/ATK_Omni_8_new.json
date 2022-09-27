@@ -1,0 +1,10 @@
+{
+	"ATK_Omni_8_new"	: {
+		"default"	: {
+			"mx"	: 3,
+			"my"	: 0,
+			"mz"	: 0,
+			"amp"	: 0
+		}
+	}
+}

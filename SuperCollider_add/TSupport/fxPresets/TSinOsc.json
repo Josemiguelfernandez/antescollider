@@ -1,0 +1,8 @@
+{
+	"TSinOsc"	: {
+		"default"	: {
+			"freq"	: 300,
+			"amp"	: -6
+		}
+	}
+}

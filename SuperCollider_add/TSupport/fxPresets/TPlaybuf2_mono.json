@@ -1,0 +1,9 @@
+{
+	"TPlaybuf2_mono"	: {
+		"default"	: {
+			"rate"	: 1,
+			"pos"	: 0,
+			"amp"	: 0
+		}
+	}
+}

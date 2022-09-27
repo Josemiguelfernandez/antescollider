@@ -1,0 +1,10 @@
+{
+	"NoisePerc"	: {
+		"default"	: {
+			"noise_release"	: 0.1,
+			"noise_amp"	: -6,
+			"amp"	: 0,
+			"noise_att"	: 0.001
+		}
+	}
+}

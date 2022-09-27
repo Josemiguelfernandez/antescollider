@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<interface>
+	<haed>1</haed>
+	<plane>0</plane>
+	<grid>0</grid>
+	<circle>1</circle>
+	<speakers>1</speakers>
+	<g_sphere>1</g_sphere>
+	<trajectories>1</trajectories>
+	<grains>1</grains>
+	<molecules>1</molecules>
+	<list3D>1</list3D>
+	<hoa_filter>1</hoa_filter>
+	<slider_x>0</slider_x>
+	<slider_y>0</slider_y>
+	<slider_z>0</slider_z>
+	<center>150, 384</center>
+</interface>
+<Views>
+	<head_status>1</head_status>
+	<plane_status>0</plane_status>
+	<grid_status>1</grid_status>
+	<circle_status>1</circle_status>
+	<speakers>0</speakers>
+	<g_sphere>0</g_sphere>
+	<trajectories>0</trajectories>
+	<grains>0</grains>
+	<tmolecules>0</tmolecules>
+	<list3D>0</list3D>
+	<concat3D>1</concat3D>
+	<test_3D>0</test_3D>
+	<hoa_filter>0</hoa_filter>
+</Views>

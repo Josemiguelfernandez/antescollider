@@ -1,0 +1,10 @@
+{
+	"Bform"	: {
+		"default"	: {
+			"formfreq"	: 70,
+			"fbwfreq"	: 200,
+			"freq"	: 200,
+			"amp"	: -6
+		}
+	}
+}

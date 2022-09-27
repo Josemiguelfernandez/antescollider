@@ -1,0 +1,658 @@
+///// RIOT GESTURES LIB
+
+////////NIMs fonctions de transfer mapping
+
+// standart foncions
+$linear := NIM { 0 0, 1 1 "linear" }
+$exp_out := NIM { 0 0, 1 1 "exp_out" }
+$quad_out := NIM { 0 0, 1 1 "quad_out" }
+$quart_in_out := NIM { 0 0, 1 1 "quart_in_out" }
+$quart_intensity_all2 := NIM { 0 0, 0.01 0.3 "exp_out", 0.5 0.7 "exp_out", 1.1 1 "linear"  } //"exp_out"
+
+///user fonction
+$exp_out_del := NIM { 0 0, 0.5 0, 0.5 1 "exp_out"}
+
+/// general map fonction
+$map_func :=  map {("lin" , $linear), ("exp_out" , $exp_out), ("quad_out" , $quad_out), ("quart_in_out" , $quart_in_out), ("exp_out_del" , $exp_out_del)}
+
+/// For record
+
+$gestes_index_L := map{("L_x", 0), ("L_y", 1), ("L_z", 2), ("L_incli_front", 3), ("L_incli_lateral", 4), ("L_intensity", 5)}
+$gestes_index:= map{("R_x", 0), ("R_y", 1), ("R_z", 2), ("R_incli_front", 3), ("R_incli_lateral", 4), ("R_intensity", 5)}
+$gestes_index_R2 := map{("R_incli_front", 0), ("R_incli_lateral", 1)}
+
+
+$obj_dispatch_map := map{}
+
+@obj_def osc_dispatch($port, $prefix, $riot_pref)
+{
+   @local $listener, $receive, $name
+
+   @init {
+       $listener := MAP{}
+       oscrecv osc $port $prefix $receive
+       $name := $riot_pref($prefix)
+       $obj_dispatch_map.add_pair($name, $THISOBJ)
+       // print name1 $name $port $prefix
+   }
+
+
+  @whenever ($receive == $receive)
+  {
+         // forall $obj in $listener
+         forall $k, $obj in $listener
+    {
+          $obj.new_data($name, $receive)
+          // print receive (""+$receive)    
+          /*  
+          switch ($riot_pref($prefix))
+          {
+              case "/1/intensity2":  $obj.handle_intensity2($receive)
+          }
+          */
+    }
+  }
+
+
+  @fun_def suscribe($obj)
+  {
+        // $listener := $listener.push_back($obj)
+        // print $listener
+        $listener.add_pair("ob"+$obj, $obj)
+        // print $listener
+  }
+
+  @fun_def unsuscribe($obj)
+  {
+      // print $listener
+       $listener.remove("ob"+$obj)
+       // print $listener
+  }
+
+  @fun_def name()
+  {
+      // print $listener
+       // _ := $listener.remove("ob"+$obj)
+       // print $listener
+       return (@take($name, 3)+@last($name))
+  }
+
+  @fun_def osc_name()
+  {
+      // print $listener
+       // _ := $listener.remove("ob"+$obj)
+       // print $listener
+       return $name
+  }  
+}
+
+
+///OSC RECEIVE RIOT
+
+
+$danse1_prefix:= map {("/0/incl_front", "danse1_incl_front"), ("/0/incl_lat", "danse1_incl_lat"), ("/0/still", "danse1_still"), ("/0/intensity2", "danse1_intensity2"), ("/0/acc-intensity", "danse1_acc-intensity"), ("/0/kick", "danse1_kick"), ("/0/kick2", "danse1_kick2"), ("/0/kickdir", "danse1_kickdir"), ("/0/kickpos", "danse1_kickpos"), ("/0/gyrkick", "danse1_gyrkick"), ("/0/dir_deriv", "danse1_dir_reriv"), ("/0/direction", "danse1_direction"), ("/0/mov_horiz", "danse1_mov_horiz"), ("/0/pitchrollyaw", "danse1_pitchrollyaw"), ("/0/dir_reriv", "danse1_dir_reriv")} 
+$danse2_prefix:= map {("/0/incl_front", "danse2_incl_front"), ("/0/incl_lat", "danse2_incl_lat"), ("/0/still", "danse2_still"), ("/0/intensity2", "danse2_intensity2"), ("/0/acc-intensity", "danse2_acc-intensity"), ("/0/kick", "danse2_kick"), ("/0/kick2", "danse2_kick2"), ("/0/kickdir", "danse2_kickdir"), ("/0/kickpos", "danse2_kickpos"), ("/0/gyrkick", "danse2_gyrkick"), ("/0/dir_deriv", "danse2_dir_reriv"), ("/0/direction", "danse2_direction"), ("/0/mov_horiz", "danse2_mov_horiz"), ("/0/pitchrollyaw", "danse2_pitchrollyaw"), ("/0/dir_reriv", "danse2_dir_reriv")}
+$danse3_prefix:= map {("/0/incl_front", "danse3_incl_front"), ("/0/incl_lat", "danse3_incl_lat"), ("/0/still", "danse3_still"), ("/0/intensity2", "danse3_intensity2"), ("/0/acc-intensity", "danse3_acc-intensity"), ("/0/kick", "danse3_kick"), ("/0/kick2", "danse3_kick2"), ("/0/kickdir", "danse3_kickdir"), ("/0/kickpos", "danse3_kickpos"), ("/0/gyrkick", "danse3_gyrkick"), ("/0/dir_deriv", "danse3_dir_reriv"), ("/0/direction", "danse3_direction"), ("/0/mov_horiz", "danse3_mov_horiz"), ("/0/pitchrollyaw", "danse3_pitchrollyaw"), ("/0/dir_reriv", "danse3_dir_reriv")}
+$danse4_prefix:= map {("/6/incl_front", "danse4_incl_front"), ("/6/incl_lat", "danse4_incl_lat"), ("/6/still", "danse4_still"), ("/6/intensity2", "danse4_intensity2"), ("/6/acc-intensity", "danse4_acc-intensity"), ("/6/kick", "danse4_kick"), ("/6/kick2", "danse4_kick2"), ("/6/kickdir", "danse4_kickdir"), ("/6/kickpos", "danse4_kickpos"), ("/6/gyrkick", "danse4_gyrkick"), ("/6/dir_deriv", "danse4_dir_reriv"), ("/6/direction", "danse4_direction"), ("/6/mov_horiz", "danse4_mov_horiz"), ("/6/pitchrollyaw", "danse4_pitchrollyaw"), ("/6/dir_reriv", "danse4_dir_reriv")}
+$danse5_prefix:= map {("/4/incl_front", "danse5_incl_front"), ("/4/incl_lat", "danse5_incl_lat"), ("/4/still", "danse5_still"), ("/4/intensity2", "danse5_intensity2"), ("/4/acc-intensity", "danse5_acc-intensity"), ("/4/kick", "danse5_kick"), ("/4/kick2", "danse5_kick2"), ("/4/kickdir", "danse5_kickdir"), ("/4/kickpos", "danse5_kickpos"), ("/4/gyrkick", "danse5_gyrkick"), ("/4/dir_deriv", "danse5_dir_reriv"), ("/4/direction", "danse5_direction"), ("/4/mov_horiz", "danse5_mov_horiz"), ("/4/pitchrollyaw", "danse5_pitchrollyaw"), ("/4/dir_reriv", "danse5_dir_reriv")}
+$danse6_prefix:= map {("/3/incl_front", "danse6_incl_front"), ("/3/incl_lat", "danse6_incl_lat"), ("/3/still", "danse6_still"), ("/3/intensity2", "danse6_intensity2"), ("/3/acc-intensity", "danse6_acc-intensity"), ("/3/kick", "danse6_kick"), ("/3/kick2", "danse6_kick2"), ("/3/kickdir", "danse6_kickdir"), ("/3/kickpos", "danse6_kickpos"), ("/3/gyrkick", "danse6_gyrkick"), ("/3/dir_deriv", "danse6_dir_reriv"), ("/3/direction", "danse6_direction"), ("/3/mov_horiz", "danse6_mov_horiz"), ("/3/pitchrollyaw", "danse6_pitchrollyaw"), ("/3/dir_reriv", "danse6_dir_reriv")}
+
+// $riot_prefix := ["/0/raw", "/1/quat", "/1/euler", "/1/kick", "/1/acc-intensity", "/1/incl_front", "/1/incl_lat", "/1/still", "/1/kickdir", "/1/direction", "/1/gyrkick", "/1/dir_reriv", "/1/kick2"]
+// $riot_label := ["raw", "quat", "euler", "kick", "acc-intensity", "incl_front", "incl_lat", "still", "kickdir", "direction", "gyrkick", "dir_reriv", "kick2"]
+
+
+///danse1
+
+$danse1_incl_front:= obj::osc_dispatch(8883, "/0/incl_front", $danse1_prefix)
+$danse1_incl_lat:= obj::osc_dispatch(8883, "/0/incl_lat", $danse1_prefix)
+$danse1_mov:= obj::osc_dispatch(8883, "/0/still", $danse1_prefix)
+$danse1_intensity2:= obj::osc_dispatch(8883, "/0/intensity2", $danse1_prefix)
+$danse1_acc_intensity:= obj::osc_dispatch(8883, "/0/acc-intensity", $danse1_prefix)
+$danse1_kick:= obj::osc_dispatch(8883, "/0/kick", $danse1_prefix)
+$danse1_kick2:= obj::osc_dispatch(8883, "/0/kick2", $danse1_prefix)
+$danse1_dir_deriv:= obj::osc_dispatch(8883, "/0/dir_deriv", $danse1_prefix)
+$danse1_kickdir:= obj::osc_dispatch(8883, "/0/kickdir", $danse1_prefix)
+$danse1_gyrkick:= obj::osc_dispatch(8883, "/0/gyrkick", $danse1_prefix)
+$danse1_kickpos:= obj::osc_dispatch(8883, "/0/kickpos", $danse1_prefix)
+$danse1_dir:= obj::osc_dispatch(8883, "/0/direction", $danse1_prefix)
+$danse1_mov_horiz:= obj::osc_dispatch(8883, "/0/mov_horiz", $danse1_prefix)
+$danse1_pitchrollyaw:= obj::osc_dispatch(8883, "/0/pitchrollyaw", $danse1_prefix)
+$danse1_dir_reriv:= obj::osc_dispatch(8883, "/0/dir_reriv", $danse1_prefix)
+
+///danse2
+
+$danse2_incl_front:= obj::osc_dispatch(8884, "/0/incl_front", $danse2_prefix)
+$danse2_incl_lat:= obj::osc_dispatch(8884, "/0/incl_lat", $danse2_prefix)
+$danse2_mov:= obj::osc_dispatch(8884, "/0/still", $danse2_prefix)
+$danse2_intensity2:= obj::osc_dispatch(8884, "/0/intensity2", $danse2_prefix)
+$danse2_acc_intensity:= obj::osc_dispatch(8884, "/0/acc-intensity", $danse2_prefix)
+$danse2_kick:= obj::osc_dispatch(8884, "/0/kick", $danse2_prefix)
+$danse2_kick2:= obj::osc_dispatch(8884, "/0/kick2", $danse2_prefix)
+$danse2_dir_deriv:= obj::osc_dispatch(8884, "/0/dir_deriv", $danse2_prefix)
+$danse2_kickdir:= obj::osc_dispatch(8884, "/0/kickdir", $danse2_prefix)
+$danse2_gyrkick:= obj::osc_dispatch(8884, "/0/gyrkick", $danse2_prefix)
+$danse2_kickpos:= obj::osc_dispatch(8884, "/0/kickpos", $danse2_prefix)
+$danse2_dir:= obj::osc_dispatch(8884, "/0/direction", $danse2_prefix)
+$danse2_mov_horiz:= obj::osc_dispatch(8884, "/0/mov_horiz", $danse2_prefix)
+$danse2_pitchrollyaw:= obj::osc_dispatch(8884, "/0/pitchrollyaw", $danse2_prefix)
+$danse2_dir_reriv:= obj::osc_dispatch(8884, "/0/dir_reriv", $danse2_prefix)
+
+///danse3
+
+$danse3_incl_front:= obj::osc_dispatch(8885, "/0/incl_front", $danse3_prefix)
+$danse3_incl_lat:= obj::osc_dispatch(8885, "/0/incl_lat", $danse3_prefix)
+$danse3_mov:= obj::osc_dispatch(8885, "/0/still", $danse3_prefix)
+$danse3_intensity2:= obj::osc_dispatch(8885, "/0/intensity2", $danse3_prefix)
+$danse3_acc_intensity:= obj::osc_dispatch(8885, "/0/acc-intensity", $danse3_prefix)
+$danse3_kick:= obj::osc_dispatch(8885, "/0/kick", $danse3_prefix)
+$danse3_kick2:= obj::osc_dispatch(8885, "/0/kick2", $danse3_prefix)
+$danse3_dir_deriv:= obj::osc_dispatch(8885, "/0/dir_deriv", $danse3_prefix)
+$danse3_kickdir:= obj::osc_dispatch(8885, "/0/kickdir", $danse3_prefix)
+$danse3_gyrkick:= obj::osc_dispatch(8885, "/0/gyrkick", $danse3_prefix)
+$danse3_kickpos:= obj::osc_dispatch(8885, "/0/kickpos", $danse3_prefix)
+$danse3_dir:= obj::osc_dispatch(8885, "/0/direction", $danse3_prefix)
+$danse3_mov_horiz:= obj::osc_dispatch(8885, "/0/mov_horiz", $danse3_prefix)
+$danse3_pitchrollyaw:= obj::osc_dispatch(8885, "/0/pitchrollyaw", $danse3_prefix)
+$danse3_dir_reriv:= obj::osc_dispatch(8885, "/0/dir_reriv", $danse3_prefix)
+
+///danse4
+
+$danse4_incl_front:= obj::osc_dispatch(5554, "/6/incl_front", $danse4_prefix)
+$danse4_incl_lat:= obj::osc_dispatch(5554, "/6/incl_lat", $danse4_prefix)
+$danse4_mov:= obj::osc_dispatch(5554, "/6/still", $danse4_prefix)
+$danse4_intensity2:= obj::osc_dispatch(5554, "/6/intensity2", $danse4_prefix)
+$danse4_acc_intensity:= obj::osc_dispatch(5554, "/6/acc-intensity", $danse4_prefix)
+$danse4_kick:= obj::osc_dispatch(5554, "/6/kick", $danse4_prefix)
+$danse4_kick2:= obj::osc_dispatch(5554, "/6/kick2", $danse4_prefix)
+$danse4_dir_deriv:= obj::osc_dispatch(5554, "/6/dir_deriv", $danse4_prefix)
+$danse4_kickdir:= obj::osc_dispatch(5554, "/6/kickdir", $danse4_prefix)
+$danse4_gyrkick:= obj::osc_dispatch(5554, "/6/gyrkick", $danse4_prefix)
+$danse4_kickpos:= obj::osc_dispatch(5554, "/6/kickpos", $danse4_prefix)
+$danse4_dir:= obj::osc_dispatch(5554, "/6/direction", $danse4_prefix)
+$danse4_mov_horiz:= obj::osc_dispatch(5554, "/6/mov_horiz", $danse4_prefix)
+$danse4_pitchrollyaw:= obj::osc_dispatch(5554, "/6/pitchrollyaw", $danse4_prefix)
+$danse4_dir_reriv:= obj::osc_dispatch(5554, "/6/dir_reriv", $danse4_prefix)
+
+///danse5
+
+$danse5_incl_front:= obj::osc_dispatch(7754, "/4/incl_front", $danse5_prefix)
+$danse5_incl_lat:= obj::osc_dispatch(7754, "/4/incl_lat", $danse5_prefix)
+$danse5_mov:= obj::osc_dispatch(7754, "/4/still", $danse5_prefix)
+$danse5_intensity2:= obj::osc_dispatch(7754, "/4/intensity2", $danse5_prefix)
+$danse5_acc_intensity:= obj::osc_dispatch(7754, "/4/acc-intensity", $danse5_prefix)
+$danse5_kick:= obj::osc_dispatch(7754, "/4/kick", $danse5_prefix)
+$danse5_kick2:= obj::osc_dispatch(7754, "/4/kick2", $danse5_prefix)
+$danse5_dir_deriv:= obj::osc_dispatch(7754, "/4/dir_deriv", $danse5_prefix)
+$danse5_kickdir:= obj::osc_dispatch(7754, "/4/kickdir", $danse5_prefix)
+$danse5_gyrkick:= obj::osc_dispatch(7754, "/4/gyrkick", $danse5_prefix)
+$danse5_kickpos:= obj::osc_dispatch(7754, "/4/kickpos", $danse5_prefix)
+$danse5_dir:= obj::osc_dispatch(7754, "/4/direction", $danse5_prefix)
+$danse5_mov_horiz:= obj::osc_dispatch(7754, "/4/mov_horiz", $danse5_prefix)
+$danse5_pitchrollyaw:= obj::osc_dispatch(7754, "/4/pitchrollyaw", $danse5_prefix)
+$danse5_dir_reriv:= obj::osc_dispatch(7754, "/4/dir_reriv", $danse5_prefix)
+
+///danse6
+
+$danse6_incl_front:= obj::osc_dispatch(8854, "/3/incl_front", $danse6_prefix)
+$danse6_incl_lat:= obj::osc_dispatch(8854, "/3/incl_lat", $danse6_prefix)
+$danse6_mov:= obj::osc_dispatch(8854, "/3/still", $danse6_prefix)
+$danse6_intensity2:= obj::osc_dispatch(8854, "/3/intensity2", $danse6_prefix)
+$danse6_acc_intensity:= obj::osc_dispatch(8854, "/3/acc-intensity", $danse6_prefix)
+$danse6_kick:= obj::osc_dispatch(8854, "/3/kick", $danse6_prefix)
+$danse6_kick2:= obj::osc_dispatch(8854, "/3/kick2", $danse6_prefix)
+$danse6_dir_deriv:= obj::osc_dispatch(8854, "/3/dir_deriv", $danse6_prefix)
+$danse6_kickdir:= obj::osc_dispatch(8854, "/3/kickdir", $danse6_prefix)
+$danse6_gyrkick:= obj::osc_dispatch(8854, "/3/gyrkick", $danse6_prefix)
+$danse6_kickpos:= obj::osc_dispatch(8854, "/3/kickpos", $danse6_prefix)
+$danse6_dir:= obj::osc_dispatch(8854, "/3/direction", $danse6_prefix)
+$danse6_mov_horiz:= obj::osc_dispatch(8854, "/3/mov_horiz", $danse6_prefix)
+$danse6_pitchrollyaw:= obj::osc_dispatch(8854, "/3/pitchrollyaw", $danse6_prefix)
+$danse6_dir_reriv:= obj::osc_dispatch(8854, "/3/dir_reriv", $danse6_prefix)
+
+
+
+///OSC RECEIVE KINECT
+
+// oscrecv L_x 11125 "/L_x" $L_x
+// oscrecv L_y 11125 "/L_y" $L_y
+// oscrecv L_z 11125 "/L_z" $L_z
+
+// oscrecv R_x 11125 "/R_x" $R_x
+// oscrecv R_y 11125 "/R_y" $R_y
+// oscrecv R_z 11125 "/R_z" $R_z
+
+// $Kinect_prefix := map {("/L_x", "l_x"), ("/L_y", "l_y"), ("/L_z", "l_z"), ("/R_x", "r_x"), ("/R_y", "r_y"), ("/R_z", "r_z")}
+
+
+// $L_x := obj::osc_dispatch(11125, "/L_x", $Kinect_prefix)
+// $L_y := obj::osc_dispatch(11125, "/L_y", $Kinect_prefix)
+// $L_z := obj::osc_dispatch(11125, "/L_z", $Kinect_prefix)
+
+// $R_x := obj::osc_dispatch(11125, "/R_x", $Kinect_prefix)
+// $R_y := obj::osc_dispatch(11125, "/R_y", $Kinect_prefix)
+// $R_z := obj::osc_dispatch(11125, "/R_z", $Kinect_prefix)
+
+
+$nim_map_freq1 := NIM { 0 60, 2.6 20 "exp_out" } //lateral
+$nim_map_freq2 := NIM { 0 88, 2.6 40 "exp_out" } //lateral
+$nim_map_freq_filt := NIM { 0 -30, 1 -6 "linear" } // frontal
+$nim_map_azi := NIM { -180 0, 180 360 "linear" }
+$nim_map_ele := NIM { 0 0, 1 90 "linear" }
+
+
+@obj_def map_gesture($gest, $server_name, $group, $module, $param, $min, $max)
+{
+    @init   {
+    @local $gest_prefix_name 
+
+        $gest.suscribe($THISOBJ) 
+        $gest_prefix_name := $gest.$name // retreive gest_prefix_name from osc_dispatch objet
+    }
+
+   @fun_def new_data($prepend, $tab)
+   {
+        switch ($prepend)
+        {
+            case ($gest_prefix_name):
+            if($tab.is_tab())
+            {
+                print val $tab
+                $Servers($server_name).n_set($module, [$param, @clip(@scale($tab[0], 0, 1, $min, $max, 1), $min, $max)])
+            }
+            else
+            {
+                $Servers($server_name).n_set($module, [$param, @clip(@scale($tab, 0, 1, $min, $max, 1), $min, $max)])
+            }
+        }    
+   }
+
+   @abort {
+            $gest.unsuscribe($THISOBJ)
+
+   }
+}
+
+$kick := 0
+
+@obj_def map_gesture_kick($gest, $name)
+{
+    @init   {
+    @local $gest_prefix_name 
+
+        $gest.suscribe($THISOBJ) 
+        $gest_prefix_name := $gest.$name // retreive gest_prefix_name from osc_dispatch objet
+    }
+
+   @fun_def new_data($prepend, $tab)
+   {
+        switch ($prepend)
+        {
+            case ($gest_prefix_name):
+            if($tab.is_tab())
+            {
+                print val $name $tab
+                $kick := $name
+                // $Servers($server_name).n_set($module, [$param, @clip(@scale($tab[0], 0, 1, $min, $max, 1), $min, $max)])
+            }
+            else
+            {
+                print val $name $tab
+                $kick := $name
+                // $Servers($server_name).n_set($module, [$param, @clip(@scale($tab, 0, 1, $min, $max, 1), $min, $max)])
+            }
+        }    
+   }
+
+   @abort {
+            $gest.unsuscribe($THISOBJ)
+
+   }
+}
+
+$still := 0
+
+@obj_def map_gesture_still($gest, $name)
+{
+    @init   {
+    @local $gest_prefix_name 
+
+        $gest.suscribe($THISOBJ) 
+        $gest_prefix_name := $gest.$name // retreive gest_prefix_name from osc_dispatch objet
+    }
+
+   @fun_def new_data($prepend, $tab)
+   {
+        switch ($prepend)
+        {
+            case ($gest_prefix_name):
+            if($tab.is_tab())
+            {
+                print val $name $tab
+                $still := $name
+                // $Servers($server_name).n_set($module, [$param, @clip(@scale($tab[0], 0, 1, $min, $max, 1), $min, $max)])
+            }
+            else
+            {
+                print val $name $tab
+                $still := $name
+                // $Servers($server_name).n_set($module, [$param, @clip(@scale($tab, 0, 1, $min, $max, 1), $min, $max)])
+            }
+        }    
+   }
+
+   @abort {
+            $gest.unsuscribe($THISOBJ)
+
+   }
+}
+
+
+
+// obj::map_gesture_func($gest, $func, $server_name, $group_id, $x, $param, $min, $max)) // instantie un le processus dans le dico
+
+@obj_def map_gesture_func($gest, $func, $server_name, $group, $module, $param, $min, $max)
+{
+    @init   {
+    @local $gest_prefix_name 
+
+        $gest.suscribe($THISOBJ) 
+        $gest_prefix_name := $gest.$name // retreive gest_prefix_name from osc_dispatch objet
+    }
+
+   @fun_def new_data($prepend, $tab)
+   {
+        switch ($prepend)
+        {
+            case ($gest_prefix_name):
+            if($tab.is_tab())
+            {
+          // print val $tab
+                $Servers($server_name).n_set($module, [$param, (@scale($func($tab[0]), 0, 1, $min, $max, 1))])
+            }    
+            else
+            {
+                $Servers($server_name).n_set($module, [$param, (@scale($func($tab), 0, 1, $min, $max, 1))])
+            }
+        }
+   }
+
+   @abort {
+            $gest.unsuscribe($THISOBJ)
+
+   }
+}
+
+
+
+@obj_def map_gesture_func_amp($gest, $func, $server_name, $node_id_out, $min, $max)
+{
+    @init   {
+    @local $gest_prefix_name 
+
+        $gest.suscribe($THISOBJ) 
+        $gest_prefix_name := $gest.$name // retreive gest_prefix_name from osc_dispatch objet
+    }
+
+   @fun_def new_data($prepend, $tab)
+   {
+        // print tab (""+$tab)
+        switch ($prepend)
+        {
+            case ($gest_prefix_name):
+            if($tab.is_tab())
+            {
+            // print val_kinect $tab
+              // print func_tab (@scale($func($tab), 0., 1., $min, $max, 1))
+               $Servers($server_name).n_set($node_id_out, ["amp", @clip(@scale($func($tab[0]), 0., 1., $min, $max, 1), $min, $max) ])
+
+              // $Servers($server_name).n_set($module, [$param, (@scale($func($tab), 0, 1, $min, $max, 1)])
+            }
+            else
+            {
+                $Servers($server_name).n_set($node_id_out, ["amp", @clip(@scale($func($tab), 0., 1., $min, $max, 1), $min, $max)])
+            }
+        }    
+   }
+
+   @abort {
+            $gest.unsuscribe($THISOBJ)
+
+   }
+}
+
+
+// ::map_gesture_ambi_pol_angle($server_name, $node_id_out, $mix_group, $gest, $radio, $min, $max))
+
+@obj_def map_gesture_ambi_pol_angle($server_name, $track_id, $mix_group, $gest, $radio, $min, $max)
+{
+    @init   {
+    @local $gest_prefix_name, $poltocar, $theta := 0, $dir := 1, $xyz := [0, 0, 0], $HOA_local_x := 0, $HOA_local_y := 0, $HOA_local_z := 0
+
+        $gest.suscribe($THISOBJ) 
+        $gest_prefix_name := $gest.$name // retreive gest_prefix_name from osc_dispatch objet
+        
+    }
+
+   @fun_def new_data($prepend, $tab)
+   {
+    switch ($prepend)
+    {
+      case ($gest_prefix_name):
+      // print tab $tab 
+
+        if($tab.is_tab())
+        {
+            $poltocar := @poltocar3D_compiled($radio, $theta-90, (@scale($tab[0], 0, 1, $min, $max, 1)*$dir*-1-90))
+        }
+        else
+        {
+            $poltocar := @poltocar3D_compiled($radio, $theta-90, (@scale($tab, 0, 1, $min, $max, 1)*$dir*-1-90))
+        }
+
+
+      $xyz[0] := $poltocar[0]
+      $xyz[1] := $poltocar[1]
+      $xyz[2] := $poltocar[2]
+
+      $Servers($server_name).n_set($track_id, ["x", $xyz[0]+$HOA_global_x+$HOA_local_x, "y", $xyz[1]+$HOA_global_y+$HOA_local_y, "z", $xyz[2]+$HOA_global_z+$HOA_local_z]) 
+
+    }    
+   }
+
+   @abort {
+            $gest.unsuscribe($THISOBJ)
+
+   }
+}
+
+// $R_riot_prefix := map {("/1/intensity2", "r_intensity2"), ("/1/kickpos", "r_kickpos"), ("/1/mov_horiz", "r_mov_horiz"), ("/1/pitchrollyaw", "r_pitchrollyaw"), ("/1/raw", "r_raw"), ("1/quat", "r_quat"), ("/1/euler", "r_euler"), ("/1/kick", "r_kick"), ("/1/acc-intensity", "r_acc-intensity"), ("/1/incl_front", "r_incl_front"), ("/1/incl_lat", "r_incl_lat"), ("/1/still", "r_still"), ("/1/kickdir", "r_kickdir"), ("/1/direction", "r_direction"), ("/1/gyrkick", "r_gyrkick"), ("/1/dir_reriv", "r_dir_reriv") , ("/1/kick2", "r_kick2"), ("/0/raw", "r_raw"), ("1/quat", "r_quat"), ("/1/euler", "r_euler"), ("/1/kick", "r_kick"), ("/1/acc-intensity", "r_acc-intensity"), ("/1/incl_front", "r_incl_front"), ("/1/incl_lat", "r_incl_lat"), ("/1/still", "r_still"), ("/1/kickdir", "r_kickdir"), ("/1/direction", "r_direction"), ("/1/gyrkick", "r_gyrkick"), ("/1/dir_reriv", "r_dir_reriv") , ("/1/kick2", "r_kick2")}
+
+
+@obj_def rec_gest_R2_all($name)
+{
+    @init   {
+    @local $R_local_x, $R_local_y, $R_local_z, $R_local_incli_front, $R_local_incli_lateral, $R_local_intensity, $start_rec, $last_val, $nim, $last_date, $data, $action, $accum, $date, $dummy
+
+      // $data := [$R_x, $R_y, $R_z, $R_incli_front, $R_incli_lateral, $R_intensity]
+      $accum := 0.0
+      $start_rec := false
+      $last_val := [0, 0, 0, 0, 0, 0]
+      $data := $last_val
+      $last_date := $NOW
+
+        forall $g in $data
+        {
+            $g.suscribe($THISOBJ)
+        }
+         
+        // $gest_prefix_name := $gest.$name // retreive gest_prefix_name from osc_dispatch objet
+        
+    }
+
+   @fun_def new_data($prepend, $tab)
+   {
+    switch ($prepend)
+    {
+      case ("r_x"):
+      $R_local_x := $tab
+      case ("r_y"):
+      $R_local_y := $tab
+      case ("r_z"):
+      $R_local_z := $tab
+
+      case ("r_incl_front"):
+      $R_local_incli_front := $tab
+      case ("r_incl_lat"):
+      $R_local_incli_lateral := $tab
+      case ("r_intensity2"):
+      $R_local_intensity := $tab
+                                  
+    }    
+   }
+
+    @whenever($R_local_incli_front == $R_local_incli_front)
+    {
+          if($start_rec)
+          {
+              $data := [$R_local_x, $R_local_y, $R_local_z, $R_local_incli_front, $R_local_incli_lateral, $R_local_intensity]
+              $dummy := @push_back($nim, $last_val, $NOW - $last_date, $data)
+              $last_val := $data
+              $last_date := $NOW
+
+              print data $data
+              // print date ($NOW - $last_date)
+              // print now $NOW
+              // print lastdate $last_date
+              // print accum $accum
+              
+          }else { // init       
+              $nim := NIM {0, $last_val 0 $data }
+              $map_rec_gest := @add_pair($map_rec_gest, $name, $nim) // add NIM to dico
+              $start_rec := true
+              $last_val := [$R_x, $R_y, $R_z, $R_incli_front, $R_incli_lateral, $R_intensity]
+              $last_date := $NOW
+              print START START START 
+           }
+           
+    }
+
+   @abort {
+              forall $g in $data
+              {
+                  $g.unsuscribe($THISOBJ)
+              }
+              $map_rec_gest_dur := @add_pair($map_rec_gest_dur, $name, $NOW - $last_date) // add dur to dico
+              print ($NOW - $last_date)
+              $map_rec_gest($name).push_back(@max_val($map_rec_gest($name)), 1, @min_val($map_rec_gest($name)))
+
+              // abort $action
+
+   }
+}
+
+
+// @proc_def ::rec_gest_R2_all($name, $dur)
+// @abort
+// { 
+//   $map_rec_gest_dur := @add_pair($map_rec_gest_dur, $name, $NOW - $last_date) // add dur to dico
+//   print ($NOW - $last_date)
+//   _ := $map_rec_gest($name).push_back(@max_val($map_rec_gest($name)), 1, @min_val($map_rec_gest($name)))
+//   abort $action
+// }
+// {
+//   @local $start_rec, $last_val, $nim, $last_date, $data, $action, $accum, $date, $dummy
+//   $accum := 0.0
+//   $start_rec := false
+//   $last_val := [0, 0, 0, 0, 0, 0]
+//   $data := $last_val
+//   $last_date := $NOW
+   
+//   $action :=  {whenever ($R_incli_front==$R_incli_front)
+//     {
+//       if($start_rec)
+//       {
+//           $data := [$R_x, $R_y, $R_z, $R_incli_front, $R_incli_lateral, $R_intensity]
+//           $dummy := @push_back($nim, $last_val, $NOW - $last_date, $data)
+//           $last_val := $data
+//           $last_date := $NOW
+
+//           // print $data
+//           // print date ($NOW - $last_date)
+//           // print now $NOW
+//           // print lastdate $last_date
+//           // print accum $accum
+          
+//       }else { // init       
+//           $nim := NIM {0, $last_val 0 $data }
+//           $map_rec_gest := @add_pair($map_rec_gest, $name, $nim) // add NIM to dico
+//           $start_rec := true
+//           $last_val := [$R_x, $R_y, $R_z, $R_incli_front, $R_incli_lateral, $R_intensity]
+//           $last_date := $NOW
+//           print START START START 
+//        }
+       
+//     }
+//   }
+//     $dur abort $action  
+//     1 print final (@max_key($map_rec_gest($name))[0])
+//     // print (""+$map_rec_gest)
+// }
+
+
+// $play_synth1 := ::play_gest_loop_R2_del("gest1", "synth_play1", ["R_incli_lateral", "R_x", "R_z", "R_y"], ["01_TMFxShift2", "03_TPan8", "03_TPan8", "00_TAddic_5_8"], ["modfreq", "pos", "amp", "transp"], [[1, 60], [0., 2.], [-40, 20], [2., 0.1]], ["lin", "lin", "exp_out", "lin"], 60, 4, 6)
+
+@proc_def ::play_gest_loop_R2_del($name_gest, $synth, $list_gest, $modules, $params, $scales, $nim_fonction, $tpo, $dur, $nloop)
+{
+  @local $nim_rec, $min, $max, $inc, $idx
+
+  $inc := 0
+  $nim_rec := $map_rec_gest($name_gest)
+
+  // print recording (""+$map_rec_gest($name_gest))
+
+  $min := @min_key($nim_rec)[0]
+  $max := @max_key($nim_rec)[0]
+
+  loop $dur @tempo $tpo
+  {   
+    group 
+    {
+      curve slider @Grain := 0.01s, @Action := {
+        forall $idx in @size($list_gest)
+        {
+
+          // print $idx ($list_gest[$idx])
+          // print ($map_func($nim_fonction[$idx]))
+
+          // print ($gestes_index_R(
+            // print $list_gest[$idx]))
+          // print ($gestes_index_R($idx))
+          //print ($gestes_index_R($idx))
+          // print ($list_gest[$gestes_index_R($idx)]) ($nim_rec($x)[$gestes_index_R($idx)])
+          // print ($scales[$idx][$gestes_index_R($list_gest[$idx])]) // ($nim_rec($x)[$gestes_index_R2($list_gest[$idx])]) //()
+              // @scale($nim_fonction($gest_in)
+          crea_track8 $synth set ($modules[$idx]) ($params[$idx]) @scale($map_func($nim_fonction[$idx])($nim_rec($x)[$gestes_index_R($list_gest[$idx])]), 0., 1., $scales[$idx][0], $scales[$idx][1], 1)
+
+          // print crea_track8 $synth set ($modules[$idx]) ($params[$idx]) @scale($map_func($nim_fonction[$idx])($nim_rec($x)[$gestes_index_R($list_gest[$idx])]), 0., 1., $scales[$idx][0], $scales[$idx][1], 1)
+
+        }
+      }
+      { $x {    {($min)} 
+        ($dur)  {($dur)}} 
+      }
+    }
+    $inc := $inc+1
+    print ("loop"+$name_gest) $inc
+
+    if ($inc >= $nloop){
+      crea_track8 $synth off 1
+    }
+
+  } until ($inc >= $nloop)
+
+  $max print fin ("loop "+$name_gest)
+
+}
+
+
+

@@ -1,0 +1,8 @@
+{
+	"TAddic_50_8"	: {
+		"default"	: {
+			"d"	: 0,
+			"amp"	: 0,
+			"lag_spat"	: 0.2,
+			"distor"	: 0,
+			"pos"	: [

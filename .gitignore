@@ -1,0 +1,6 @@
+# exclude emacs editor auto save file
+*~
+
+# Mac info folder
+.DS_Store
+

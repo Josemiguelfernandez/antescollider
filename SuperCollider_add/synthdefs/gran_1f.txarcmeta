@@ -1,0 +1,69 @@
+var o, p;
+o = [
+	Event.prNew,  Array.prNew(4),  Event.prNew,  Array.prNew(48),  
+	Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  Array.prNew(5)
+];
+p = [
+	// Event
+	0, [ array: o[1],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	1, [ 'specs',  o[2],  nil,  nil ],  
+	// Event
+	2, [ array: o[3],  size: 12,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	3, [ 'rate',  o[4],  'overlap',  o[5],  
+		'bpHi',  o[6],  nil,  nil,  
+		'posLo',  o[7],  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'posRateM',  o[8],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'posRateE',  o[9],  
+		nil,  nil,  'bpRQ',  o[10],  
+		nil,  nil,  'posHi',  o[11],  
+		'panMax',  o[12],  nil,  nil,  
+		'bpLo',  o[13],  nil,  nil,  
+		'amp',  o[14],  'trigRate',  o[15] ],  
+	// Array
+	4, [ 0.1,  2,  'lin',  0.01,  
+		0.75 ],  
+	// Array
+	5, [ 0.2,  12,  'lin',  0.01,  
+		7 ],  
+	// Array
+	6, [ 100,  5000,  'lin',  0,  
+		3000 ],  
+	// Array
+	7, [ 0.01,  0.99,  'lin',  0.01,  
+		0 ],  
+	// Array
+	8, [ 0.1,  10,  'exp',  0.01,  
+		1.35 ],  
+	// Array
+	9, [ -3,  4,  'lin',  1,  
+		-1 ],  
+	// Array
+	10, [ 0.05,  1,  'lin',  0,  
+		0.18 ],  
+	// Array
+	11, [ 0.01,  0.99,  'lin',  0.01,  
+		0.5 ],  
+	// Array
+	12, [ 0.0.0,  1,  'lin',  0.005,  
+		0.75 ],  
+	// Array
+	13, [ 100,  5000,  'lin',  0,  
+		300 ],  
+	// Array
+	14, [ 0.0.0,  3,  'lin',  0.005,  
+		1 ],  
+	// Array
+	15, [ 1,  200,  'lin',  0.01,  
+		90 ]
+];
+prUnarchive(o,p);

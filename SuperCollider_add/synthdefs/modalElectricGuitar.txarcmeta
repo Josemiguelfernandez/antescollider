@@ -1,0 +1,17 @@
+var o, p;
+o = [
+	Event.prNew,  Array.prNew(12),  Array.prNew(2),  "by Josh Mitchell"
+];
+p = [
+	// Event
+	0, [ array: o[1],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	1, [ 'category',  'guitar',  nil,  nil,  
+		nil,  nil,  'tags',  o[2],  
+		nil,  nil,  'credit',  o[3] ],  
+	// Array
+	2, [ 'pitched',  'modal' ]
+];
+prUnarchive(o,p);

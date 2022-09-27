@@ -1,0 +1,9 @@
+{
+	"Warbulence_mod"	: {
+		"default"	: {
+			"freq"	: 200,
+			"exp_line"	: 10,
+			"amp"	: -6
+		}
+	}
+}

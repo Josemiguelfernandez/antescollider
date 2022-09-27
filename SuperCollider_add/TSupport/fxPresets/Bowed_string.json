@@ -1,0 +1,20 @@
+{
+	"Bowed_string"	: {
+		"psycho2"	: {
+			"freq"	: 215.481,
+			"amp"	: -5.4348430183974
+		},
+		"preset0"	: {
+			"freq"	: 0,
+			"amp"	: 0
+		},
+		"psycho1"	: {
+			"freq"	: 41.18,
+			"amp"	: -20.0
+		},
+		"bow_synth-bol"	: {
+			"freq"	: 219.973,
+			"amp"	: -20.915409
+		}
+	}
+}

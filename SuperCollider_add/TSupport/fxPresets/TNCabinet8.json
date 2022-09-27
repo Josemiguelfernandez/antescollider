@@ -1,0 +1,14 @@
+{
+	"TNCabinet8"	: {
+		"default"	: {
+			"lag"	: 0.1,
+			"hpp"	: 50,
+			"lmt"	: 3500,
+			"amp"	: 0,
+			"lpp"	: 100,
+			"res"	: 0.1,
+			"drv"	: 0,
+			"tlt"	: -12
+		}
+	}
+}

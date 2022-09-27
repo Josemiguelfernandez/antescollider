@@ -1,0 +1,1222 @@
+/* ©nadirB. 2018-2021 */
+
+@global $pi
+$pi := 3.141592653589793
+
+/*#######################Function Definitions#################*/
+
+@fun_def @rad2deg($alpha, $pi){(($alpha*180)/$pi)}
+@fun_def @deg2rad($deg){($deg/180)} ;Should be $deg*$pi/180 but $iniT & $targeT are already multiplied by $pi in the inserted trajectory processes !!
+
+
+@fun_def @rectilinearX($t, $a, $alpha){$a+($t*$alpha)}
+@fun_def @rectilinearY($t, $b, $beta){$b+($t*$beta)}
+
+@fun_def circleX($t, $radius, $offsetX){$radius*@cos($t) + $offsetX}
+@fun_def circleY($t, $radius, $offsetY){$radius*@sin($t) + $offsetY}
+
+@fun_def @ellipseX($a, $alpha, $t, $offsetX){$a*@cos($t) - $alpha*@sin($t) + $offsetX}
+@fun_def @ellipseY($b, $beta, $t,  $offsetY){$b*@sin($t) - $beta*@cos($t) + $offsetY}
+
+@fun_def @sinFunc($x, $w, $amp, $offset, $pi) {(@sin(($x*$w))*$amp) + ($offset*$pi)}
+
+@fun_def @lissajouX($a, $m, $t){$a * @sin($m * $t)}
+@fun_def @lissajouY($b, $n, $t){$b * @cos($n * $t )}
+
+@fun_def @lissajouBisX($t, $k){@cos($k*$t)*@sin($t)}
+@fun_def @lissajouBisY($t, $k){@sin($k*$t)*@cos($t)}
+
+@fun_def @deltoideX($t,  $r, $offsetX) {2*$r * @cos($t) + $r * @cos(2 * $t) + $offsetX}
+@fun_def @deltoideY( $t,  $r, $offsetY) {2*$r*@sin($t) - $r*@sin(2*$t) + $offsetY}
+
+@fun_def @rosaceX($t, $k){@cos($k*$t)*@sin($t)}
+@fun_def @rosaceY($t, $k){@cos(-$k*$t)*@cos($t)}
+
+@fun_def @rosaceVariationX($t,$p,$q){($p*@cos($t)+@cos($q*$t))}
+@fun_def @rosaceVariationY($t,$p,$q){($p*@sin($t)-@sin($q*$t))}
+
+@fun_def @gaussOgnion($k, $x, $offset){($k * @exp(-0.2*@pow($x, 2)) + $offset)}
+
+@fun_def @hypocycloide1X( $t, $b, $offsetX){$b * ((2 * @sin($t)) - @sin(2 * $t)) + $offsetX}
+@fun_def @hypocycloide1Y($t, $a, $offsetY){($a * (1 + @cos($t))) * ((2 * @cos($t)) + @cos($t)) + $offsetY}
+
+@fun_def @hypocycloide2X( $t, $a, $offsetX){$a*(2*@cos($t)) + @cos($t) + $offsetX}
+@fun_def @hypocycloide2Y($t, $b, $offsetY){$b*(2*@sin($t)) - @sin(2*$t) + $offsetY}
+
+@fun_def @curvoideX($t, $b){($b*(1+@cos($t)))*((2*@sin($t)) - @sin(2*$t))}
+@fun_def @curvoideY($t, $a){($a*(1+@cos($t)))*((2 * @cos($t)) + @cos($t))}
+
+@fun_def @hypocycloideVariationsX( $t, $R, $r, $offsetY){($R-$r)*@sin($t) - $r*@sin((($R-$r)/$r)*$t) + $offsetY}
+@fun_def @hypocycloideVariationsY($t, $R, $r, $offsetX){($R-$r)*@cos($t) + $r*@cos((($R-$r)/$r)*$t) + $offsetX}
+
+@fun_def @epiX( $t, $m, $offsetX){1/@sin($m*$t) * @cos($t) + $offsetX}
+@fun_def @epiY($t, $m, $offsetY){1/@sin($m*$t) * @sin($t) + $offsetY}
+
+/* #############3D###################### */
+
+@fun_def @generic3DX($t,$a,$b, $offsetX){@sin($a*$t)*@cos($b*$t)+$offsetX}
+@fun_def @generic3DY($t,$a,$b, $offsetY){@sin($a*$t)*@sin($b*$t)+$offsetY}
+@fun_def @generic3DZ($t, $c, $offsetZ){@cos($c*$t)+$offsetZ}
+
+/* $a = rayon & 2$pi$b = distance between 2 conscutive turn & if $e = 1 -> dextre (droite), if e = -1 senestre (gauche) */
+@fun_def @helicoideX($a, $t, $offsetX){($a*@cos($t))+$offsetX}
+@fun_def @helicoideY($a, $t, $offsetY){(($a*@sin($t)))+$offsetY}
+@fun_def @helicoideZ($b, $t, $offsetZ){($b*$t)+$offsetZ}
+
+/* clélie Curve */
+
+@fun_def @clelieX($R, $n, $t, $offsetX){$R*@cos($n*$t)*@cos($t)+$offsetX}
+@fun_def @clelieY($R, $n, $t, $offsetY){$R*@cos($n*$t)*@sin($t)+$offsetY}
+@fun_def @clelieZ($R, $n, $t, $offsetZ){$R*@sin($n*$t)+$offsetZ}
+
+/* couronne sinusoidale */
+/* n > 0 */
+
+@fun_def @couronneX($a, $b, $n, $t, $offsetX) {$a*@cos($t)+$offsetX}
+@fun_def @couronneY($a, $b, $n, $t, $offsetY) {$a*@sin($t)+$offsetY}
+@fun_def @couronneZ($a, $b, $n, $t, $offsetZ) {$b*@cos($n*$t)+$offsetZ}
+
+/* lissajou 3D */
+
+@fun_def @lissajou3DX($a, $t, $offsetX){$a*@sin($t)+$offsetX}
+@fun_def @lissajou3DY($b, $n, $t, $offsetY){$b*@sin($n*$t)+$offsetY}
+@fun_def @lissajou3DZ($c, $m, $t, $offsetZ){$c*@sin($m*$t)+$offsetZ}
+
+
+/*#######################Function Compilation#################*/
+
+@compilation(MAP{
+
+	@rad2deg -> [["double", "double"], "double"],
+	@deg2rad -> [["double"], "double"],
+
+	@rectilinearX -> [["double", "double", "double"], "double"],
+	@rectilinearY -> [["double", "double", "double"], "double"],
+
+	@circleX -> [["double", "double", "double"], "double"],
+	@circleY -> [["double", "double", "double"], "double"],
+
+	@ellipseX -> [["double", "double", "double", "double" ], "double"],
+	@ellipseY -> [["double", "double", "double", "double"], "double"],
+
+	@sinFunc -> [["double", "double", "double", "double", "double"], "double"],
+
+	@lissajouX -> [["double", "double", "double"], "double"],
+	@lissajouY -> [["double", "double", "double"], "double"],
+
+	@lissajouBisX -> [["double", "double"], "double"],
+	@lissajouBisY -> [["double", "double"], "double"],
+
+	@deltoideX -> [["double", "double", "double"], "double"],
+	@deltoideY ->	[["double", "double", "double"], "double"],
+
+	@rosaceX -> [["double", "double"], "double"],
+	@rosaceY -> [["double", "double"], "double"],
+
+	@rosaceVariationX -> [["double", "double", "double"], "double"],
+	@rosaceVariationY -> [["double", "double", "double"], "double"],
+
+	@gaussOgnion -> [["double", "double", "double"], "double"],
+
+	@hypocycloide1X -> [["double", "double", "double"], "double"],
+	@hypocycloide1Y -> [["double", "double", "double"], "double"],
+
+	@hypocycloide2X -> [["double", "double", "double"], "double"],
+	@hypocycloide2Y -> [["double", "double", "double"], "double"],
+
+	@curvoideX -> [["double", "double"], "double"],
+	@curvoideY -> [["double", "double"], "double"],
+
+	@generic3DX -> [["double", "double", "double", "double"], "double"],
+	@generic3DY -> [["double", "double", "double", "double"], "double"],
+	@generic3DX -> [["double", "double", "double"], "double"],
+
+	@helicoideX -> [["double", "double", "double"], "double"],
+	@helicoideY -> [["double", "double", "double"], "double"],
+	@helicoideX -> [["double", "double", "double"], "double"],
+
+	@clelieX -> [["double", "double", "double", "double"], "double"],
+	@clelieY -> [["double", "double", "double", "double"], "double"],
+	@clelieZ -> [["double", "double", "double", "double"], "double"],
+
+	@couronneX -> [["double", "double", "double", "double", "double"], "double"],
+	@couronneY -> [["double", "double", "double", "double", "double"], "double"],
+	@couronneZ -> [["double", "double", "double", "double", "double"], "double"],
+
+
+
+@lissajou3DX -> [["double", "double", "double"], "double"],
+@lissajou3DY -> [["double", "double", "double", "double"], "double"],
+@lissajou3DZ -> [["double", "double", "double", "double"], "double"],
+
+})
+
+/*#######################Process::rectilinear#################*/
+
+@proc_def ::rectilinear($server_name, $track_id, $iniT=-1, $targeT=1, $a=0, $b=0, $alpha=1, $beta=0, $speed=4, $loop_num=1, $elev=0)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $xyz)
+	$trajs_index += 1
+
+	@local $body, $t ; to use for setvar outControl with a whenever{(setvar...==setvar...)}
+	$body := 0.
+
+	// @local $cpt, $prefix
+	// $cpt := 0
+
+	// @history_clear()
+
+	// $prefix := "/source/" + $src + "/xy"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+	loop $speed
+
+	{
+		curve @grain := 0.01s @Action := {
+			TRAJECTORY  @rectilinearX($t, $a, $alpha) @rectilinearY($t, $b, $beta)
+		}
+
+				@abort :=
+				{		kill lineLoop
+						print_antescofo "lineCurve aborted at " $t
+						Curve rectilinearAbort
+						@grain 0.1
+						@action := {print_message "handler lineCurve: " $t
+						TRAJECTORY @rectilinearX($t, $a, $alpha) @rectilinearY($t, $b, $beta)
+						}
+
+						{
+
+							$t {
+										{ ($t)  } /*@type "exp"*/
+									$speed { ($targeT) }
+							}
+						}
+					}
+
+
+
+			{
+				$t
+				{
+								 { ($iniT)  } /*@type "exp"*/
+					$speed { ($targeT) }
+
+
+				}
+		}
+
+	} during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish	
+
+
+}
+
+/*#######################Process::circle#################*/
+
+/*
+@proc_def circle($src=1, $iniT=3/4, $targeT=2+3/4, $radius=1, $offsetX=0, $offsetY=0, $count=1, $speed=4, $loop_num=1, $elev=0)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $xyz)
+	$trajs_index += 1
+
+		// @local $cpt, $prefix
+		// $cpt := 0
+		// @history_clear()
+
+		// $prefix := "/source/" + $src + "/xy"
+		// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+		loop $speed
+		// @abort := {
+			// print_message "Curve C aborted at " $t
+			Curve @grain := 0.1 @action := {
+				;print_message "handler curve: " $t
+				// TRAJECTORY @circleX($t, $radius, $offsetX) @circleY($t, $radius, $offsetY)
+			$xyz[0] := @circleX($t, $radius, $offsetX)
+			$xyz[1] := @circleY($t, $radius, $offsetY)
+			$xyz[2] := $elev
+
+			}
+
+			{
+				$t {
+					{ ($t)  } //@type "exp"
+					$speed { ($iniT*$pi) }
+				}
+			} 
+		// }
+
+		{
+			// $cpt := $cpt + 1 //loop counter
+			curve @grain := 0.01s @action := {
+				// TRAJECTORY @circleX($t, $radius, $offsetX) @circleY($t, $radius, $offsetY)
+			$xyz[0] := @circleX($t, $radius, $offsetX)
+			$xyz[1] := @circleY($t, $radius, $offsetY)
+			$xyz[2] := $elev
+
+			}
+
+				{
+					$t {
+						{ ($iniT*$pi)  } /*@type "exp"
+						$speed { ($targeT*$pi) }
+						}
+				}
+
+			// print_antescofo tour $cpt ":" ;prints the number of loops
+
+		} during[$loop_num#] ; set the loop during $count/number of beats related to the BPM
+}
+*/
+
+/*#######################Process::ellipse#################*/
+
+
+@proc_def ::ellipse($server_name, $track_id, $initT = 0, $endT=2, $a=2, $b=0.2, $alpha=0, $beta=0, $offsetX=0, $offsetY=0, $speed=4, $loop_num=1, $elev=0)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $xyz)
+	$trajs_index += 1
+
+	// @global $speed ; to use for setvar outControl with a whenever{(setvar...==setvar...)}
+	// @local $offset, $cpt1,  $prefix
+	// $offset := 0.
+	// $cpt1 := 0
+
+	// $prefix := "/source/" + $src + "/xy"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+	loop $speed
+	{
+		// $cpt1 := $cpt1+1
+
+		curve @grain := 0.02s @Action := {
+			// TRAJECTORY @ellipseX($a, $alpha, $t, $offsetX) @ellipseY($b, $beta, $t, $offsetY)
+		$xyz[0] := @ellipseX($a, $alpha, $t, $offsetX)
+		$xyz[1] := @ellipseY($b, $beta, $t, $offsetY)
+		$xyz[2] := $elev
+		// print ellipse (""+$xyz)
+		$Servers($server_name).n_set($track_id, ["x", $xyz[0]+$HOA_global_x, "y", $xyz[1]+$HOA_global_y, "z", $xyz[2]+$HOA_global_z])		            
+
+
+		}
+				{
+					$t
+					{
+									 { ($initT*$pi) } /*@type "exp"*/
+						$speed { ($endT*$pi) }
+					}
+				}
+
+		// print_antescofo "tour:" $cpt1
+
+	} during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish	
+
+
+}
+
+/*#######################Process::sin#################*/
+
+@proc_def ::sin_trajectory($server_name, $track_id, $iniT=-1, $targeT=1, $amp=1, $w=1, $offset=0, $speed=4, $loop_num=1, $elev=0)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $xyz)
+	$trajs_index += 1
+
+	loop $speed
+	{
+	;abort picurve
+	// $prefix := "/source/" + $src + "/xy"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+	curve @grain := 0.02s @Action := {
+		// $val := @sinFunc($x, $w, $amp, $offset, $pi)
+		// TRAJECTORY  $x $val
+	$xyz[0] := $x
+	$xyz[1] := @sinFunc($x, $w, $amp, $offset, $pi)
+	$xyz[2] := $elev
+
+	$Servers($server_name).n_set($track_id, ["x", $xyz[0]+$HOA_global_x, "y", $xyz[1]+$HOA_global_y, "z", $xyz[2]+$HOA_global_z])		            
+
+	}
+			{
+				$x
+				{
+								 { ($iniT)  } /*@type "exp"*/
+					$speed { ($targeT) }
+				}
+			}
+	} during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish	
+
+}
+
+/*#######################Process::lissajou#################*/
+
+@proc_def ::lissajou($server_name, $track_id, $initT=-1, $endT=1, $a=1, $b=1, $m=1, $n=1, $speed=4, $loop_num=1, $elev=0)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $xyz)
+	$trajs_index += 1
+
+	// @global $speed ; to use for setvar outControl with a whenever{(setvar...==setvar...)}
+
+	// @local $cpt, $prefix
+	// $cpt := 0
+
+	// @history_clear()
+
+	// $prefix := "/source/" + $src + "/xy"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+	loop $speed
+	{
+		;abort lissajou_curve
+
+		// $cpt := $cpt + 1
+
+		curve @grain := 0.01s
+		@Action := { 
+			// TRAJECTORY @lissajouX($a, $m, $t) @lissajouY($b, $n, $t)
+	$xyz[0] := @lissajouX($a, $m, $t)
+	$xyz[1] := @lissajouY($b, $n, $t)
+	$xyz[2] := $elev
+
+	// $Servers($server_name).n_set($track_id, ["x", $xyz[0]+$HOA_global_x, "y", $xyz[1]+$HOA_global_y, "z", $xyz[2]+$HOA_global_z])		            
+	$Servers($server_name).n_set($track_id, ["coords", @cartopol3D_tab($xyz)])	
+
+		}
+
+			{
+					$t
+					{
+									 { ($initT*$pi)  } ;@type "sine_in"
+						$speed { ($endT*$pi) }  ;@type "sine_out"
+
+
+					}
+			}
+
+			// print_antescofo $cpt
+
+	} during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish		
+
+}
+
+/*#######################Process::lissajouBis#################*/
+
+@proc_def ::lissajou_bis($server_name, $track_id, $initT=0, $targeT=1, $k=1, $speed=4, $loop_num=1, $elev=0)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $xyz)
+	$trajs_index += 1
+
+	// $prefix := "/source/" + $src + "/xy"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+	loop $speed 
+	{
+
+		curve @grain := 0.01s
+		@Action := {
+			// TRAJECTORY  @lissajouBisX($t, $k) @lissajouBisY($t, $k)
+	$xyz[0] := @lissajouBisX($t, $k)
+	$xyz[1] := @lissajouBisY($t, $k)
+	$xyz[2] := $elev
+
+	// $Servers($server_name).n_set($track_id, ["x", $xyz[0]+$HOA_global_x, "y", $xyz[1]+$HOA_global_y, "z", $xyz[2]+$HOA_global_z])		            
+	// $Servers($server_name).n_set($track_id, ["coords", @cartopol3D_tab($xyz)])	
+	$Servers($server_name).n_set($track_id, ["coords", $xyz])	
+
+
+		}
+
+				{
+					$t
+					{
+						{ ($initT*$pi) } ;@type "sine_in"
+						$speed { ($targeT*$pi) } ;@type "sine_out"
+					}
+				}
+
+	} during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish	
+
+}
+
+/*#######################Process::curve#################*/
+
+@proc_def ::spat_curve($server_name, $track_id, $initAz, $Az, $initDist, $Dist, $speed, $loop_num=1, $elev=0)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $xyz)
+	$trajs_index += 1
+
+	// @local $cpt, $prefix
+	// $cpt := 0
+
+	// $prefix := "/source/" + $src + "/ad"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+	;abort spat_angle_deg
+	loop $speed 
+	{
+
+		curve @grain := 0.01s @Action := { TRAJECTORY $azim  $distance }
+
+		{
+			$azim, $distance {
+
+				{ $initAz, $initDist}
+				$speed { $Az, $Dist}
+
+			}
+
+		}
+
+		;print_message $Az	
+	}during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish	
+
+}
+
+
+/*#######################Process::deltoide#################*/
+
+
+@proc_def ::deltoide($server_name, $track_id, $initT=-1, $endT=1, $r=0.2, $offsetX=0.2, $offsetY=0, $speed=4, $loop_num=1, $elev=0)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $xyz)
+	$trajs_index += 1
+
+	// @local $cpt, $prefix
+	// $cpt := 0
+
+	// $prefix := "/source/" + $src + "/xyz"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+	loop $speed
+	{
+	;abort deltoideCurve
+
+	curve @grain := 0.02s @Action := {
+		// TRAJECTORY @deltoideX($t,  $r, $offsetX) @deltoideY($t,  $r, $offsetY) $z
+	$xyz[0] := @deltoideX($t,  $r, $offsetX)
+	$xyz[1] := @deltoideY($t,  $r, $offsetY)
+	$xyz[2] := $elev
+
+	$Servers($server_name).n_set($track_id, ["x", $xyz[0]+$HOA_global_x, "y", $xyz[1]+$HOA_global_y, "z", $xyz[2]+$HOA_global_z])		            
+
+	}
+
+			{
+				$t
+				{
+								 { ($initT*$pi)}
+					$speed { ($endT*$pi) }
+				}
+			}
+	}during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish	
+
+}
+
+/*#######################Process::rosace#################*/
+
+@proc_def ::rosace_trajectory($server_name, $track_id, $initT=0, $targeT=2, $k=2, $speed=4, $loop_num=1, $elev=0)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $xyz)
+	$trajs_index += 1
+
+	// $prefix := "/source/" + $src + "/xy"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+	loop $speed
+	{
+		// abort rosaceCurve
+
+		curve @grain := 0.01s @Action := {
+			// TRAJECTORY  @rosaceX($t, $k) @rosaceY($t, $k)
+	$xyz[0] := @rosaceX($t, $k)
+	$xyz[1] := @rosaceY($t, $k)
+	$xyz[2] := $elev
+
+ 	// print rosace (""+$xyz)
+
+	$Servers($server_name).n_set($track_id, ["x", $xyz[0]+$HOA_global_x, "y", $xyz[1]+$HOA_global_y, "z", $xyz[2]+$HOA_global_z])		            
+
+
+		}
+
+			{
+				$t
+						{
+								   	 { ($initT*$pi) } /*@type "exp"*/
+							$speed { ($targeT*$pi) }
+						}
+			}
+
+	} during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish	
+
+}
+
+/*#######################Process::rosaceVariation#################*/
+
+@proc_def ::rosace_trajectory_variation($server_name, $track_id, $initC=0, $cycle=2, $p=1, $q=2, $speed=4, $loop_num=1, $elev=0)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $xyz)
+	$trajs_index += 1
+
+	// @global $speed ; to use for setvar outControl with a whenever{(setvar...==setvar...)}
+	// @local $offset
+	// $offset := 0.
+
+	// @local $cpt
+	// $cpt := 0
+
+	// $prefix := "/source/" + $src + "/xy"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+    loop $speed
+	{
+
+		// $cpt := $cpt + 1
+
+		// abort rosaceVariationCurve
+
+		curve @grain := 0.01s @Action := {
+			// TRAJECTORY  @rosaceVariationX($t, $p, $q) @rosaceVariationY($t, $p, $q)
+	$xyz[0] := @rosaceVariationX($t, $p, $q)
+	$xyz[1] := @rosaceVariationY($t, $p, $q)
+	$xyz[2] := $elev
+
+	$Servers($server_name).n_set($track_id, ["x", $xyz[0]+$HOA_global_x, "y", $xyz[1]+$HOA_global_y, "z", $xyz[2]+$HOA_global_z])		            
+
+		}
+
+			{
+				$t
+						{
+								   	 { ($initC*$pi)  } /*@type "exp"*/
+							$speed { ($cycle*$pi) }
+						}
+			}
+
+			// print_antescofo "trajectory nº" $cpt
+
+	}during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish	
+
+}
+
+/*#######################Process::rosaceVariation#################*/
+
+@proc_def ::gauss($server_name, $track_id, $iniT=-3, $targeT=1, $k=-1, $offset=0, $speed=4, $loop_num=1, $elev=0)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $xyz)
+	$trajs_index += 1
+
+	// $prefix := "/source/" + $src + "/xy"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+	loop $speed
+	{
+	;abort gaussOgnionCurve
+
+	curve @grain := 0.02s @Action := {
+		$val := @gaussOgnion($k, $x, $offset)
+		// TRAJECTORY   $x $val
+	$xyz[0] := $x
+	$xyz[1] := $val
+	$xyz[2] := $elev
+
+	$Servers($server_name).n_set($track_id, ["x", $xyz[0]+$HOA_global_x, "y", $xyz[1]+$HOA_global_y, "z", $xyz[2]+$HOA_global_z])		            
+
+	}
+
+			{
+				$x
+				{
+								 { ($iniT)  } /*@type "exp"*/
+					$speed { ($targeT*($pi)) }
+
+				}
+			}
+
+	}during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish	
+
+}
+
+
+/*#######################Process::hypocycloide1#################*/
+
+@proc_def ::hypocycloide1($server_name, $track_id, $initT=0, $endT=2, $a=0.3, $b=0.3, $offsetX=0, $offsetY=0, $speed=4, $loop_num=1, $elev=0)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $xyz)
+	$trajs_index += 1
+
+	// $prefix := "/source/" + $src + "/xy"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+    loop $speed
+	{
+		;abort hypocycloideCurve
+
+		curve @grain := 0.02s @Action := {
+			// TRAJECTORY  @hypocycloide1X($t, $a, $offsetX) @hypocycloide1Y($t, $b, $offsetY)
+	$xyz[0] := @hypocycloide1X($t, $a, $offsetX)
+	$xyz[1] := @hypocycloide1Y($t, $b, $offsetY)
+	$xyz[2] := $elev
+
+	$Servers($server_name).n_set($track_id, ["x", $xyz[0]+$HOA_global_x, "y", $xyz[1]+$HOA_global_y, "z", $xyz[2]+$HOA_global_z])		            
+
+
+		}
+
+				{
+					$t
+							{
+									   { ($initT*$pi)  } /*@type "exp"*/
+								$speed { ($endT*$pi) }
+
+							}
+				}
+
+	}during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish
+
+
+}
+
+/*#######################Process::hypocycloide2#################*/
+
+@proc_def ::hypocycloide2($server_name, $track_id, $initT=0, $endT=2, $a=0.3, $b=0.3, $offsetX=0, $offsetY=0, $speed=1, $loop_num=1, $elev=0)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $xyz)
+	$trajs_index += 1
+
+	// $prefix := "/source/" + $src + "/xy"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+    loop $speed
+	{
+		;abort hypocycloide2Curve
+
+		curve @grain := 0.02s @Action := {
+			// TRAJECTORY @hypocycloide2X($t, $a, $offsetX) @hypocycloide2Y($t, $b, $offsetY)
+	$xyz[0] := @hypocycloide2X($t, $a, $offsetX)
+	$xyz[1] := @hypocycloide2Y($t, $b, $offsetY)
+	$xyz[2] := $elev
+
+	$Servers($server_name).n_set($track_id, ["x", $xyz[0]+$HOA_global_x, "y", $xyz[1]+$HOA_global_y, "z", $xyz[2]+$HOA_global_z])		            
+
+
+		}
+
+				{
+					$t
+							{
+									   	 { ($initT*$pi)  } /*@type "exp"*/
+								$speed { ($endT*$pi) }
+
+							}
+				}
+
+	}during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish
+
+
+}
+
+/*#######################Process::curvoide#################*/
+
+@proc_def ::curvoide($server_name, $track_id, $initT=-1, $endT=1, $a=0.2, $b=0.2, $offsetX=0, $offsetY=0, $speed=4, $loop_num=1, $elev=0)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $xyz)
+	$trajs_index += 1
+
+	// $prefix := "/source/" + $src + "/xy"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+    loop $speed
+	{
+		;abort curvoideCurve
+
+		curve @grain := 0.02s @Action := {
+			// TRAJECTORY  @curvoideX($t, $a) @curvoideY($t, $b)
+
+	$xyz[0] := @curvoideX($t, $a)
+	$xyz[1] := @curvoideY($t, $b)
+	$xyz[2] := $elev
+
+	$Servers($server_name).n_set($track_id, ["x", $xyz[0]+$HOA_global_x, "y", $xyz[1]+$HOA_global_y, "z", $xyz[2]+$HOA_global_z])		            
+
+		}
+
+				{
+					$t
+							{
+									   	 { ($initT*$pi)  } /*@type "exp"*/
+								$speed { ($endT*$pi) }
+
+							}
+				}
+
+	}during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish
+
+
+}
+
+/*#######################Process::hypocycloideVariations#################*/
+
+
+@proc_def ::hypocycloideVariations($server_name, $track_id, $initT=0, $endT=2, $R=1, $r=1/3, $offsetX=0, $offsetY=0, $speed=4, $loop_num=1, $elev=0)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $xyz)
+	$trajs_index += 1
+
+	// $prefix := "/source/" + $src + "/xy"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+	loop $speed @exclusive
+	{
+	;abort hypocycloideVariationsCurve
+
+	curve @grain := 0.02s @Action := {
+		// TRAJECTORY  @hypocycloideVariationsX($t, $R, $r, $offsetX) @hypocycloideVariationsY($t, $R, $r, $offsetY)
+	$xyz[0] := @hypocycloideVariationsX($t, $R, $r, $offsetX)
+	$xyz[1] := @hypocycloideVariationsY($t, $R, $r, $offsetY)
+	$xyz[2] := $elev		
+
+	$Servers($server_name).n_set($track_id, ["x", $xyz[0]+$HOA_global_x, "y", $xyz[1]+$HOA_global_y, "z", $xyz[2]+$HOA_global_z])		            
+
+	}
+
+			{
+				$t
+				{
+								 { ($initT*$pi) }
+					$speed { ($endT*$pi) }
+
+				}
+			}
+
+	}during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish
+
+
+}
+
+/*#######################Process::epi#################*/
+
+@proc_def ::epi($server_name, $track_id, $initT=0.01, $endT=2, $m=(2*$pi), $offsetX=0, $offsetY=0, $speed=4, $loop_num=1, $elev=0)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $epi_xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $epi_xyz)
+	$trajs_index += 1	
+
+	// @global $speed ; to use for setvar outControl with a whenever{(setvar...==setvar...)}
+	// @local $offset
+	// $offset := 0.
+
+	// $prefix := "/source/" + $src + "/xy"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+    loop $speed
+	{
+		;abort epiCurve
+
+		curve @grain := 0.02s @Action := {
+			// TRAJECTORY @epiX($t, $m, $offsetX) @epiY($t, $m, $offsetY)
+	$epi_xyz[0] := @epiX($t, $m, $offsetX)
+	$epi_xyz[1] := @epiY($t, $m, $offsetY)
+	$epi_xyz[2] := $elev
+
+	$Servers($server_name).n_set($track_id, ["x", $epi_xyz[0]+$HOA_global_x, "y", $epi_xyz[1]+$HOA_global_y, "z", $epi_xyz[2]+$HOA_global_z])		            
+
+
+		}
+
+				{
+					$t
+							{
+									   	 { ($initT*$pi)  } /*@type "exp"*/
+								$speed { ($endT*$pi) }
+
+
+							}
+				}
+
+	}during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish
+
+
+}
+
+/*########################3DProcess::generic3D#################*/
+
+
+@proc_def generic3D($server_name, $track_id, $initT=1, $targeT=3, $a=1,$b=1,$c=1, $offsetX=0, $offsetY=0, $offsetZ=1, $speed=1, $loop_num=1)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+
+{
+	@local $generic3D_xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $generic3D_xyz)
+	$trajs_index += 1		
+	// @global $SPEED ; to use for setvar outControl with a whenever{(setvar...==setvar...)}
+	// @local $offset
+	// $offset := 0.
+
+	// $prefix := "/source/" + $src + "/xyz"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+    loop $speed
+	{
+		;abort generic3DCurve
+			// TRAJECTORY @generic3DX($t,$a,$b, $offsetX) @generic3DY($t,$a,$b,$offsetY) @generic3DZ($t,$c,$offsetZ)
+		curve @grain := 0.001s @Action := {
+	$generic3D_xyz[0] := @generic3DX($t,$a,$b, $offsetX)
+	$generic3D_xyz[1] := @generic3DY($t,$a,$b,$offsetY)
+	$generic3D_xyz[2] := @generic3DZ($t,$c,$offsetZ)
+
+	$Servers($server_name).n_set($track_id, ["x", $generic3D_xyz[0]+$HOA_global_x, "y", $generic3D_xyz[1]+$HOA_global_y, "z", $generic3D_xyz[2]+$HOA_global_z])		            
+
+							}
+
+		{
+			$t
+					{
+							   	 { ($initT*$pi)  } /*@type "exp"*/
+						$speed { ($targeT*$pi) }
+
+					}
+		}
+
+	}during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish
+
+}
+
+
+
+
+/*########################3DProcess::helicoide#################*/
+
+@proc_def ::helicoide3D($server_name, $track_id, $initT=1/2, $endT=4+1/2, $a=0.7, $b=0.2, $offsetX=0, $offsetY=0, $offsetZ=0, $speed=4, $loop_num=1)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $helicoide_xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $helicoide_xyz)
+	$trajs_index += 1	
+
+	// $prefix := "/source/" + $src + "/xyz"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+	loop $speed @exclusive
+	{
+	// abort helicoideCurve
+
+	curve @grain := 0.02s @Action := {
+		// TRAJECTORY  @helicoideX($a, $t, $offsetX) @helicoideY($a, $t, $offsetY) @helicoideZ($b, $t, $offsetZ)
+	$helicoide_xyz[0] := @helicoideX($a, $t, $offsetX)
+	$helicoide_xyz[1] := @helicoideY($a, $t, $offsetY)
+	$helicoide_xyz[2] := @helicoideZ($b, $t, $offsetZ)
+
+	$Servers($server_name).n_set($track_id, ["x", $helicoide_xyz[0]+$HOA_global_x, "y", $helicoide_xyz[1]+$HOA_global_y, "z", $helicoide_xyz[2]+$HOA_global_z])		            
+
+	}
+
+			{
+				$t
+				{
+								 { ($initT*$pi) }
+					$speed { ($endT*$pi) }
+
+				}
+			}
+	}during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish
+}
+
+/*#######################Process::clelie#################*/
+
+
+// @proc_def ::clelie($src=1, $initT=-1, $endT=1, $R=1, $n=1, $offsetX=0, $offsetY=0, $offsetZ=0, $speed=4){
+
+// 	$prefix := "/source/" + $src + "/xyz"
+// 	oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+// 	;loop clelieLoop $speed @exclusive{
+// 	abort clelieCurve
+
+// 	curve clelieCurve @grain := 0.02s @Action := {
+// 		TRAJECTORY  @clelieX($R, $n, $t, $offsetX) @clelieY($R, $n, $t, $offsetY) @clelieZ($R, $n, $t, $offsetZ)
+// 	}
+
+// 			{
+// 				$t
+// 				{
+// 								 { ($initT*$pi) }
+// 					$speed { ($endT*$pi) }
+
+// 				}
+// 			}
+
+// 	;}
+
+// }
+
+
+/*#######################Process::couronneSin#################*/
+
+
+@proc_def ::couronne3D($server_name, $track_id, $initT=-1, $endT=1, $a=1, $b=1, $n=1, $offsetX=0, $offsetY=0, $offsetZ=0, $speed=4, $loop_num=1)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{	
+	@local $couronne_xyz := [0, 0, 0], $proc_index
+	
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $couronne_xyz)
+	$trajs_index += 1	
+	// $prefix := "/source/" + $src + "/xyz"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+	loop $speed @exclusive
+	{
+	// abort couronneCurve
+		curve @grain := 0.02s @Action := {
+			// TRAJECTORY  @couronneX($a, $b, $n, $t, $offsetX) @couronneY($a, $b, $n, $t, $offsetY) @couronneZ($a, $b, $n, $t, $offsetZ)
+		$couronne_xyz[0] := @couronneX($a, $b, $n, $t, $offsetX)
+		$couronne_xyz[1] := @couronneY($a, $b, $n, $t, $offsetY)
+		$couronne_xyz[2] := @couronneZ($a, $b, $n, $t, $offsetZ)	
+
+		$Servers($server_name).n_set($track_id, ["x", $couronne_xyz[0]+$HOA_global_x, "y", $couronne_xyz[1]+$HOA_global_y, "z", $couronne_xyz[2]+$HOA_global_z])		            
+	}
+			{
+				$t
+				{
+								 { ($initT*$pi) }
+					$speed { ($endT*$pi) }
+
+				}
+			}
+
+	}during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish
+
+}
+
+
+/*#######################Process::clelie#################*/
+
+
+@proc_def ::clelie3D($server_name, $track_id, $initT=-1, $endT=1, $R=1, $n=1, $offsetX=0, $offsetY=0, $offsetZ=0, $speed=4, $loop_num=1)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $clelie_xyz := [0, 0, 0], $proc_index
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $clelie_xyz)
+	$trajs_index += 1	
+
+	// $prefix := "/source/" + $src + "/xyz"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+
+	loop $speed @exclusive
+	{
+	// abort clelieCurve
+
+		curve  @grain := 0.02s @Action := {
+		// TRAJECTORY  @clelieX($R, $n, $t, $offsetX) @clelieY($R, $n, $t, $offsetY) @clelieZ($R, $n, $t, $offsetZ)
+		$clelie_xyz[0] := @clelieX($R, $n, $t, $offsetX)
+		$clelie_xyz[1] := @clelieY($R, $n, $t, $offsetY)
+		$clelie_xyz[2] := @clelieZ($R, $n, $t, $offsetZ)
+
+		$Servers($server_name).n_set($track_id, ["x", $clelie_xyz[0]+$HOA_global_x, "y", $clelie_xyz[1]+$HOA_global_y, "z", $clelie_xyz[2]+$HOA_global_z])		            
+
+	}
+
+			{
+				$t
+				{
+								 { ($initT*$pi) }
+					$speed { ($endT*$pi) }
+
+				}
+			}
+
+	}during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish
+
+}
+
+
+/*#######################Process::lssajou3D#################*/
+
+
+@proc_def ::lissajou3D($server_name, $track_id, $initT=0, $endT=4, $a=1, $b=1, $c=1, $n=1/2, $m=1/2, $offsetX=0, $offsetY=0, $offsetZ=0, $speed=4, $loop_num=1)
+@abort
+{
+	$trajs.remove($proc_index)
+}
+{
+	@local $lissa_xyz := [0, 0, 0], $proc_index
+	// $prefix := "/source/" + $src + "/xyz"
+	// oscsend TRAJECTORY "127.0.0.1" : 4072 $prefix
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $lissa_xyz)
+	$trajs_index += 1
+
+	loop $speed @exclusive
+	{
+
+	curve @grain := 0.02s @Action := {
+		// TRAJECTORY  @lissajou3DX($a, $t, $offsetX) @lissajou3DY($b, $n, $t, $offsetY) @lissajou3DZ($c, $m, $t, $offsetZ)
+		// print  @lissajou3DX($a, $t, $offsetX) @lissajou3DY($b, $n, $t, $offsetY) @lissajou3DZ($c, $m, $t, $offsetZ)
+		$lissa_xyz[0] := @lissajou3DX($a, $t, $offsetX)
+		$lissa_xyz[1] := @lissajou3DY($b, $n, $t, $offsetY)
+		$lissa_xyz[2] := @lissajou3DZ($c, $m, $t, $offsetZ)
+
+		$Servers($server_name).n_set($track_id, ["x", $lissa_xyz[0]+$HOA_global_x, "y", $lissa_xyz[1]+$HOA_global_y, "z", $lissa_xyz[2]+$HOA_global_z])		            
+
+	}
+
+			{
+				$t
+				{
+								 { ($initT*$pi) }
+					$speed { ($endT*$pi) }
+
+				}
+			}
+
+	}during[$loop_num#]
+	($speed*$loop_num) $trajs.remove($proc_index) // remove tab from MAP when finish
+
+}

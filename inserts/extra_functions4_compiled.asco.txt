@@ -1,0 +1,939 @@
+//// Functions
+
+$pi := 3.14159265359
+
+
+// Mapping
+
+// MaxMsp classic scale mode
+
+@fun_def @scale_old($x, $in_low, $in_high, $out_low, $out_high, $power) 
+{
+	if($out_high-$out_low >= 0)
+	{
+		return
+		($out_low + ($out_high-$out_low) * ( ($out_high - $out_low) * @exp(-($in_high-$in_low)*@log($power)) * @exp($x*@log($power)) ))
+			// ( out_low + ( out_high -out_low) * ( ( out_high -  out_low) *  exp(-1*(in_high-in_low)* log( power)) *  exp( x*log(power)) ))
+	}
+	else
+	{
+		return
+		-( $out_low + ($out_high-$out_low) * ( ($out_high - $out_low) * @exp(-($in_high-$in_low)*@log($power)) * @exp($x*@log($power)) ) ) 
+			// (-1) * (  out_low + ( out_high- out_low) * ( ( out_high -  out_low) *  exp(-1*( in_high- in_low)* log( power)) *  exp( x* log( power)) ) ) 
+	}
+	// (out_high-out_low >= 0) ? (out_low + (out_high-out_low) * ( (out_high - out_low) * exp(-1*(in_high-in_low)*log(power)) * exp(x*log(power)) )) : (-1) * ( out_low + (out_high-out_low) * ( (out_high - out_low) * exp(-1*(in_high-in_low)*log(power)) * exp(x*log(power)) ) ) 
+}
+
+// MaxMsp modern scale mode
+
+@fun_def @scale($x, $in_low, $in_high, $out_low, $out_high, $power) 
+{
+	if(($x-$in_low)/($in_high-$in_low) == 0)
+	{
+		$out_low
+	}
+	else
+	{
+		if((($x-$in_low)/($in_high-$in_low)) > 0)
+		{
+			($out_low + ($out_high-$out_low) * @pow((($x-$in_low)/($in_high-$in_low)), $power))
+		}
+		else
+		{
+			( $out_low + ($out_high-$out_low) * -(@pow(((-$x+$in_low)/($in_high-$in_low)), $power)))
+		}
+	}
+}
+
+
+	// Another scale avec logarithmic scaler (old)
+	// in, in_low in_hi, out_low, out_hi
+// @fun_def @scale($f1, $f2, $f3, $f4, $f5, $f6) 
+// { 
+// 	return ((@exp((($f1-$f2)/($f3-$f2)-1)*$f6)-1)/(@exp(-$f6)-1)*($f4-$f5)+$f5 )
+// } 
+
+// SuperCollider Lang scales
+
+@fun_def @linlin($x, $a, $b, $c, $d)
+{
+	if ($x <= $a) {return $c}
+    if ($x >= $b) {return $d}
+    return ($x-$a)/($b-$a) * ($d-$c) + $c
+}
+
+
+@fun_def @explin($x, $a, $b, $c, $d)
+{
+	if ($x <= $a) {return $c}
+    if ($x >= $b) {return $d}
+    return (@log($x/$a)) / (@log($b/$a)) * ($d-$c) + $c
+
+}
+
+@fun_def @expexp($x, $a, $b, $c, $d)
+{
+	if ($x <= $a) {return $c}
+    if ($x >= $b) {return $d}
+    return @pow($d/$c, @log($x/$a) / @log($b/$a)) * $c    
+}
+
+@fun_def @linexp($x, $a, $b, $c, $d)
+{
+	if ($x <= $a) {return $c}
+    if ($x >= $b) {return $d}
+    return @pow($d/$c, ($x-$a)/($b-$a)) * $c   
+}
+
+
+
+// convertions
+
+@fun_def @ang2rad($theta)
+{
+	@local $pi := 3.14159265359
+	return ($pi*$theta)/180.
+}
+
+@fun_def @rad2ang($rad)
+{
+	@local $pi := 3.14159265359
+	return $rad*(180/$pi)
+}
+
+
+@fun_def @poltocar($r, $theta)
+{
+	@local $x :=0., $y := 0.
+	$x := $r * @cos(@ang2rad($theta))
+	$y := $r * @sin(@ang2rad($theta))
+	return [$x, $y]
+}
+
+@fun_def @cartopol($x, $y)
+{
+	@local $r := 0., $theta := 0.
+	$r := @sqrt($x * $x + $y * $y)
+	$theta := @rad2ang(@atan2($y, $x))
+	return [$r, $theta]
+}
+
+// x = r * sinθ * cosφ
+// y = r * sinθ * sinφ
+// z = r * cosθ
+
+@fun_def @poltocar3D($r, $phi, $theta)
+{
+	@local $ang, $el, $x, $y, $z
+	$ang := ($phi * -1) + 90
+	$el := ($theta * -1) + 90
+	$x := $r * @sin(@ang2rad($el)) * @cos(@ang2rad($ang))
+	$y := $r * @sin(@ang2rad($el)) * @sin(@ang2rad($ang)) 
+	$z := $r * @cos(@ang2rad($el))
+
+	return [$x, $y, $z]
+}
+
+
+@fun_def @poltocar3D_tab($tab)
+{
+	@local $r := $tab[0], $theta := $tab[1], $phi := $tab[2]
+	@poltocar3D_compiled($r, $theta, $phi)
+}
+
+@fun_def @poltocar3D_ambi($r, $phi, $theta) // for Ambitools dae
+{
+	@local
+	$x := $r * @sin(@ang2rad($phi)) * @cos(@ang2rad($theta)),
+	$z := $r * @sin(@ang2rad($phi)) * @sin(@ang2rad($theta)), // * -1
+	$y := $r * @cos(@ang2rad($phi))
+
+	return [$x, $y, $z]
+}
+
+
+@fun_def @poltocar3D_ambi_tab($tab)
+{
+	@local $r := $tab[0], $phi := $tab[1],  $theta := $tab[2]
+	@poltocar3D_ambi_compiled($r, $phi, $theta)
+}
+
+
+@fun_def @poltocar3D_2($r, $theta, $phi) // $theta  $phi invert
+{
+	@local 
+	$x := $r * @sin(@ang2rad($phi)) * @cos(@ang2rad($theta)),
+	$y := $r * @sin(@ang2rad($phi)) * @sin(@ang2rad($theta)),
+	$z := $r * @cos(@ang2rad($phi))
+
+	return [$x, $y, $z]
+}
+
+@fun_def @poltocar3D_2_tab($tab)
+{
+	@local $r := $tab[0], $theta := $tab[1], $phi := $tab[2]
+	@poltocar3D_2_compiled($r, $theta, $phi)
+}
+
+
+@fun_def @poltocar3D_rad($r, $theta, $phi)
+{
+	@local 
+	$x := $r * @sin($theta) * @cos($phi),
+	$y := $r * @sin($theta) * @sin($phi),
+	$z := $r * @cos($theta)
+	return [$x, $y, $z]
+}
+
+
+@fun_def @cartopol3D($x, $y, $z)
+{
+	@local 
+	$r := @sqrt($x*$x + $y*$y + $z*$z), 
+	$theta := @rad2ang(@atan2($x, $y)),  // inverse atan $x, $y
+	$phi := @rad2ang(@atan2($z, @sqrt($x*$x + $y*$y))) // a ver orden atan2
+		// $phi := @rad2ang(@acos($z / $r))
+
+	return [$r, $theta, $phi] // theta neg for Ambitools inverse azi *-1 Fixed !
+	// return [$r, $phi, $theta] // theta neg for Ambitools inverse azi *-1 Fixed !
+}
+
+@fun_def @poltocar3D_3($r, $theta, $phi) // $theta  $phi invert
+{
+	@local 
+	$x := $r * @sin(@ang2rad($theta)) * @cos(@ang2rad($phi)),
+	$z := $r * @sin(@ang2rad($theta)) * @sin(@ang2rad($phi)),
+	$y := $r * @cos(@ang2rad($theta))
+/*	if($x<0)
+	{
+		$z := $z * -1
+	}*/
+	return [$x, $y, $z]
+}
+
+@fun_def @cartopol3D_3($x, $y, $z)
+{
+	@local 
+	$r := @sqrt($x*$x + $y*$y + $z*$z), 
+	// $theta := @rad2ang(@atan2($x, $y)),  // inverse atan $x, $y
+	$theta := @rad2ang(@acos($y / $r))
+	$phi := @rad2ang(@atan2($z, $x)) // a ver orden atan2
+		// $phi := @rad2ang(@acos($z / $r))
+/*		if($phi<0){ 
+			$phi := 180 + $phi 
+			$theta := $theta * -1
+		}*/
+	return [$r, $theta, $phi] // theta neg for Ambitools inverse azi *-1 Fixed !
+	// return [$r, $phi, $theta] // theta neg for Ambitools inverse azi *-1 Fixed !
+}
+
+@fun_def @cartopol3D_ambi($x, $y, $z)
+{
+	@local 
+	$r := @sqrt($x*$x + $y*$y + $z*$z), 
+	$phi := @rad2ang(@atan2($x, $y)),  // inverse atan $x, $y
+	$theta := @rad2ang(@atan2($z, @sqrt($x*$x + $y*$y))) // a ver orden atan2
+		// $phi := @rad2ang(@acos($z / $r))
+
+	return [$r, $phi, $theta] // theta neg for Ambitools inverse azi *-1 Fixed !
+	// return [$r, $phi, $theta] // theta neg for Ambitools inverse azi *-1 Fixed !
+}
+
+// print (@poltocar3D_ambi(2.80409, 68.5347, 2.0))
+// print (@cartopol3D_ambi(2.608007, 1.026122, 0.091074))
+
+
+@fun_def @cartopol3D_ambi_tab($tab)
+{
+	@local $x := $tab[0], $y := $tab[1], $z := $tab[2]
+	@cartopol3D_ambi_compiled($x, $y, $z)
+}
+
+
+@fun_def @cartopol3D_rad($x, $y, $z)
+{
+	@local $r, $theta, $phi
+	$r := @sqrt($x*$x + $y*$y + $z*$z)
+	$theta := @atan2($y, $x)
+	// $phi := @rad2ang(@acos($z / $r))
+	$phi := @atan2($z, @sqrt($x*$x + $y*$y))
+	return [$r, $theta, $phi]
+}
+
+@fun_def @cartopol3D_tab($tab)
+{
+	@local $x := $tab[0], $y := $tab[1], $z := $tab[2]
+	@cartopol3D_compiled($x, $y, $z)
+}
+
+
+@fun_def @distance3D($point1, $point2)
+{
+	@local $x1 := $point1[0], $y1 := $point1[1], $z1 := $point1[2], $x2 := $point2[0], $y2 := $point2[1], $z2 := $point2[2], $d
+	$d := @sqrt(@pow($x2 - $x1, 2) + @pow($y2 - $y1, 2) + @pow($z2 - $z1, 2) * 1.0)
+	return $d
+}
+
+
+@fun_def post($post)
+{
+	print (""+$post)
+}
+
+@fun_def @to_char($x) 
+	{ return "" + $x }
+
+@fun_def map2tab($map)
+{	
+	@local $tab := []
+	forall $k, $v in $map
+	{
+		$tab.push_back($k)
+		$tab.push_back($v) 
+	}
+	return $tab
+}
+
+
+@fun_def map2tab_index($map)
+{	
+	@local $tab := []
+	forall $x in $map.size()
+	{
+		$tab.push_back($map(""+$x))
+	}
+	return $tab
+}
+
+@fun_def @true ($x)
+	{return true}
+
+
+@fun_def neg($x)
+{
+	$x*-1
+}
+
+@fun_def inv($x)
+{
+	1/$x
+}
+
+
+@fun_def not($x)
+{
+	if($x)
+	{
+		return false
+	}
+	else
+	{
+		return true
+	}
+}
+
+
+//////////////////////// fun_defs
+
+
+
+@fun_def @rand_range($min, $max) {@rand($max-$min)+$min}
+@fun_def @rand_range_int($min, $max) {@rand_int($max-$min)+$min}
+@fun_def @rand2($val) {@rand_range($val.neg(), $val)}
+@fun_def @exprand_range($min, $max) {$min * @exp(@log($max/$min)* @rand(1.0))}
+
+
+@fun_def @midic2hz($x)  {442 * @exp(($x-6900.0) * @log(2.0)/1200.)} // en midicents
+
+@fun_def @dur2sec($val) {$val*(60/$RT_TEMPO)}
+@fun_def @dur2mlsec($val) {$val*(60000/$RT_TEMPO)}
+
+@fun_def @dB2a($val) {@pow(10, $val/20)}
+
+
+@fun_def @a2dB($val) {20*@log10($val)}
+
+
+////////vecteurs de probabilites
+
+/*@fun_def @sup($i, $x) { $x > @rand(1.0) } // pour probabilites
+
+@fun_def @findI($t) { @find($t, @sup) } // pour probabilites
+
+@fun_def @vprob($tdata, $tprob) { // vecteur de probabilites
+  	$tdata[@findI(@scan(@+, $tprob) / @reduce(@+, $tprob))] }*/
+
+@fun_def @vprob($tdata, $tweight)
+{
+   @local
+   $tproba := $tweight / @reduce(@+, $tweight),
+   $troulette := @scan(@+, $tproba),
+   $roll := @rand(1.0),
+   $index := $troulette.find(\$i, $v.($roll < $v))
+
+   return $tdata[$index]
+}
+
+
+//////// tabs
+
+@fun_def @rand_vect($num, $min, $max) {
+
+	  [ @rand($max-$min)+$min | ($num) ]	
+}
+
+;; tableau random de $num elements (int)
+
+@fun_def @rand_int_vect($num, $rand) {
+
+	  [ @rand_int($rand) | ($num) ]	
+}
+
+@fun_def @rand_range_int_vect($num, $min, $max) {
+
+	  [ @rand_int($max-$min)+$min | ($num) ]	
+}
+
+@fun_def @dB2a_tab($tab) {
+
+	  [ @pow(10, $x/20) | $x in $tab ]	
+}
+
+@fun_def @sum($tab) {
+
+	 return @reduce(@+, $tab)
+}
+
+// order tab
+
+
+$var_for_compare_value := <undef>
+@fun_def compare_value($i, $j)
+{ return $var_for_compare_value[$i] < $var_for_compare_value[$j] }
+
+@fun_def order($t)
+{
+  @local $index := @iota($t.size())
+  $var_for_compare_value := $t
+  return @sort($index, @compare_value)
+}
+
+
+
+// Clips
+
+@fun_def clip_high($x, $y)
+{
+  return (($x > $y) ? $y: $x)
+}
+
+@fun_def clip_low($x, $y)
+{
+  return (($x < $y) ? $y: $x)
+}
+
+// return ((($x > $l)&&($x < $h)) ? $x: $x)
+
+@fun_def clip($x, $l, $h)
+{
+	if(($x >= $l)&&($x <= $h))
+	{
+		return $x
+	}else{
+		if($x <= $l)
+		{
+			return $l
+		}else{
+			return $h
+		}
+	}
+}
+
+@fun_def @choose($tab) {
+
+	return $tab[@rand_int(@size($tab))]
+}
+
+@fun_def @tab_diff($tab) { // replace by succession
+	@local $inc := 0, $tab_new := []
+	loop 
+	{
+		$tab_new.push_back($tab[$inc] - $tab[$inc+1])
+		$inc += 1
+	} until ($inc >= $tab.size()-1)
+	return $tab_new
+}
+
+@fun_def @tab_diff_inc($tab) { // replace by succession
+	@local $inc := 0, $tab_new := []
+	loop 
+	{
+		$tab_new.push_back($tab[$inc+1] - $tab[$inc])
+		$inc += 1
+	} until ($inc >= $tab.size()-1)
+	return $tab_new
+}
+
+@fun_def @tab_accum($tab) { // replace by succession
+	@local $inc := 0, $tab_new := [], $result := 0
+	loop 
+	{
+		$result := $tab[$inc]+$result
+		$tab_new.push_back($result)
+		$inc += 1
+	} until ($inc >= $tab.size()-1)
+	return $tab_new
+}
+
+
+@fun_def @pop($tab) {
+	@local $size := $tab.size(), $result
+	$result := $tab.last()
+	$tab := $tab.remove($size-1)
+	return $result
+}
+
+
+@fun_def @delace($tab) {
+	@local $size := $tab.size(), $t1, $t2
+	$t1 := [ $tab[$i] | $i in $size : 2] 
+	$t2 := [ $tab[$i+1] | $i in $size : 2] 
+	return [$t1, $t2]
+}
+
+// @fun_def @lace_2tab($tab1, $tab2) 
+// {
+//   @local $size := $tab1.size(), $result := [], $i := 0
+//   Loop 
+//   {
+//     $result.push_back([$tab1[$i], $tab2[$i]])
+//     $i += 1
+//   } during [$size #]
+
+//   return $result
+// }
+
+@fun_def zip($t)
+{
+   @local $res := []
+   forall $i in $t[0].size()
+   {
+       $res.push_back([$t[0, $i], $t[1, $i]])
+   }
+   return $res
+}
+
+
+@fun_def @coin($x) {
+
+	return (($x < @rand(1)) ? true: false)
+}
+
+
+
+@fun_def @drunk($val, $min, $max, $steep) 
+{
+	if(($val >= $min)&&($val <= $max))
+	{
+		if (@rand(1.)> 0.5) 
+		{
+			$val := $val + @rand($steep)
+			return $val
+		}else{
+			$val := $val - @rand($steep)
+			return $val
+		}
+	}else{
+		if($val <= $min)
+		{
+			$val := $val + @rand($steep)
+			return $val
+		}else{
+			$val := $val - @rand($steep)
+			return $val
+		}
+	}
+}
+
+@fun_def @drunk_tab_steep($val, $min, $max, $tab_steep) 
+{
+	if(($val >= $min)&&($val <= $max))
+	{
+		if (@rand(1.)> 0.5) 
+		{
+			$val := $val + @choose($tab_steep)
+			return $val
+		}else{
+			$val := $val - @choose($tab_steep)
+			return $val
+		}
+	}else{
+		if($val <= $min)
+		{
+			$val := $val + @choose($tab_steep)
+			return $val
+		}else{
+			$val := $val - @choose($tab_steep)
+			return $val
+		}
+	}
+}
+
+// Data filtering (ex. sensors, physical moodels, ...)
+@fun_def slide($input, $previous, $slide_up, $slide_down)
+{
+  return ((($input)+($previous*$slide_up))/($slide_up+1))*($input>=$previous)+((($input)+($previous*$slide_down))/($slide_down+1))*($input<$previous)
+}
+
+// pvoc buf size calculation
+
+@fun_def calcPVRecSize($num, $frameSize, $hop)
+{
+	@local $rawsize := 0., $sr := 48000.
+	$rawsize := ((($num * $sr) / ($frameSize)).ceil() * $frameSize)
+	return $rawsize * $hop.inv() + 3
+
+}
+
+// 	nearestInScale { arg scale, stepsPerOctave=12; // collection is sorted
+// 		var key, root;
+// 		root = this.trunc(stepsPerOctave);
+// 		key = this % stepsPerOctave;
+// 		^key.nearestInList(scale) + root
+
+// @fun_def @nearestInScale($val, $scale, $stepsPerOctave = 12)
+// {
+// 	@local $key, $root
+// 	$root := @floor($val)
+// 	$key := $val % $stepsPerOctave
+// 	return $val
+// }
+
+
+
+// add signal generator in antescofo !!!
+
+
+
+	// Finds the kth element in the array, according to a given sorting function.
+	// This is typically fast (order is O(n) rather than O(n log n)) because it
+	// doesn't attempt to completely sort the array. Method is due to C. A. F. Hoare.
+	// Note: this rearranges array elements IN PLACE.
+	
+@fun_def hoareFind($tab, $k, $cmp = <undef>, $left = 0, $right = -1)
+{
+    @local $sz := $tab.size()
+    
+    if ($cmp.is_undef()) { $cmp := @< }
+    if ($right < 0) { $roght := $sz - 1 }
+
+    loop
+    {
+       @local $p := $tab.hoarePartition($left, $right, $tab[$k], $cmp)
+       @local $l := $p / $sz
+       @local $r := $p % $sz
+
+       if ($r < $k) { $left := $l }
+       if ($k < $l) { $right := $r }
+    } while ($left < $right)
+
+    return $tab[$k]
+}
+
+
+
+@fun_def hoarePartition($tab, $l, $r, $p, $cmp)
+{
+    @local $sz := $tab.size()
+    @local $tmp
+
+    loop
+    {
+        loop {
+	   $l += 1
+	} while (($l < $sz) && $cmp($tab[$l], $p))
+
+        loop {
+	   $r -= 1
+	} while ((0 <= $r) && $cmp($p, $tab[$r]))
+
+        if ($l <= $r)
+	{
+	    $tmp := $tab[$l]
+	    $tab[$l] := $tab[$r]
+	    $tab[$r] := $tmp
+    	    $l += 1
+	    $r -= 1
+	}
+
+    } while ($l <= $r)
+
+    return $l * $sz + $r
+}
+
+
+
+
+@fun_def @orbit($body_pos_x, $body_pos_y, $body_vel_x, $body_vel_y) 
+{
+	@local $grav_const := 0.000000000066742, $earth_mass := 5975000000000000000000000.0, 
+	$radius := (@pow($body_pos_x, 2) + @pow($body_pos_y, 2)).sqrt(), 
+	$grav_accel := ($grav_const * ($earth_mass / @pow($radius, 2))), 
+	$angle := @atan2($body_pos_x, $body_pos_y)
+
+	$body_vel_x := $body_vel_x + (@sin($angle) * $grav_accel)
+	$body_vel_y := $body_vel_y + (@cos($angle) * $grav_accel)
+	$body_pos_x := $body_pos_x - $body_vel_x
+	$body_pos_y := $body_pos_y - $body_vel_y
+
+	return [$body_pos_x, $body_pos_y, $body_vel_x, $body_vel_y]
+}
+
+
+/// PartConv patition for HOA
+@fun_def @partitionsize($fftsize, $irbuffer_numFrames)
+{	
+	return $fftsize * @round(@ceil($irbuffer_numFrames/($fftsize/2)))
+}
+
+print "COMPILE RAND_RANGE"
+
+$ret := @compilation(MAP{
+	@scale -> [["double", "double", "double", "double", "double", "double"], "double"],
+	@scale_old -> [["double", "double", "double", "double", "double", "double"], "double"],
+	@linlin -> [["double", "double", "double", "double", "double"], "double"],
+	@explin -> [["double", "double", "double", "double", "double"], "double"],
+	@expexp -> [["double", "double", "double", "double", "double"], "double"],
+	@linexp -> [["double", "double", "double", "double", "double"], "double"],
+	@ang2rad -> [["double"], "double"],	
+	@rad2ang -> [["double"], "double"],
+	@poltocar -> [["double", "double"], ["double"]],
+	@cartopol -> [["double", "double"], ["double"]],
+	@poltocar3D -> [["double", "double", "double"], ["double"]],
+	@poltocar3D_ambi -> [["double", "double", "double"], ["double"]],
+	@poltocar3D_2 -> [["double", "double", "double"], ["double"]],
+	@poltocar3D_rad -> [["double", "double", "double"], ["double"]],
+	@cartopol3D -> [["double", "double", "double"], ["double"]],
+	@cartopol3D_ambi -> [["double", "double", "double"], ["double"]],
+	// cartopol3D_tab -> [["double"], ["double"]],
+    @neg -> [["double"], "double"],
+    @inv -> [["double"], "double"],    
+    // @dur2sec -> [["double"], "double"],
+    @rand_range -> [["double", "double"], "double"],
+    @rand_range_int -> [["double", "double"], "int"],
+    @rand2 -> [["double"], "double"],
+    @exprand_range -> [["double", "double"], "double"],
+
+    // @rand_vect -> [ ["double", "double", "double"], ["double"] ],
+    // @rand_int_vect -> [ ["double", "double"], ["double"] ],
+
+    @midic2hz -> [["double"], "double"],
+    @dB2a -> [["double"], "double"],
+    @a2dB -> [["double"], "double"],
+    @clip_high -> [["double", "double"], "double"],
+    @clip_low -> [["double", "double"], "double"],
+    @clip -> [["double", "double", "double"], "double"],
+    // @lace_2tab -> [ [["double", "double"]], ["double"]],
+    // @choose -> [ [["double"]], ["double"]],
+    @coin -> [["double"], "bool"],
+    @drunk -> [["double", "double", "double", "double"], "double"],
+    // @drunk_tab_steep -> [["double", "double", "double", [["double"]] ], "double"]
+    @slide -> [["double", "double", "double", "double"], "double"],
+    @partitionsize -> [["double", "double"], "double"],
+    @orbit -> [["double", "double", "double", "double"], ["double"]],
+    @calcPVRecSize -> [["double", "double", "double"], "double"]
+})
+// 
+print scale @scale(0.5, 0, 1, 0, 100, 1)
+print scale_compiled @scale_compiled(0.5, 0, 1, 0, 100, 1)
+
+print scale_old @scale_old(0.5, 0, 1, 0, 100, 1.)
+print scale_old_compiled @scale_old_compiled(0.5, 0, 1, 0, 100, 1.)
+
+print linlin @linlin(0.5, 0, 1, 0, 100)
+print linlin_compiled @linlin_compiled(0.5, 0, 1, 0, 100)
+
+print explin @explin(0.5, 0.001, 1, 0.001, 100)
+print explin_compiled @explin_compiled(0.5, 0.001, 1, 0.001, 100)
+
+print expexp @expexp(0.5, 0.0001, 1, 0.0001, 100)
+print expexp_compiled @expexp_compiled(0.5, 0.0001, 1, 0.0001, 100)
+
+print linexp @linexp(0.5, 0.0001, 1, 0.0001, 100)
+print linexp_compiled @linexp_compiled(0.5, 0.0001, 1, 0.0001, 100)
+
+print ang2rad @ang2rad(180)
+print ang2rad_compiled @ang2rad_compiled(180)
+
+print rad2ang @rad2ang($pi)
+print rad2ang_compiled @rad2ang_compiled($pi)
+
+print poltocar @poltocar(0.5, 180)
+print poltocar_compiled (@poltocar_compiled(0.5, 180)) // crash
+
+print poltocar @poltocar(2, 166)
+print poltocar_compiled (@poltocar_compiled(2, 166)) // crash
+
+print cartopol @cartopol(3, 4)
+print cartopol_compiled @cartopol_compiled(3, 4)
+
+print poltocar3D @poltocar3D(1, 10, 20)
+print poltocar3D_compiled @poltocar3D_compiled(1, 10, 20)
+
+print poltocar3D_1 @poltocar3D(5, 0, 30)
+print poltocar3D_2 @poltocar3D_2(5, 0, 30)
+
+print poltocar3D_rad @poltocar3D_rad(1, 10, 20)
+print poltocar3D_rad_compiled @poltocar3D_rad_compiled(1, 10, 20)
+
+print cartopol3D @cartopol3D(0.5, 1, 0.1)
+print cartopol3D_compiled @cartopol3D_compiled(0.5, 1, 0.1)
+
+print cartopol3D_rad @cartopol3D_rad(0.5, 1, 0.1)
+
+print cartopol3D_compiled2 @cartopol3D_compiled(1.25, 2.165064, 4.330127) 
+
+print cartopol3D_tab @cartopol3D_tab([0.5, 1.2, 0.2])
+// print cartopol3D_tab_compiled @cartopol3D_tab_compiled([5, 0, 30])
+	
+print neg @neg(1)
+print neg_compiled @neg_compiled(1)
+
+print inv @inv(10)
+print inv_compiled @inv_compiled(10)
+
+print rand_range @rand_range(1, 2)
+print rand_range_compiled @rand_range_compiled(1, 2)
+
+print rand_range_int @rand_range_int(1, 20)
+print rand_range_int_compiled @rand_range_int_compiled(1, 20)
+
+print rand2 @rand2(2)
+print rand2_compiled @rand2_compiled(2)
+
+print exprand_range @exprand_range(20, 20000)
+print exprand_range_compiled @exprand_range_compiled(20, 20000)
+
+
+print rand_vect @rand_vect(10, 0, 1)
+// print rand_vect_compiled @rand_vect_compiled(10, 0, 1)
+
+print rand_int_vect @rand_int_vect(10, 2)
+// print rand_int_vect_compiled @rand_int_vect_compiled(10, 2)
+
+print midic2hz @midic2hz(6900)
+print midic2hz_compiled @midic2hz_compiled(6900)
+
+print dB2a @dB2a(6)
+print dB2a_compiled @dB2a_compiled(6)
+
+print a2dB @a2dB(1.01)
+print a2dB_compiled @a2dB_compiled(1.01)
+
+print clip_high @clip_high(20, 10)
+print clip_high_compiled @clip_high_compiled(20, 10)
+
+print clip_low @clip_low(-10, -2)
+print clip_low_compiled @clip_low_compiled(-10, -2)
+
+print clip @clip(-10, 1, 100)
+print clip_compiled @clip_compiled(-10, 1, 100)
+
+print orbit @orbit(1400000, 750000, 0.0, 8500)
+print orbit_compiled @orbit_compiled(1400000, 750000, 0.0, 8500)
+
+print partitionsize (@partitionsize(2048, 1500))
+print partitionsize_compiled (@partitionsize_compiled(2048, 1500))
+
+print calcPVRecSize (@calcPVRecSize(1, 1024, 0.5))
+print calcPVRecSize_compiled (@calcPVRecSize_compiled(1, 1024, 0.5))
+
+// print drunk @drunk(1, 0, 10, 2)
+// forall $i in 100
+// {
+// 	print drunk_compiled @drunk_compiled(1, 0, 10, 2)
+// }
+
+// @proc_def ::rand_lfo_basic($module, $param, $min, $max, $init_val, $type, $tpo) 
+// {
+//   @local $v1, $v2, $duree, $current, $curve_proc, $lin, $curve_int_proc 
+
+//   $v1 := $init_val
+//   $v2 := $init_val
+//   $curve_int_proc := 0
+
+//   $delay := @rand(1.) + 0.5
+
+//   group @tempo := $tpo
+//   {
+//     Loop $delay @exclusive //@tempo := $tpo
+//     {
+//       abort $curve_int_proc
+      
+//       $v1 := $v2
+//       $v2 := @rand_range($min, $max) // @rand($max-$min)+$min
+//       $delay := @rand(1.) + 0.5
+//       $duree := $delay
+      
+//       $curve_int_proc := {  curve
+//                 // @tempo := $tpo
+//                 @Grain := 0.005 //0.01s 
+//                 @action :=  { 
+//                 	// print localsynthset $module $param $lin 
+//                         n_set $module $param $lin  
+//                       }
+
+//                 { $lin {
+//                          {$v1} @type := $type
+//                     $duree {$v2} 
+//                     }
+//                 }
+//               }
+//     }
+//   }
+// }
+
+// @proc_def ::brown_lfo($module, $param, $min, $max, $drunk_step, $init_val, $type, $tpo) 
+// {
+// 	@local $v1, $v2, $duree, $current, $curve_proc, $lin, $curve_int_proc, $drunk_val
+
+// 	$v1 := $init_val
+// 	$v2 := @drunk($init_val, $min, $max, $drunk_step)
+// 	$curve_int_proc := 0
+
+// 	$delay := @rand(1.) + 0.5
+// 	// $drunk_val := @drunk($drunk_val, -0.062, 1.813, $drunk_step)
+
+// 	group @tempo := $tpo
+// 	{
+// 	Loop $delay @exclusive //@tempo := $tpo
+// 	{
+// 		abort $curve_int_proc
+
+// 		$v1 := $v2
+// 		$v2 := @drunk($v1, $min, $max, $drunk_step) //@rand_range($min, $max) // @rand($max-$min)+$min
+// 		$delay := @rand(1.) + 0.5
+// 		$duree := $delay
+
+// 		$curve_int_proc := 
+// 		{  
+// 			curve
+// 		        // @tempo := $tpo
+// 		        @Grain := 0.005 //0.01s 
+// 		        @action :=  { 
+// 		        	// print localsynthset $module $param $lin 
+// 		                // print n_set $module $param $lin  
+// 		                brown_lfo $lin
+// 		              }
+
+// 		        { $lin {
+// 		                 {$v1} @type := $type
+// 		            $duree {$v2} 
+// 		            }
+// 		        }
+// 		    }
+// 		}
+// 	}
+// }
+
+// ::brown_lfo("toto", "titi", 0, 100, 5, 50, "linear", 200)

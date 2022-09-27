@@ -1,0 +1,18 @@
+{
+	"TJPverb_mono"	: {
+		"default"	: {
+			"modFreq"	: 2,
+			"t60"	: 1,
+			"damp"	: 0,
+			"size"	: 1,
+			"mid"	: 1,
+			"high"	: 1,
+			"amp"	: 0,
+			"low"	: 1,
+			"highcut"	: 2000,
+			"modDepth"	: 0.1,
+			"lowcut"	: 500,
+			"earlydiff"	: 0.707
+		}
+	}
+}

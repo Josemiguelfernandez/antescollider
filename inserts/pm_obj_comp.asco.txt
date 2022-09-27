@@ -1,0 +1,2411 @@
+antescofo::bypass_temporeset "on"
+
+
+$input1 := 0.0
+$input2 := 0.0
+
+
+
+@fun_def neg($x)
+{
+ 	return $x*-1
+}
+
+@fun_def @rand_range($min, $max) { return @rand($max-$min) + $min }
+
+// @fun_def @rand2($val) {@rand_range($val.neg(), $val)}
+
+// @fun_def not($express)
+// {
+// 	if($express == true) {return false}
+// 	if($express == false) {return true}
+// }
+
+
+
+@obj_def Link($setL, $setK, $setD, $setD2)
+{	
+	@local
+	   $position1 := 0.0,
+	   $position2 := 0.0,
+	   $rigidity := 0.0,
+	   $visc_damp := 0.0,
+	   $vel_damp := 0.0,
+	   $lengthMin := 0.0,
+	   $lengthMax := 10000.0,
+	   $length := 0.0,
+	   $distance_old := 0.0,
+	   $position_old1 := 0.0,
+	   $position_old2 := 0.0,
+	   $outForce1 := 0.0,
+	   $outForce2 := 0.0
+
+
+	@init {
+
+  	$length := $setL
+	$rigidity := $setK
+	$visc_damp := $setD
+	$vel_damp := $setD2
+	$distance_old := $length
+
+	}
+
+	@fun_def position1($x)
+	{
+		$position1 := $x
+		// print position1 $x
+		return $x
+	}
+
+	@fun_def position2($x)
+	{
+		$position2 := $x
+		// print position2_test $position2
+		return $x
+	}
+
+	@fun_def posTrig($pos1, $pos2)
+	{
+		if ($pos1.is_obj()) 
+		{
+			_ := $THISOBJ.position1($pos1.$position_out)
+		}
+		else
+		{
+			_ := $THISOBJ.position1($pos1)
+		}
+		
+		if ($pos2.is_obj()) 
+		{
+			_ := $THISOBJ.position2($pos2.$position_out)
+			// print position_out_test $pos2.$position_out
+		}
+		else
+		{
+			_ := $THISOBJ.position2($pos2)
+		}
+
+		_ := $THISOBJ.trig()
+	}
+
+	@fun_def connect($mass1, $mass2, $back1, $back2)
+	{
+		_ := $THISOBJ.posTrig($mass1, $mass2)
+		if($back1) 
+		{
+			// if($mass1.is_obj())
+			// {
+				$mass1.force($outForce1)
+				// print back1 "true" $back1
+			// }
+		}
+		if($back2) 
+		{	
+			// if($mass2.is_obj())
+		// 	{
+				$mass2.force($outForce2)
+				// print back2 "true" $back2
+			// }
+		}
+	}
+
+	@fun_def trig()
+	{
+		@local $force1 := 0., $force2 := 0., $distance := 0.
+
+		$distance := $position2 - $position1
+		if ($distance < 0) 
+		{
+			$distance := $distance.neg()
+		}
+		$force1 :=  $rigidity * ($distance - $length) + ($visc_damp * ($distance - $distance_old))
+		$distance_old := $distance
+		if (($distance > $lengthMax) || ($distance < $lengthMin)) 
+		{
+			$force1 := 0
+		}
+		if ($distance != 0) 
+		{ 
+			$force1 := $force1 * ($position2 - $position1) / $distance 
+		}
+		$force2 := $force1.neg() + ($position_old2 - $position2) * $vel_damp
+		$force1 := $force1 +  ($position_old1 - $position1) * $vel_damp // mass damping
+
+		$position_old1 := $position1
+		$position_old2 := $position2
+		$outForce1 := $force1
+		$outForce2 := $force2
+	}
+
+
+	@fun_def reset()
+	{
+		$position1 := 0.0
+		$position2 := 0.0
+		$position_old1 := 0.0
+		$position_old2 := 0.0
+		$distance_old := $length
+	}
+
+	@fun_def resetF()
+	{ //resetForce
+		$position_old1 := $position1
+		$position_old2 := $position2
+		$distance_old := $length
+	}
+}
+
+$sigLink := MAP{
+
+	@neg -> [[double], double],
+	@rand_range -> [["double", "double"], "double"],
+
+      obj::Link -> MAP { 
+	 "$position1" -> "double",
+	 "$position2" -> "double",
+	 "$rigidity" -> "double",
+	 "$visc_damp" -> "double",
+	 "$vel_damp" -> "double",
+     "$lengthMin" -> "double",
+     "$lengthMax" -> "double",
+	 "$length" -> "double",
+	 "$distance_old" -> "double",
+	 "$position_old1" -> "double",
+	 "$position_old2" -> "double",
+	 "$outForce1" -> "double",
+	 "$outForce2" -> "double",
+
+	 // [@neg, "double", ["double"]],
+	  
+	 "position1" -> [["double"], "double"],
+	 "position2" -> [["double"], "double"],
+         "trig" -> [[], "void"]
+         // "position2" -> [["double"], "double"],
+      }
+}
+
+// $ret := @compilation(MAP{
+//      @neg -> [["double"], "double"],
+//      @rand_range -> [["double", "double"], "double"],
+//      @rand2 -> [["double"], "double"]
+// })
+
+// @assert $ret 
+
+$ret := @compilation($sigLink)
+print compiled Link
+// @assert $ret
+
+
+
+
+@obj_def Mass($setM, $setX, $setMinX, $setMaxX)
+{
+	@local
+	  $posX_new := 0.0,
+	  $xInit := 0.0,
+	  $forceX := 0.0,
+	  $mass := 1.0,
+	  $posX_old_1 := 0.0,
+	  $posX_old_2 := 0.0,
+	  $dX := 0.0,
+	  $minX := -10000.0,
+	  $maxX := 10000.0,
+	  $position_out := 0.0,
+	  $velocity_out := 0.0,
+	  $force_out := 0.0
+
+	@init
+	{
+		$setMinX := -100000. 
+		$setMaxX := 100000.
+
+		if ($mass <= 0) {$mass := 1.}
+		$mass := $setM 
+		$xInit := $setX
+		$minX := $setMinX
+		$maxX := $setMaxX
+	}
+
+	@fun_def force($force_in) // mass_force in C source
+	{
+		$forceX := $forceX + $force_in 
+		return $forceX
+	}
+
+	@fun_def trig()
+	{  //bang
+		if ($mass > 0)
+		{ 
+			$posX_new := $forceX/$mass + (2 * $posX_old_1) - $posX_old_2 
+			// print posX_new $posX_new
+		}else
+		{ 
+			$posX_new := $posX_old_1
+		}
+
+		$posX_new := @max(@min($maxX, $posX_new), $minX);
+		$posX_new := $posX_new + $dX;
+		$posX_old_1 := $posX_old_1 + $dX; // "pour ne pas avoir d'inertie suplementaire du a ce deplacement"
+		$velocity_out := $posX_old_1 - $posX_old_2
+		$position_out := $posX_new
+		$force_out := $forceX
+		$posX_old_2 := $posX_old_1
+		$posX_old_1 := $posX_new
+		$forceX := 0
+		$dX := 0
+		// print mass_trig $position_out
+	}
+
+	@fun_def reset()
+	{
+		$posX_old_2 := $xInit
+		$posX_old_1 := $xInit
+		$posX_new := $xInit
+		_ := $THISOBJ.resetF()
+	
+	}
+
+	@fun_def resetF()
+	{
+		$forceX := 0;
+	}
+
+	@fun_def dX($x)
+	{  //mass_dX in C source
+		$dX := $dX + $x
+		}
+
+	@fun_def setX($posX)
+	{  // mass_setX in C source
+		$posX_old_2 := $posX
+		$posX_old_1 := $posX ; // "clear history for stability (instability) problem"
+		$forceX := 0;
+		$position_out := $posX
+		$posX_new := $posX
+	}
+}
+
+$sigMass := MAP { obj::Mass -> MAP {
+	  	"$posX_new" -> "double",
+	  	"$xInit" -> "double",
+	  	"$forceX" -> "double",
+	  	"$mass" -> "double",
+	  	"$posX_old_1" -> "double",
+	  	"$posX_old_2" -> "double",
+	  	"$dX" -> "double",
+	  	"$minX" -> "double",
+	  	"$maxX" -> "double",
+	  	"$position_out" -> "double",
+	  	"$velocity_out" -> "double",
+	  	"$force_out" -> "double",
+
+	  	"force" -> [["double"], "double"],
+          "trig" -> [[], "void"],
+          "dX" -> [["double"], "double"],          
+          ; "reset" -> [[], "double"],
+          ; "resetF" -> [[], "double"],
+	  "setX" -> [["double"], "void"],
+}}
+
+$ret := @compilation($sigMass)
+print compiled Mass
+
+
+@obj_def Mass2D($setM = 1, $setXY = [0, 0], $setMinX = -100000, $setMaxX = 100000, $setMinY = -100000, $setMaxY = 100000, $setT = 0)
+{
+	@init
+	{
+		@local $posX_old_1 := 0.0, $posX_old_2 := 0.0, $posY_old_1 := 0.0, $posY_old_2 := 0.0, $xInit := 0.0, $yInit := 0.0, $forceX := 0.0, $forceY := 0.0, $vX := 0.0, $vY := 0.0, $dX := 0.0, $dY := 0.0, $onoff := 1, $mass := 1.0, $seuil := 0.0, $damp := 0.0, $minX := -100000, $maxX := 100000, $minY := -100000, $maxY := 100000, $position_out := [0.0, 0.0], $velocity_out := [0.0, 0.0, 0.0], $force_out := [0.0, 0.0, 0.0] 
+
+		$mass := $setM
+
+		$xInit := $setXY[0]
+		$yInit := $setXY[1]
+		$minX := $setMinX
+		$maxX := $setMaxX
+		$minY := $setMinY
+		$maxY := $setMaxY
+		$seuil := $setT
+		$posX_old_1 := $xInit 
+		$posX_old_2 := $xInit
+		$posY_old_1 := $yInit 
+		$posY_old_2 := $yInit
+		$position_out := [$xInit, $yInit]
+	}
+
+	@fun_def force($arrayXY) // mass_force in C source
+	{
+		// print arrayXY $arrayXY
+		$forceX := $forceX + $arrayXY[0]
+		$forceY := $forceY + $arrayXY[1]
+	}
+
+	@fun_def displace($arrayXY) //changer pour x, y
+	{ 
+		$dX := $dX + $arrayXY[0]
+		$dY := $dY + $arrayXY[1]
+	}
+
+	@fun_def dX($x)
+	{ 
+		$dX := $dX + $x
+	}
+
+	@fun_def dY($y) 
+	{
+		$dY := $dY + $y
+	}
+
+	@fun_def trig() //bang
+	{ 
+	@local $posX_new := 0.0, $posY_new := 0.0, $vXloc := 1.0, $vYloc := 1.0
+	if ($onoff == 1)
+		{
+			if ($seuil > 0)
+			{
+				if ($posY_old_1 == $minY) // "si on est en dehors de la structure -> frottement sec sur les bords"
+				{
+					if ($forceX.abs() <= ($seuil * $forceY.neg()))
+					{
+						$vXloc := 0 // on est a l'interieur du cone de frottement
+					}
+				}
+				if ($posY_old_1 == $maxY) // "si on est en dehors de la structure -> frottement sec sur les bords"
+				{
+					if ($forceX.abs() <= ($seuil * $forceY))
+					{
+						$vXloc := 0 // on est a l'interieur du cone de frottement
+					}
+				};
+				if ($posX_old_1 == $minX) // "si on est en dehors de la structure -> frottement sec sur les bords"
+				{
+					if ($forceX.abs() <= ($seuil * $forceY.neg()))
+					{
+						$vYloc := 0 // on est a l'interieur du cone de frottement
+					}
+				};
+				if ($posX_old_1 == $maxX) // "si on est en dehors de la structure -> frottement sec sur les bords"
+				{
+					if ($forceX.abs() <= ($seuil * $forceY))
+					{
+						$vYloc := 0 // on est a l'interieur du cone de frottement
+					}
+				}
+			}
+		 	$forceX := $forceX +  ($damp * ($posX_old_2 - $posX_old_1)) 
+		 	$forceY := $forceY +  ($damp * ($posY_old_2 - $posY_old_1))  //damping
+
+			if ($mass != 0)
+			{
+			  	$posX_new := $forceX/$mass + 2 * $posX_old_1 - $posX_old_2
+				$posY_new := $forceY/$mass + 2 * $posY_old_1 - $posY_old_2
+			}	
+			else
+			{
+				$posX_new := $posX_old_1
+				$posY_new := $posY_old_1
+			}
+
+		if ($vXloc == 0)
+		{
+			$posX_new := $posX_old_1
+		}			// on n'a pas de mv qd on est a l'interieur du cone de frottement
+		if ($vYloc == 0)
+		{
+			$posY_new := $posY_old_1
+		}
+		$posX_new := @max(@min($posX_new, $maxX), $minX)
+		$posY_new := @max(@min($posY_new, $maxY), $minY)
+
+		$posX_new := $posX_new + $dX
+		$posY_new := $posY_new + $dY
+
+		$posX_old_1 := $posX_old_1 + $dX				// pour eviter l'inertie
+		$posY_old_1 := $posY_old_1 + $dY
+
+		
+
+		$posX_old_2 := $posX_old_1
+		$posX_old_1 := $posX_new
+
+		$posY_old_2 := $posY_old_1
+		$posY_old_1 := $posY_new
+
+		$force_out := [$forceX,  $forceY, (($forceX * $forceX) + ($forceY * $forceY)).sqrt()] //out3
+
+
+		$forceX := @rand_range(0.0, 1e-25) // 0.0000000000000000000000001
+		$forceY := @rand_range(0.0, 1e-25)
+
+		$dX := 0
+		$dY := 0
+
+		$vX := $posX_old_1 - $posX_old_2
+		$vY := $posY_old_1 - $posY_old_2
+
+		$velocity_out := [$vX, $vY, (($vX * $vX) + ($vY * $vY)).sqrt()] //out2
+		$position_out := [$posX_new, $posY_new]  //out0
+
+  		}
+	}
+
+	@fun_def reset()
+	{
+		$posX_old_2 := $xInit
+		$posX_old_1 := $xInit
+		$forceX := 0
+
+		$posY_old_2 := $yInit
+		$posY_old_1 := $yInit
+		$forceY := 0
+
+		$vX := 0
+		$vY := 0
+
+		$dX := 0
+		$dY := 0
+		$seuil := 0
+		$onoff := 1
+		$position_out := [ $xInit, $yInit ];
+		$force_out := [ 0 | (3) ]
+		$velocity_out := [ 0 | (3) ]
+
+  	}
+
+  	@fun_def resetF()
+  	{
+ 		$dX := 0
+ 		$dY := 0
+ 		$forceX := 0
+ 		$forceY := 0
+    }
+
+    @fun_def setXY($posX, $posY) 
+    { 
+    	_ := $THISOBJ.setX($posX)
+    	_ := $THISOBJ.setY($posY)
+   	}
+
+	@fun_def setX($posX) 
+	{
+    	$posX_old_2 := $posX
+    	$posX_old_1 := $posX
+		$forceX := 0
+		$position_out[0] := $posX
+	}
+
+	@fun_def setY($posY) 
+	{ 
+    	$posY_old_2 := $posY
+    	$posY_old_1 := $posY
+		$forceY := 0
+		$position_out[1] := $posY
+	}
+
+	@fun_def inter_ambient($ambientObj)  //Ambient2D object
+	{ 
+		@local $aO
+
+		$aO := $ambientObj
+
+		if (( $posX_old_1 > $aO.$xMin) && ( $posX_old_1 < $aO.$xMax) && ( $posY_old_1 > $aO.$yMin) && ( $posY_old_1 < $aO.$yMax))
+		{
+			$forceX := $forceX + $aO.$forceX + @rand2($aO.$randomFX) + (($posX_old_2 - $posX_old_1) * $aO.$damp)
+			$forceY := $forceY + $aO.$forceY + @rand2($aO.$randomFY) + (($posY_old_2 - $posY_old_1) * $aO.$damp)
+			$dX := $dX + $aO.$dX
+			$dY := $dY + $aO.$dY
+
+			// print posX_old_1 $posX_old_1
+			// print posX_old_2 $posX_old_2
+			// print posY_old_1 $posY_old_1
+			// print posY_old_2 $posY_old_2			
+
+			// print aOforceX (""+$aO.$forceX)
+			// print aOdamp (""+$aO.$damp)
+			// print aOforceY (""+$aO.$forceY)
+
+			// print aOxMin (""+$aO.$xMin)
+			// print aOxMax (""+$aO.$xMax)
+			// print aOyMin (""+$aO.$yMin)
+			// print aOyMax (""+$aO.$yMax)
+
+			// print aOrandomFX (""+$aO.$randomFX)
+			// print aOrandomFY (""+$aO.$randomFY)
+
+			// print forceX $forceX
+			// print forceY $forceY
+			// print dX $dX
+			// print dY $dY
+
+		}
+		//{"bad ambient interaction message".warn}
+
+	}
+
+	@fun_def inter_line($ambientObj) 
+	{	
+		@local $aO, $a1, $b1, $c1, $tmp, $posx1, $posx2, $posy1, $posy2, $profondeur, $prof_max
+		
+		$aO := $ambientObj
+		// print a0-machin (""+$aO.$x1)
+		$posx1 := $aO.$x1
+		$posy1 := $aO.$y1
+		$posx2 := $aO.$x2
+		$posy2 := $aO.$y2
+
+		$b1 := $posx2 - $posx1
+		$a1 := $posy2.neg() + $posy1
+
+		if ((($a1==0) && ($b1==0)).not())
+			{
+				$tmp := @sqrt( ($a1 * $a1) + ($b1 * $b1) )			//  longueur du vecteur pour renormalisation
+				$a1 := $a1 / $tmp							// composante X de la normal
+				$b1 := $b1 / $tmp							// composante Y de la normal
+				$c1 := $a1 * $posx1 + ($b1 * $posy1)
+
+				$profondeur := ($a1 * $posX_old_1)  + ($b1 * $posY_old_1) - $c1
+				if ( ( $profondeur  < 0) && ($profondeur >  @neg($aO.$pMax)) )
+					{
+						 $tmp := $aO.$fN; // force ct normal
+						 $forceX := $forceX + ( $tmp * $a1 )
+						 $forceY := $forceY + ( $tmp * $b1 )
+
+						 $tmp := $aO.$fT; // force ct tengentiel
+						 $forceX := $forceX - ( $tmp * $b1 )
+						 $forceY := $forceY - ( $tmp * $a1.neg() )
+
+						 $tmp := $aO.$kN; // force K normal
+						 $tmp := $tmp * $profondeur ;
+						 $forceX := $forceX - ( $tmp * $a1 )
+						 $forceY := $forceY - ( $tmp * $b1 )
+
+						 $tmp := $aO.$dN; // damping2 normal
+						 $tmp := $tmp * ( $vX * $a1 + ( $vY * $b1 ) );
+						 $forceX := $forceX - ( $tmp * $a1 )
+						 $forceY := $forceY - ( $tmp * $b1 )
+
+						 $tmp := $aO.$dT; // damping2 tangentiel
+						 $tmp := $tmp * ( $vX * $b1 - ( $vY * $a1 ) );
+						 $forceX := $forceX - ( $tmp * $b1 ) 
+						 $forceY := $forceY - ( $tmp * $a1.neg() ) 
+
+						 $tmp := $aO.$dn; // d normal
+						 $dX := $dX + ( $tmp * $a1 )
+						 $dY := $dY + ( $tmp * $b1 )
+
+						 $tmp := $aO.$dt; // d tangentiel
+						 $dX := $dX - ( $tmp * $b1 )
+						 $dY := $dY - ( $tmp * $a1.neg() )
+					}
+				}
+	}
+
+	@fun_def inter_seg($ambientObj) 
+	{
+		@local $aO, $a1, $b1, $c1, $a2, $b2, $c2, $a3, $b3, $c3, $tmp, $posx1, $posx2, $posy1, $posy2, $profondeur, $prof_max
+		
+		$aO := $ambientObj
+		$posx1 := $aO.$x1
+		$posy1 := $aO.$y1
+		$posx2 := $aO.$x2
+		$posy2 := $aO.$y2
+
+		$b1 := $posx2 - $posx1
+		$a1 := $posy2.neg() + $posy1
+
+		if ((($a1==0) && ($b1==0)).not())
+			{
+				$tmp = @sqrt( ($a1 * $a1) + ($b1 * $b1) );			//  longueur du vecteur pour renormalisation
+				if ($tmp != 0)
+					{
+						$a1 = $a1 / $tmp;							// composante X de la normal
+						$b1 = $b1 / $tmp;
+					}
+					else
+					{
+						$a1 = 0
+						$b1 = 0
+					}
+											// composante Y de la normal
+				$c1 = $a1 * $posx1 + ($b1 * $posy1);
+
+				$profondeur = ($a1 * $posX_old_1)  + ($b1 * $posY_old_1)  - $c1;
+				if ( ( $profondeur  < 0) && ($profondeur >  @neg($aO.$pMax)) )
+					{
+						$a2 = $b1; 
+						$b2 = $a1.neg();
+						$c2 = $a2 * $posx1 + ($b2 * $posy1);
+						if ( ($a2 * $posX_old_1 + ($b2 * $posY_old_1)) > $c2)
+							{
+								$a3 = $a2; 
+								$b3 = $b2;
+								$c3 = $a3 * $posx2 + ($b3 * $posy2);
+								if ( ($a2 * $posX_old_1 + ($b3 * $posY_old_1)) < $c3)
+									{
+						 				$tmp = $aO.$fN; // force ct normal
+										 $forceX = $forceX + ( $tmp * $a1 );
+										 $forceY = $forceY + ( $tmp * $b1 );
+
+										 $tmp = $aO.$fT; // force ct tengentiel
+										 $forceX = $forceX - ( $tmp * $b1 );
+										 $forceY = $forceY - ( $tmp * $a1.neg() );
+
+										 $tmp = $aO.$kN; // force K normal
+										 $tmp = $tmp * $profondeur ;
+										 $forceX = $forceX - ( $tmp * $a1 );
+										 $forceY = $forceY - ( $tmp * $b1 );
+
+										 $tmp = $aO.$dN; // damping2 normal
+										 $tmp = $tmp * ( $vX * $a1 + ( $vY * $b1 ) );
+										 $forceX = $forceX - ( $tmp * $a1 );
+										 $forceY = $forceY - ( $tmp * $b1 );
+
+										 $tmp = $aO.$dT; // damping2 tangentiel
+										 $tmp = $tmp * ( $vX * $b1 - ( $vY * $a1 ) );
+										 $forceX = $forceX - ( $tmp * $b1 ) ;
+										 $forceY = $forceY - ( $tmp * $a1.neg() ) ;
+
+										 $tmp = $aO.$dn; // d normal
+										 $dX = $dX + ( $tmp * $a1 );
+										 $dY = $dY + ( $tmp * $b1 );
+
+										 $tmp = $aO.$dt; // d tangentiel
+										 $dX = $dX - ( $tmp * $b1 );
+										 $dY = $dY - ( $tmp * $a1.neg() );
+									}
+							}
+					}
+				}
+	}
+
+	@fun_def inter_circle($ambientObj) 
+	{
+		@local $aO, $posx1, $posy1, $nX, $nY, $distance, $dMax, $tmp, $deltaX_old, $deltaY_old, $distance_old, $fnx := 0, $fny := 0, $ftx := 0, $fty := 0
+
+		$aO := $ambientObj;
+		$aO.$posX_old := $aO.$posX // set value posX_old of objet aO
+		$aO.$posY_old := $aO.$posY //pour calcul vitesse interacteur ?
+		// $aO.posX_old := $aO.$posX // set value posX_old of objet aO
+		// $aO.posY_old := $aO.$posY //pour calcul vitesse interacteur ?
+		$posx1 := $aO.$posX;
+		$posy1 := $aO.$posY;
+		$nX := $posX_old_1 - $posx1;					// vecteur deplacement X
+		$nY := $posY_old_1 - $posy1;					// vecteur deplacement Y
+
+		$distance := @sqrt(($nX * $nX)+($nY * $nY));		// $distance entre le centre de l'interaction, et le pts
+
+		$dMax := $aO.$rMax;		// $distance max de l'interaction
+
+
+		if ( ($distance > $aO.$rMin) && ($distance < $dMax) )
+		{
+			$nX := $nX/$distance;							// composante X de la normal (normalis√©)
+			$nY := $nY/$distance;							// composante Y de la normal.
+
+			$tmp := $aO.$fN; // force constante normal
+			$fnx := $fnx + $tmp;
+			$fny := $fny + $tmp;
+
+			$tmp := $aO.$fT; // force constante tengentiel
+			$ftx := $ftx + $tmp;
+			$fty := $fty + $tmp;
+
+			$tmp := $aO.$kN; // force variable (K) normal
+			$tmp := $tmp * ( $dMax - $distance );
+			$fnx := $fnx + $tmp;
+			$fny := $fny + $tmp;
+
+			$tmp := $aO.$kT; // force variable (K) tengentiel
+			$tmp := $tmp * ( $dMax - $distance );
+			$ftx := $ftx + $tmp;
+			$fty := $fty + $tmp;
+
+		    $tmp := $aO.$rN; // force normal proportionel a 1/r
+			if ($distance != 0)
+			{
+				$tmp := $tmp / $distance;
+				$fnx := $fnx + $tmp;
+				$fny := $fny + $tmp;
+			};
+
+		    $tmp := $aO.$rT; // force tengentiel proportionel a 1/r
+			if ($distance != 0)
+			{
+				$tmp := $tmp / $distance;
+				$ftx := $ftx - $tmp;
+				$fty := $fty - $tmp;
+			};
+
+			$tmp := $aO.$dn; // damping2 normal
+			$tmp := $tmp * ($vX * $nX + ( $vY * $nY) );
+				$fnx  := $fnx - $tmp;
+				$fny  := $fny - $tmp;
+
+			$tmp := $aO.$dt; // damping2 tangentiel
+			$tmp := $tmp * ($vX * $nY - ( $vY * $nX) );
+				$ftx  := $ftx - $tmp;
+				$fty  := $fty - $tmp;
+
+			$tmp := $aO.$dRN; // d normal
+			if ($distance != 0)
+			{
+				$tmp := $tmp / $distance;
+				$dX := $dX + ($tmp * $nX) ;
+				$dY := $dY + ( $tmp * $nY) ;
+			};
+
+			$tmp := $aO.$dRT; // d tangentiel
+			if ($distance != 0)
+			{
+				$tmp := $tmp / $distance;
+
+				$dX := $dX - ( $tmp * $nY) ;
+				$dY := $dY - ($tmp * $nX.neg()) ;
+			};
+
+			$tmp := $aO.$d; // damping de liaison
+			if ($tmp != 0)
+			{
+				$deltaX_old := $aO.$posX_old - $posX_old_2;
+				$deltaY_old := $aO.$posY_old - $posY_old_2;
+				$distance_old := @sqrt( ($deltaX_old * $deltaX_old) + ($deltaY_old * $deltaY_old))
+
+				$tmp := $tmp * ($distance - $distance_old)
+				$fnx := $fnx - $tmp
+				$fny := $fny - $tmp
+			};
+
+			$tmp := $aO.$g; // force normal proportionel a 1/r2
+			if ($distance != 0)
+			{
+				$tmp := $tmp /($distance*$distance);
+				$fnx := $fnx + $tmp;
+				$fny := $fny + $tmp;
+			};
+
+			$tmp := $aO.$dN; // deplacement constante normal
+			$dX := $dX + ($tmp * $nX);
+			$dY := $dY + ($tmp * $nY);
+
+			$tmp := $aO.$dT; // deplacement constante tengentiel
+			$dX := $dX - ($tmp * $nY);
+			$dY := $dY - ($tmp * $nX.neg());
+
+		    $forceX := $forceX + ($fnx * $nX + ($ftx * $nY))  // optimisation, but does not change anything...
+		    $forceY := $forceY + ($fny * $nY - ($fty * $nX))
+		}
+
+	}
+
+}
+
+
+
+$sigMass2D := MAP{
+      obj::Mass2D -> MAP { 
+      	"$posX_old_1" -> "double",
+      	"$posX_old_2" -> "double",
+      	"$posY_old_1" -> "double",
+      	"$posY_old_2" -> "double",
+	 	"$xInit" -> "double",
+	 	"$yInit" -> "double",
+	 	"$forceX" -> "double",
+	 	"$forceY" -> "double",	 	 	 	 
+	 	"$vX" -> "double",
+	 	"$vY" -> "double",
+	 	"$dX" -> "double",
+     	"$dY" -> "double",
+     	"$onoff" -> "double",
+	 	"$mass" -> "double",
+	 	"$seuil" -> "double",
+	 	"$damp" -> "double",
+	 	"$minX" -> "double",
+		"$maxX" -> "double",
+		"$minY" -> "double",
+		"$minX" -> "double",
+		"$maxY" -> "double",
+	 	"$position_out" -> ["double"],
+	 	"$velocity_out" -> ["double"],
+	 	"$force_out" -> ["double"],
+
+
+	  	"force" -> [[ ["double"] ], "double"],
+	  	"displace" -> [[ ["double"] ], "double"],
+	 	"dX" -> [[ "double"], "double"],
+	 	"dY" -> [[ "double"], "double"],
+		"trig" -> [[], "void"],
+     		"setX" -> [["double"], "void"],
+     		"setY" -> [["double"], "void"],
+
+      }
+}
+
+
+// $ret := @compilation($sigMass2D)
+print compiled Mass2D
+
+@obj_def Link2D($setL, $setK, $setD, $setD2)
+{	
+	@init 
+	{
+		@local $rigidity := 0.0, $visc_damp := 0.0, $vel_damp := 0, $length := 0.0, $distance_old := 0.0, $positionX1 := 0.0, $positionX2 := 0.0, $posx_old1 := 0.0, $posx_old2 := 0.0, $positionY1 := 0.0, $positionY2 := 0.0, $posy_old1 := 0.0, $posy_old2 := 0.0, $lMin := 0.0, $lMax := 10000.0, $muscle := 1.0, $outForce1 := [0.0, 0.0], $outForce2 := [0.0, 0.0]
+
+	  	$length := $setL
+	  	$rigidity := $setK
+	  	$visc_damp := $setD 
+	  	$vel_damp := $setD2
+  		$distance_old := $length
+  	}
+
+	@fun_def position1($arrayXY)
+	{
+		$positionX1 := $arrayXY[0]
+		$positionY1 := $arrayXY[1]
+		
+		// print positionX1 ($arrayXY[0])
+		// print positionY1 ($arrayXY[1])
+	}
+
+	@fun_def position2($arrayXY)
+	{
+		$positionX2 := $arrayXY[0]
+		$positionY2 := $arrayXY[1]
+
+		// print positionX2 $arrayXY[0]
+		// print positionY2 $arrayXY[1]
+	}
+
+	@fun_def posTrig($pos1, $pos2)
+	{
+		if ($pos1.is_obj()) 
+		{
+			_ := $THISOBJ.position1($pos1.$position_out)
+		}
+		else
+		{
+			_ := $THISOBJ.position1($pos1)
+		}
+		
+		if ($pos2.is_obj()) 
+		{
+			_ := $THISOBJ.position2($pos2.$position_out)
+			// print position_out_test $pos2.$position_out
+		}
+		else
+		{
+			_ := $THISOBJ.position2($pos2)
+		}
+
+		_ := $THISOBJ.trig()
+	}
+
+	@fun_def connect($mass1, $mass2, $back1, $back2)
+	{
+		_ := $THISOBJ.posTrig($mass1, $mass2)
+		if($back1) 
+		{
+			// if($mass1.is_obj)
+			// {
+				$mass1.force($outForce1)
+				// print back1 "true" $back1
+			// }
+		}
+		if($back2) 
+		{	
+			// if($mass2.is_obj)
+		// 	{
+				$mass2.force($outForce2)
+				// print back2 "true" $back2
+			// }
+		}
+
+	}
+
+	@fun_def trig()
+	{
+		@local $force := 0.0, $forcex1 := 0.0, $forcey1 := 0.0, $forcex2 := 0.0, $forcey2 := 0.0, $distance := 0.0
+
+		$distance := (($positionX2 - $positionX1).pow(2) + ($positionY2 - $positionY1).pow(2)).sqrt()
+		$force := ($rigidity * ($distance - ($length * $muscle))) + ($visc_damp * ($distance - $distance_old))
+
+		if ($distance > $lMax) {$force := 0.0}
+		if ($distance < $lMin) {$force := 0.0}
+
+		if ($distance != 0.0)
+		{
+			$forcex1 := $force * ($positionX2 - $positionX1) / $distance
+			$forcey1 := $force * ($positionY2 - $positionY1) / $distance
+		}
+		else
+		{
+			$forcex1 := 0.0
+			$forcey1 := 0.0
+		}
+
+
+		$forcex2 := $forcex1.neg()
+		$forcey2 := $forcey1.neg()
+
+		$forcex1 := $forcex1 + ($posx_old1 - $positionX1) * $vel_damp
+		$forcey1 := $forcey1 + ($posy_old1 - $positionY1) * $vel_damp
+
+		$forcex2 := $forcex2 + ($posx_old2 - $positionX2) * $vel_damp
+		$forcey2 := $forcey2 + ($posy_old2 - $positionY2) * $vel_damp
+
+		$outForce1 := [$forcex1, $forcey1]
+		$outForce2 := [$forcex2, $forcey2]
+
+		$posx_old2 := $positionX2
+		$posx_old1 := $positionX1
+
+		$posy_old2 := $positionY2
+		$posy_old1 := $positionY1
+
+		$distance_old := $distance
+
+  	}
+
+
+	@fun_def reset()
+	{
+  		$positionX1 := 0.0
+  		$positionX2 := 0.0
+  		$posx_old1 := 0.0
+  		$posx_old2 := 0.0
+  		$positionY1 := 0.0
+  		$positionY2 := 0.0
+  		$posy_old1 := 0.0
+  		$posy_old2 := 0.0
+		$distance_old := $length;
+
+	}
+
+	@fun_def resetF() 
+	{
+		$posx_old1 := $positionX1
+		$posx_old2 := $positionX2
+
+		$posy_old1 := $positionY1
+		$posy_old2 := $positionY2
+
+		$distance_old := $lengthx
+  	}
+
+  	@fun_def resetL()
+  	{
+		$length := (($positionX2 - $positionX1).pow(2) + ($positionY2 - $positionY1).pow(2)).sqrt() 
+  	}
+}
+
+$sigLink2D := MAP{
+      obj::Link2D -> MAP { 
+	 "$rigidity" -> "double",
+	 "$visc_damp" -> "double",
+	 "$vel_damp" -> "double",
+	 "$length" -> "double",
+	 "$distance_old" -> "double",
+     "$positionX1" -> "double",
+     "$positionX2" -> "double",
+	 "$posx_old1" -> "double",
+	 "$posx_old2" -> "double",
+	 "$positionY1" -> "double",
+	 "$positionY2" -> "double",
+	 "$posy_old1" -> "double",
+	 "$posy_old2" -> "double",
+	 "$lMin" -> "double",
+	 "$lMax" -> "double",
+	 "$muscle" -> "double",
+	 "$outForce1" -> "double",
+	 "$outForce2" -> "double",
+
+	 // [@neg, "double", ["double"]],
+	  
+	 "position1" -> [[ ["double"] ], "double"],
+	 "position2" -> [[ ["double"] ], "double"],
+     // "trig" -> [[], "double"],
+     // "reset" -> [[ ["double"] ], "double"],
+     // "resetF" -> [[ ["double"] ], "double"],
+	 // "resetL" -> [[ ["double"] ], "double"]     
+
+      }
+}
+
+$ret := @compilation($sigLink2D)
+print compiled Link2D
+
+
+@obj_def Mass3D($setM, $setXYZ, $setMinX = -100000., $setMaxX = 100000., $setMinY = -100000., $setMaxY = 100000., $setMinZ = -100000., $setMaxZ = 100000., $setD = 0.0, $setT = 0.0)
+{
+	@local
+	   $posX_old_1 := 0.0,
+	   $posX_old_2 := 0.0,
+	   $posY_old_1 := 0.0,
+	   $posY_old_2 := 0.0,
+	   $posZ_old_1 := 0.0,
+	   $posZ_old_2 := 0.0,
+	   $xInit := 0.0,
+	   $yInit := 0.0,
+	   $zInit := 0.0,
+	   $forceX := 0.0,
+	   $forceY := 0.0,
+	   $forceZ := 0.0,
+	   $vX := 0.0,
+	   $vY := 0.0,
+	   $vZ := 0.0,
+	   $dX := 0.0,
+	   $dY := 0.0,
+	   $dZ := 0.0,
+	   $onoff := 1.,
+	   $mass := 1.0,
+	   $seuil := 0.0,
+	   $damp := 0.0,
+	   $minX := -100000.,
+	   $maxX := 100000.,
+	   $minY := -100000.,
+	   $maxY := 100000.,
+	   $minZ := -100000.,
+	   $maxZ := 100000.,
+	   $position_out := [0.0, 0.0, 0.0],
+	   $velocity_out := [0.0, 0.0, 0.0, 0.0],
+	   $force_out := [0.0, 0.0, 0.0, 0.0]
+
+	@init
+	{		
+		$mass := $setM 
+		$xInit := $setXYZ[0]
+		$yInit := $setXYZ[1]
+		$zInit := $setXYZ[2]
+		$minX := $setMinX 
+		$maxX := $setMaxX 
+		$minY := $setMinY 
+		$maxY := $setMaxY
+		$minZ := $setMinZ 
+		$maxZ := $setMaxZ 
+		$seuil := $setT  //seuil??
+		$posX_old_1 := $xInit 
+		$posX_old_2 := $xInit
+		$posY_old_1 := $yInit 
+		$posY_old_2 := $yInit
+		$posZ_old_1 := $zInit 
+		$posZ_old_2 := $zInit
+		$position_out := [$xInit, $yInit, $zInit]
+		$damp := $setD //ajoute
+	}
+
+	@fun_def force($arrayXYZ)
+	{
+		$forceX := $forceX + $arrayXYZ[0]
+		$forceY := $forceY + $arrayXYZ[1]
+		$forceZ := $forceZ + $arrayXYZ[2]
+	}
+
+	@fun_def mass($ma)
+	{
+		$mass := $ma 
+	}
+
+	@fun_def dX($x) //idem 2D
+	{
+		$dX := $dX + $x
+	}
+
+	@fun_def dY($y) //idem 2D
+	{ 
+		$dY := $dY + $y
+	}
+
+	@fun_def dZ($z)
+	{ 
+		$dZ := $dZ + $z
+	}
+
+	@fun_def displace($arrayXYZ) 
+	{ 
+		_ := .dX($arrayXYZ[0])
+		_ := .dY($arrayXYZ[1])
+		_ := .dZ($arrayXYZ[2])
+	}
+
+	@fun_def trig() 
+	{ //bang
+		@local $posX_new := 0.,
+		       $posY_new := 0.,
+		       $posZ_new := 0.,
+		       $vXloc := 1.,
+		       $vYloc := 1.,
+		       $vZloc := 1.
+		       
+			if ($onoff == 1)
+				{
+					if ($seuil > 0)
+					{
+
+						if ($posZ_old_1 == $minZ) // "si on est en dehors de la structure -> frottement sec sur les bords"
+						{
+							if (($forceX.pow(2) + ($forceY.pow(2))).sqrt() <= ($seuil * $forceZ.neg()))
+							{
+								$vXloc := 0; // on est a l'interieur du cone de frottement
+								$vYloc := 0; 							}
+							}
+						}
+						if ($posZ_old_1 == $maxZ)
+						{
+							if (($forceX.pow(2) + ($forceY.pow(2))).sqrt() <= ($seuil * $forceZ))
+							{
+								$vXloc := 0;
+								$vYloc := 0;
+							}
+						}
+
+						if ($posY_old_1 == $minY)
+						{
+							if (($forceX.pow(2) + ($forceZ.pow(2))).sqrt() <= ($seuil * $forceY.neg()))
+							{
+								$vXloc := 0
+								$vYloc := 0
+							}
+						}
+
+						if ($posY_old_1 == $maxY)
+						{
+							if (($forceX.pow(2) + ($forceZ.pow(2))).sqrt() <= ($seuil * $forceY))
+							{
+								$vXloc := 0
+								$vYloc := 0
+							}
+						}
+
+						if ($posX_old_1 == $minX)
+						{
+							if (($forceY.pow(2) + ($forceZ.pow(2))).sqrt() <= ($seuil * $forceX.neg()))
+							{
+								$vXloc := 0
+								$vYloc := 0
+							}
+						}
+						if ($posX_old_1 == $maxX)
+						{
+							if (($forceY.pow(2) + ($forceZ.pow(2))).sqrt() <= ($seuil * $forceX))
+							{
+								$vXloc := 0
+								$vYloc := 0
+							}
+						}
+					}
+				 	$forceX := $forceX + ($damp * ($posX_old_2 - $posX_old_1)) ;//$damping
+				 	$forceY := $forceY + ($damp * ($posY_old_2 - $posY_old_1)) ;
+				 	$forceZ := $forceZ + ($damp * ($posZ_old_2 - $posZ_old_1)) ;
+
+				  if ($mass != 0)
+				  {
+					  $posX_new := $forceX/$mass + (2 * $posX_old_1) - $posX_old_2;
+				  	  $posY_new := $forceY/$mass + (2 * $posY_old_1) - $posY_old_2;
+				  	  $posZ_new := $forceZ/$mass + (2 * $posZ_old_1) - $posZ_old_2;
+
+				  }
+				  else
+				  {
+					$posX_new := $posX_old_1;
+					$posY_new := $posY_old_1;
+					$posZ_new := $posZ_old_1;
+
+				  };
+
+				if ($vXloc == 0)
+				    {$posX_new := $posX_old_1};			// on n'a pas de mv qd on est a l'interieur du cone de frottement
+				if ($vYloc == 0)
+				    {$posY_new := $posY_old_1};
+				if ($vZloc == 0)
+				    {$posZ_new := $posZ_old_1};
+
+				  $posX_new := @max(@min($posX_new, $maxX), $minX);
+				  $posY_new := @max(@min($posY_new, $maxY), $minY);
+				  $posZ_new := @max(@min($posZ_new, $maxZ), $minZ);
+
+				  $posX_new := $posX_new + $dX;
+				  $posY_new := $posY_new + $dY;
+				  $posZ_new := $posZ_new + $dZ;
+
+				  $posX_old_1 := $posX_old_1 + $dX;				// pour eviter l'inertie
+				  $posY_old_1 := $posY_old_1 + $dY;
+				  $posZ_old_1 := $posZ_old_1 + $dZ;
+
+				  $position_out := [$posX_new, $posY_new, $posZ_new] ; //out0
+
+				  $posX_old_2 := $posX_old_1
+				  $posX_old_1 := $posX_new
+
+				  $posY_old_2 := $posY_old_1
+				  $posY_old_1 := $posY_new
+
+				  $posZ_old_2 := $posZ_old_1
+				  $posZ_old_1 := $posZ_new
+
+				  $force_out := [$forceX,  $forceY, $forceZ, (($forceX * $forceX) + ($forceY * $forceY) + ($forceZ * $forceZ)).sqrt()]; //out3
+
+				  $forceX := @rand_range(0.0, 1e-25)
+				  $forceY := @rand_range(0.0, 1e-25)
+				  $forceZ := @rand_range(0.0, 1e-25)
+
+				  $dX := 0
+				  $dY := 0
+				  $dZ := 0
+
+				  $vX :=  $posX_old_1 - $posX_old_2
+				  $vY :=  $posY_old_1 - $posY_old_2
+				  $vZ :=  $posZ_old_1 - $posZ_old_2
+
+				  $velocity_out := [$vX, $vY, $vZ, (($vX * $vX) + ($vY * $vY) + ($vZ * $vZ)).sqrt()] //out2
+
+  		}
+	}
+	
+
+	@fun_def reset() 
+	{
+		$posX_old_2 := $xInit;
+		$posX_old_1 := $xInit;
+		$forceX := 0.0
+
+		$posY_old_2 := $yInit;
+		$posY_old_1 := $yInit;
+		$forceY := 0.0
+
+		$posZ_old_2 := $zInit;
+		$posZ_old_1 := $zInit;
+		$forceZ := 0.
+
+		$vX := 0.0
+		$vY := 0.0
+		$vZ := 0.0
+
+		$dX := 0.0
+		$dY := 0.0
+		$dZ := 0.0
+
+		$seuil := 0.0
+		$onoff := 1.0
+		$position_out := [$xInit, $yInit, $zInit];
+		$force_out := [0.0 | (4)] 
+		$velocity_out := [0.0 | (4)] //
+
+  	}
+
+  	@fun_def resetF()
+  	{
+ 		$dX := 0.0
+ 		$dY := 0.0
+ 		$dZ := 0.0
+ 		$forceX := 0.0
+ 		$forceY := 0.0
+ 		$forceZ := 0.0
+    }
+
+    @fun_def setXYZ($posX, $posY, $posZ) 
+    { 
+    	$THISOBJ.setX($posX)
+    	$THISOBJ.setY($posY)
+    	$THISOBJ.setZ($posZ)
+    }
+
+	@fun_def setX($posX)  //idem 2D
+	{ 		
+    	$posX_old_2 := $posX
+    	$posX_old_1 := $posX;
+		$forceX := 0.0
+		$position_out[0] := $posX
+	}
+
+	@fun_def setY($posY)  //idem 2D
+	{   
+    	$posY_old_2 := 0.0
+    	$posY_old_1 := 0.0
+    	$posY := 0.0
+		$forceY := 0.0
+		$position_out[1] := $posY
+	}
+
+	@fun_def setZ($posZ) 
+	{ 
+    	$posZ_old_2 := 0.0
+    	$posZ_old_1 := 0.0
+    	$posZ := 0.0
+		$forceZ := 0.0
+		$position_out[2] := $posZ
+	}
+	// set_mass ->setter
+
+	@fun_def inter_ambient($ambientObj) //Ambient3D object 
+	{
+		@local $aO := $ambientObj
+
+		if (($posX_old_1 > $aO.$xMin) && ($posX_old_1 < $aO.$xMax) && ( $posY_old_1 > $aO.$yMin) && ( $posY_old_1 < $aO.$yMax) && ( $posZ_old_1 > $aO.$zMin) && ( $posZ_old_1 < $aO.$zMax))
+		{
+			$forceX := $forceX + $aO.$forceX + @rand2($aO.$randomFX) + (($posX_old_2 - $posX_old_1) * $aO.$damp)
+			$forceY := $forceY + $aO.$forceY + @rand2($aO.$randomFY) + (($posY_old_2 - $posY_old_1) * $aO.$damp)
+			$forceZ := $forceZ + $aO.$forceZ + @rand2($aO.$randomFZ) + (($posZ_old_2 - $posZ_old_1) * $aO.$damp)
+			$dX := $dX + $aO.$dX 
+			$dY := $dY + $aO.$dY 
+			$dZ := $dZ + $aO.$dZ
+		}
+					//{"bad ambient interaction message".warn}
+					// set_mass ->setter
+	}
+
+	@fun_def inter_circle($ambientObj) //Circle3D object
+	{
+		@local $aO := $ambientObj, $a, $b, $c, $d, $profondeur, $distance, $tmp, $profondeur_old, $rayon, $rayon_old, $toto
+
+		// ax+by+cz-d=0
+		// a = Xvector / |V|
+		// b = Yvector ...
+		// d est tel que aXcenter +bYcenter + cYcenter = d
+
+		$a := $aO.$vX
+		$b := $aO.$vY
+		$c := $aO.$vZ
+
+		// print a (""+$a)
+		// print b (""+$b)
+		// print c (""+$c)
+
+		$tmp := (($a*$a) + ($b*$b) + ($c*$c)).sqrt()
+		// print tmp (""+$tmp) 
+		// print (""+(@sqrt(1)))
+
+		// print toto
+
+		if ($tmp != 0)
+		{
+			$a := $a/$tmp
+			$b := $b/$tmp
+			$c := $c/$tmp
+		}
+		else
+		{
+			$a := 1
+			$b := 0
+			$c := 0
+		}
+		// print a2 (""+$a)
+		// print b2 (""+$b)
+		// print c2 (""+$c)
+
+		$d := ($a * $aO.$x0) + ($b * $aO.$y0) + ($c * $aO.$z0)
+
+		// print d (""+$d) 
+		// print posX_old_1 (""+$posX_old_1) 
+		// print posY_old_1 (""+$posY_old_1) 
+		// print posZ_old_1 (""+$posZ_old_1) 
+
+		// 0,211132
+
+		$profondeur := ($a * $posX_old_1) + ($b * $posY_old_1) + ($c * $posZ_old_1) - $d
+
+		// print profondeur (""+$profondeur) 
+		// print x0 (""+$aO.$x0) 
+		// print y0 (""+$aO.$y0) 
+		// print z0 (""+$aO.$z0) 
+
+		$rayon := (($posX_old_1 - $aO.$x0).pow(2) + ($posY_old_1 - $aO.$y0).pow(2) + ($posZ_old_1 - $aO.$z0).pow(2) - ($profondeur * $profondeur)).sqrt() 
+		// print rayon (""+$rayon) 
+		// print a0 (""+($aO.$pMax.neg()))
+		// print rMin (""+($aO.$rMin))
+		// print rMax (""+($aO.$rMax))
+
+		if (($profondeur < 0) && ($profondeur > $aO.$pMax.neg()) && ($rayon > $aO.$rMin) && ($rayon < $aO.$rMax))
+			{
+				$tmp := $aO.$fN; // force normal constante
+
+				$forceX := $forceX + ($tmp * $a)
+				$forceY := $forceY + ($tmp * $b)
+				$forceZ := $forceZ + ($tmp * $c)
+
+				$tmp := $aO.$kN; // force normal proportionelle a la $profondeur
+
+				$tmp := $tmp * $profondeur;
+
+				$forceX := $forceX - ($tmp * $a)
+				$forceY := $forceY - ($tmp * $b)
+				$forceZ := $forceZ - ($tmp * $c)
+
+				$tmp := $aO.$d; // damping normal proportionel a la $profondeur
+
+				$profondeur_old := $a * $posX_old_2 + ($b * $posY_old_2) + ($c * $posZ_old_2) - $d;
+
+				$tmp := $tmp * ($profondeur - $profondeur_old);
+
+				$forceX := $forceX - ($tmp * $a)
+				$forceY := $forceY - ($tmp * $b)
+				$forceZ := $forceZ - ($tmp * $c)
+
+				$tmp := $aO.$dN; // deplacement normal constante
+
+				$dX := $dX + ($tmp * $a)
+				$dY := $dY + ($tmp * $b)
+				$dZ := $dZ + ($tmp * $c)
+
+				$tmp := $aO.$dKN; // deplacement normal proportionelle a la $profondeur
+
+				$tmp := $tmp * $profondeur;
+				$dX := $dX - ($tmp * $a)
+				$dY := $dY - ($tmp * $b)
+				$dZ := $dZ - ($tmp * $c)
+		}
+		else
+		{
+			// print "error bad circle interaction message"
+			$toto := 0
+
+		}
+	}
+
+// @obj_def Plane3D($vX, $vY, $vZ, $x0, $y0, $z0, $fN, $kN,  $kT,  $d, $pMax, $dN, $dKN) 
+		@fun_def inter_plane($ambientObj)  //Plane3D object
+		{
+			@local $aO := $ambientObj, $a, $b, $c, $d, $profondeur, $distance, $tmp, $profondeur_old;
+
+		// ax+by+cz-d=0
+		// a = Xvector / |V|
+		// b = Yvector ...
+		// d est tel que aXcenter +bYcenter + cYcenter = d
+
+		$a := $aO.$vX
+		$b := $aO.$vY
+		$c := $aO.$vZ
+
+		$tmp := ($a*$a + $b*$b + $c*$c).sqrt()
+
+		if ($tmp != 0)
+		{
+				$a := $a/$tmp
+				$b := $b/$tmp
+				$c := $c/$tmp
+		}
+		else
+		{
+			$a := 1;
+			$b := 0;
+			$c := 0;
+		};
+
+		$d := $a * $aO.$x0 + $b * $aO.$y0 + $c * $aO.$z0
+//C a optimiser : envoyer  directement les coef directeur et l'offset
+//C a faire pour les autres obj aussi
+
+		$profondeur := $a * $posX_old_1 + $b * $posY_old_1 + $c * $posZ_old_1 - $d
+		// print profondeur $profondeur
+		// print aO_pMax ($aO.$pMax) ($aO.$pMax.neg())
+
+		if (($profondeur < 0) && ($profondeur > $aO.$pMax.neg()))
+		{
+			// print interaction
+				$tmp := $aO.$fN; // force normal constante
+
+				$forceX := $forceX + $tmp * $a
+				$forceY := $forceY + $tmp * $b
+				$forceZ := $forceZ + $tmp * $c
+
+				$tmp := $aO.$kN; // force normal proportionelle a la $profondeur
+
+				$tmp := $tmp * $profondeur;
+
+				$forceX := $forceX - $tmp * $a
+				$forceY := $forceY - $tmp * $b
+				$forceZ := $forceZ - $tmp * $c
+
+
+
+				$tmp := $aO.$d; // damping normal proportionel a la $profondeur
+
+				$profondeur_old := $a * $posX_old_2 + $b * $posY_old_2 + $c * $posZ_old_2 - $d
+
+				$tmp := $tmp * ($profondeur - $profondeur_old);
+
+				$forceX := $forceX - ($tmp * $a)
+				$forceY := $forceY - ($tmp * $b)
+				$forceZ := $forceZ - ($tmp * $c)
+
+				$tmp := $aO.$dN; // deplacement normal constante
+
+				$dX := $dX + ($tmp * $a)
+				$dY := $dY + ($tmp * $b)
+				$dZ := $dZ + ($tmp * $c)
+
+				$tmp := $aO.$dKN; // deplacement normal proportionelle a la $profondeur
+
+				$tmp := $tmp * $profondeur
+				$dX := $dX - ($tmp * $a)
+				$dY := $dY - ($tmp * $b)
+				$dZ := $dZ - ($tmp * $c)
+		}
+		// else
+		// {
+		//  	print "error bad plane interraction message"
+		// }
+	}
+
+	@fun_def inter_cylinder($ambientObj)  // Cylinder3D obj
+	{
+		@local $aO := $ambientObj, $a, $b, $c, $d, $profondeur, $profondeur_old, $distance, $tmp, $rayon_old, $rayon, $xb, $yb, $zb, $ta, $tb, $tc, $xb_old, $yb_old, $zb_old
+
+
+		// ax+by+cz-d=0
+		// a = Xvector / |V|
+		// b = Yvector ...
+		// d est tel que aXcenter +bYcenter + cYcenter = d
+		$a := $aO.$vX
+		$b := $aO.$vY
+		$c := $aO.$vZ
+
+		$tmp := ($a*$a + ($b*$b) + ($c*$c)).sqrt() 
+
+		if ($tmp != 0)
+		{
+				$a := $a/$tmp
+				$b := $b/$tmp
+				$c := $c/$tmp
+		}
+		else
+		{
+			$a := 1
+			$b := 0
+			$c := 0
+		};
+
+		$d := $a * $aO.$x0 + ($b * $aO.$y0) + ($c * $aO.$z0)
+
+		$profondeur = $a * $posX_old_1 + ($b * $posY_old_1) + ($c * $posZ_old_1) - $d
+		$xb := $posX_old_1 - $aO.$x0 - ($profondeur * $a)
+		$yb := $posY_old_1 - $aO.$y0 - ($profondeur * $b)
+		$zb := $posZ_old_1 - $aO.$z0 - ($profondeur * $c)
+
+		$rayon := (@pow($xb, 2) + @pow($yb, 2)  + @pow($zb, 2)).sqrt() 
+
+		if ($rayon != 0)
+		{
+			$xb := $xb / $rayon  // normalisation
+			$yb := $yb / $rayon
+			$zb := $zb / $rayon
+		}
+		else
+		{
+			$xb = $yb = $zb = 0  // normalisation
+		};
+
+		$ta := $b * $zb - ($c * $yb) // vecteur tengentiel = vecteur vectoriel $rayon
+		$tb := $c * $xb - ($a * $zb)
+		$tc := $a * $yb - ($b * $xb)
+
+		if (($profondeur < $aO.$pMax) && ($profondeur > $aO.$pMin) && ($rayon < $aO.$rMax) && ($rayon > $aO.$rMin ) )
+			{
+
+				$tmp := $aO.$fN; // force normal constante
+
+				$forceX := $forceX + ($tmp * $xb)
+				$forceY := $forceY + ($tmp * $yb)
+				$forceZ := $forceZ + ($tmp * $zb)
+
+				$tmp := $aO.$kN ; // rigidit√© normal proportionelle
+				$tmp := $tmp * ($aO.$rMax - $rayon)
+				$forceX := $forceX + ($tmp * $xb)
+				$forceY := $forceY + ($tmp * $yb)
+				$forceZ := $forceZ + ($tmp * $zb)
+
+				$tmp := $aO.$d ; // damping normal proportionelle a la $profondeur
+
+				$profondeur_old := $a * $posX_old_2 + ($b * $posY_old_2) + ($c * $posZ_old_2) - $d
+
+				$xb_old := $posX_old_2 - $aO.$x0  - ($profondeur_old * $a)
+				$yb_old := $posY_old_2 - $aO.$y0  - ($profondeur_old * $b)
+				$zb_old := $posZ_old_2 - $aO.$z0  - ($profondeur_old * $c)
+
+				$rayon_old := (@pow($xb_old, 2) + @pow($yb_old, 2)  + @pow($zb_old, 2)).sqrt()
+
+				$tmp := $tmp * ($rayon - $rayon_old)
+
+				$forceX := $forceX - ($tmp * $xb)
+				$forceY := $forceY - ($tmp * $yb)
+				$forceZ := $forceZ - ($tmp * $zb)
+
+				$tmp := $aO.$rN ; // force normal proportionne a 1/R
+				if ($rayon != 0)
+				{
+					$tmp := $tmp / $rayon;
+					$forceX := $forceX + ($tmp * $xb);
+					$forceY := $forceY + ($tmp * $yb);
+					$forceZ := $forceZ + ($tmp * $zb);
+				};
+
+				$tmp := $aO.$g ; // force normal proportionne a 1/R*R
+				if ($rayon != 0)
+				{
+					$tmp := $tmp / ($rayon*$rayon);
+					$forceX := $forceX + ($tmp * $xb);
+					$forceY := $forceY + ($tmp * $yb);
+					$forceZ := $forceZ + ($tmp * $zb);
+				};
+
+				$tmp := $aO.$tFN ; // force tengente constante
+				$forceX := $forceX - ($tmp * $ta);
+				$forceY := $forceY - ($tmp * $tb);
+				$forceZ := $forceZ - ($tmp * $tc);
+
+				$tmp := $aO.$tKN ; // rigidit√© tengentiel proportionelle
+				$tmp := $tmp * ( $aO.$rMax  - $rayon) ;
+				$forceX := $forceX + ($tmp * $ta);
+				$forceY := $forceY + ($tmp * $tb);
+				$forceZ := $forceZ + ($tmp * $tc);
+
+				$tmp := $aO.$dN ; // deplacement normal constante
+
+				$dX := $dX + ($tmp * $xb);
+				$dY := $dY + ($tmp * $yb);
+				$dZ := $dZ + ($tmp * $zb);
+
+				$tmp := $aO.$dKN ; // deplacement normal proportionelle
+				$tmp := $tmp * ($aO.$rMax  - $rayon ) ;
+
+				$dX := $dX + ($tmp * $xb);
+				$dY := $dY + ($tmp * $yb);
+				$dZ := $dZ + ($tmp * $zb);
+
+				$tmp := $aO.$dT ; // deplacement tengente constante
+				$dX := $dX + ($tmp * $ta);
+				$dY := $dY + ($tmp * $tb);
+				$dZ := $dZ + ($tmp * $tc);
+
+				$tmp := $aO.$dKT ; // deplacement tengentiel proportionelle
+				$tmp := $tmp * ( $aO.$rMax  - $rayon ) ;
+				$dX := $dX + ($tmp * $ta)
+				$dY := $dY + ($tmp * $tb)
+				$dZ := $dZ + ($tmp * $tc)
+
+		}
+		else
+		{
+			print "error bad cylinder interraction message"
+		}
+
+	}
+
+	@fun_def inter_sphere($ambientObj)  // Sphere3D obj
+	{
+		@local $aO := $ambientObj, $posx1, $posy1, $posz1, $nX, $nY, $nZ, $dx, $dy, $dz, $distance, $dMax, $tmp, $deltaX_old, $deltaY_old, $deltaZ_old, $distance_old
+
+		$posx1 := $aO.$x0;
+		$posy1 := $aO.$y0;
+		$posz1 := $aO.$z0;
+		$nX := $posX_old_1 - $posx1					// vecteur deplacement X
+		$nY := $posY_old_1 - $posy1					// vecteur deplacement Y
+		$nZ := $posZ_old_1 - $posz1					// vecteur deplacement Y
+
+		$distance := (($nX * $nX)+($nY * $nY)+($nZ * $nZ)).sqrt()		// $distance entre le centre de l'interaction, et le pts
+
+		$nX := $nX/$distance;							// composante X de la normal (normalis√©)
+		$nY := $nY/$distance;							// composante Y de la normal.
+		$nZ := $nZ/$distance;							// composante Y de la normal.
+
+		$dMax := $aO.$rMax;		// $distance max de l'interaction
+		if (($distance > $aO.$rMin) && ($distance < $dMax))
+		{
+			$tmp := $aO.$fN; // force constante normal
+			$forceX := $forceX + ($tmp * $nX)
+			$forceY := $forceY + ($tmp * $nY)
+			$forceZ := $forceZ + ($tmp * $nZ)
+
+			$tmp := $aO.$kN; // force variable (K) normal
+			$tmp := $tmp * ($dMax - $distance)
+			$forceX := $forceX + ($tmp * $nX)
+			$forceY := $forceY + ($tmp * $nY)
+			$forceZ := $forceZ + ($tmp * $nZ)
+
+		    $tmp := $aO.$fRN; // force normal proportionel a 1/r
+			if (($distance != 0) && ($tmp != 0))
+			{
+				$tmp := $tmp / $distance;
+				$forceX := $forceX + ($tmp * $nX)
+				$forceY := $forceY + ($tmp * $nY)
+				$forceZ := $forceZ + ($tmp * $nZ)
+			};
+
+			$tmp := $aO.$d; // damping2 normal
+			$tmp := $tmp * ($vX * $nX + $vY * $nY + $vZ * $nZ );
+			$forceX := $forceX - ($tmp * $nX)
+			$forceY := $forceY - ($tmp * $nY)
+			$forceZ := $forceZ - ($tmp * $nZ)
+
+			$tmp := $aO.$dN; // d normal
+			$dX := $dX + ($tmp * $nX) 
+			$dY := $dY + ($tmp * $nY) 
+			$dZ := $dZ + ($tmp * $nZ) 
+
+			$tmp := $aO.$g; // force normal proportionel a 1/r2
+			if ( ($distance != 0) && ($tmp != 0) )
+			{
+				$tmp := $tmp / ($distance * $distance);
+				$forceX := $forceX + ($tmp * $nX);
+				$forceY := $forceY + ($tmp * $nY);
+				$forceZ := $forceZ + ($tmp * $nZ);
+			};
+
+			$tmp := $aO.$dKN; // deplacement variable (K) normal
+			$tmp := $tmp * ( $dMax - $distance );
+			$dX := $dX + ($tmp * $nX) ;
+			$dY := $dY + ($tmp * $nY) ;
+			$dZ := $dZ + ($tmp * $nZ) ;
+
+			$tmp := $aO.$dRN; // deplacement normal proportionel a 1/r
+			if ( ($distance != 0) && ($tmp != 0) )
+			{
+				$tmp := $tmp / $distance;
+				$dX := $dX + ($tmp * $nX) ;
+				$dY := $dY + ($tmp * $nY) ;
+				$dZ := $dZ + ($tmp * $nZ) ;
+			};
+
+			$tmp := $aO.$dGN; // deplacement normal proportionel a 1/r2
+			if ( ($distance != 0) && ($tmp != 0) )
+			{
+				$tmp :=  $tmp / ($distance * $distance);
+				$dX := $dX + ($tmp * $nX) ;
+				$dY := $dY + ($tmp * $nY) ;
+				$dZ := $dZ + ($tmp * $nZ) ;
+			}
+		}
+	}
+
+	/////INTERACTION A VOIR:
+	/*
+inter_sphere
+	*/
+}
+
+
+$sigMass3D := MAP{ obj::Mass3D -> MAP {
+	   "$posX_old_1" -> "double",
+	   "$posX_old_2" -> "double",
+	   "$posY_old_1" -> "double",
+	   "$posY_old_2" -> "double",
+	   "$posZ_old_1" -> "double",
+	   "$posZ_old_2" -> "double",
+	   "$xInit" -> "double",
+	   "$yInit" -> "double",
+	   "$zInit" -> "double",
+	   "$forceX" -> "double",
+	   "$forceY" -> "double",
+	   "$forceZ" -> "double",
+	   "$vX" -> "double",
+	   "$vY" -> "double",
+	   "$vZ" -> "double",
+	   "$dX" -> "double",
+	   "$dY" -> "double",
+	   "$dZ" -> "double",
+	   "$onoff" -> "double",
+	   "$mass" -> "double",
+	   "$seuil" -> "double",
+	   "$damp" -> "double",
+	   "$minX" -> "double",
+	   "$maxX" -> "double",
+	   "$minY" -> "double",
+	   "$maxY" -> "double",
+	   "$minZ" -> "double",
+	   "$maxZ" -> "double",
+	   "$position_out" -> ["double"],
+	   "$velocity_out" -> ["double"],
+	   "$force_out" -> ["double"],
+
+	   "force" -> [[ ["double"] ], "double"],
+	   "displace" -> [[ ["double"] ], "double"],
+
+	   "trig" -> [[], "double"],
+	   
+	   "dX" -> [["double"], "double"],
+	   "dY" -> [["double"], "double"],
+	   "dZ" -> [["double"], "double"],
+
+	   "setXYZ" -> [["double", "double", "double"], "double"],
+	   "setX" -> [["double"], "double"],
+	   "setY" -> [["double"], "double"],
+	   "setZ" -> [["double"], "double"],
+
+	   // "inter_sphere" -> [["obj"], "double"],
+}}
+
+// $ret := @compilation($sigMass3D)
+// print compiled Mass3D
+// @assert $ret
+// $ret := @compilation($sigMass3D)
+
+
+	@obj_def Link3D($setL, $setK, $setD, $setD2)
+	{
+		@local 
+		$rigidity := 0.0, 
+		$visc_damp := 0.0, 
+		$vel_damp := 0.0, 
+		$length := 0.0, 
+		$distance_old := 0.0, 
+		$positionX1 := 0.0, 
+		$positionX2 := 0.0, 
+		$posx_old1 := 0.0, 
+		$posx_old2 := 0.0, 
+		$positionY1 := 0.0, 
+		$positionY2 := 0.0, 
+		$posy_old1 := 0.0, 
+		$posy_old2 := 0.0, 
+		$positionZ1 := 0.0, 
+		$positionZ2 := 0.0, 
+		$posz_old1 := 0.0, 
+		$posz_old2 := 0.0, 
+		$lMin := 0.0, 
+		$lMax := 10000.0, 
+		$muscle := 1.0, 
+		$outForce1 := [0.0, 0.0, 0.0], 
+		$outForce2 := [0.0, 0.0, 0.0]
+		@init
+		{
+			$length := $setL 
+			$rigidity := $setK 
+			$visc_damp := $setD  
+			$vel_damp := $setD2
+  			$distance_old := $length
+  		}
+
+		@fun_def position1($arrayXYZ)
+		{
+		 	$positionX1 := $arrayXYZ[0]
+		 	$positionY1 := $arrayXYZ[1]
+		 	$positionZ1 := $arrayXYZ[2]
+		}
+
+		@fun_def position2($arrayXYZ) 
+		{
+		 	$positionX2 := $arrayXYZ[0]
+		 	$positionY2 := $arrayXYZ[1]
+		 	$positionZ2 := $arrayXYZ[2]
+		}
+
+		@fun_def posTrig($pos1, $pos2)
+		{
+			if ($pos1.is_obj()) 
+			{
+				$THISOBJ.position1($pos1.$position_out)
+			}
+			else
+			{
+				$THISOBJ.position1($pos1)
+			}
+			
+			if ($pos2.is_obj()) 
+			{
+				$THISOBJ.position2($pos2.$position_out)
+				// print position_out_test $pos2.$position_out
+			}
+			else
+			{
+				if($pos2 != -1) // si c'est -1 c'est qu'il n'existe pas, voir une meilleure façon de faire...
+				{
+					$THISOBJ.position2($pos2)
+				}
+			}
+
+			$THISOBJ.trig()
+		}
+
+		@fun_def connect($mass1, $mass2, $back1 = true, $back2 = true)
+		{
+			$THISOBJ.posTrig($mass1, $mass2)
+			if($back1) 
+			{
+				if($mass1.is_obj())
+				{
+					$mass1.force($outForce1)
+					// print back1 "true" $back1
+				}
+			}
+			if($back2) 
+			{	
+				if($mass2.is_obj())
+				{
+					$mass2.force($outForce2)
+					// print back2 "true" $back2
+				}
+			}
+
+		}
+
+	 	@fun_def trig() 
+	 	{ //bang
+	  		@local $force := 0., $forcex1:= 0., $forcey1:= 0., $forcez1:= 0., $forcex2:= 0., $forcey2 := 0., $forcez2 := 0., $distance := 0.
+
+		$distance := (($positionX2 - $positionX1).pow(2) + ($positionY2 - $positionY1).pow(2) + ($positionZ2 - $positionZ1).pow(2)).sqrt()
+		$force := ($rigidity * ($distance - ($length * $muscle))) + ($visc_damp * ($distance - $distance_old))
+
+		if ($distance > $lMax) {$force := 0.0}
+		if ($distance < $lMin) {$force := 0.0}
+
+		if ($distance != 0.0)
+		{
+			$forcex1 := $force * ($positionX2 - $positionX1) / $distance
+			$forcey1 := $force * ($positionY2 - $positionY1) / $distance
+			$forcez1 := $force * ($positionZ2 - $positionZ1) / $distance
+
+		}
+		else
+		{
+			$forcex1 := 0.0
+			$forcey1 := 0.0
+			$forcez1 := 0.0
+		} ;
+
+		$forcex2 := $forcex1.neg()
+		$forcey2 := $forcey1.neg()
+		$forcez2 := $forcez1.neg()
+		$forcex1 := $forcex1 + ($posx_old1 - $positionX1) * $vel_damp
+		$forcey1 := $forcey1 + ($posy_old1 - $positionY1) * $vel_damp
+		$forcez1 := $forcez1 + ($posz_old1 - $positionZ1) * $vel_damp
+
+		$forcex2 := $forcex2 +  ($posx_old2 - $positionX2) * $vel_damp
+		$forcey2 := $forcey2 +  ($posy_old2 - $positionY2) * $vel_damp
+		$forcez2 := $forcez2 +  ($posz_old2 - $positionZ2) * $vel_damp
+
+		$outForce1 := [$forcex1, $forcey1, $forcez1]
+		$outForce2 := [$forcex2, $forcey2, $forcez2]
+
+		$posx_old2 := $positionX2
+		$posx_old1 := $positionX1
+
+		$posy_old2 := $positionY2
+		$posy_old1 := $positionY1
+
+		$posz_old2 := $positionZ2
+		$posz_old1 := $positionZ1
+
+		$distance_old := $distance
+
+	  }
+
+	@fun_def reset() 
+	{
+  		$positionX1 := 0.0
+  		$positionX2 := 0.0
+  		$posx_old1 := 0.0
+  		$posx_old2 := 0.0
+  		$positionY1 := 0.0
+  		$positionY2 := 0.0
+  		$posy_old1 := 0.0
+  		$posy_old2 := 0.0
+  		$positionZ1 := 0.0
+  		$positionZ2 := 0.0
+  		$posz_old1 := 0.0
+  		$posz_old2 := 0.0
+
+		$distance_old := $length
+	}
+
+	@fun_def resetF() 
+	{
+		$posx_old1 := $positionX1
+		$posx_old2 := $positionX2
+
+		$posy_old1 := $positionY1
+		$posy_old2 := $positionY2
+
+		$posz_old1 := $positionZ1
+		$posz_old2 := $positionZ2
+
+		$distance_old := $length
+  	}
+
+	@fun_def resetL() 
+	{
+		// $length := sqrt ( ($positionX2 - $positionX1) ** 2 + (($positionY2 - $positionY1) ** 2 ) + (($positionZ2 - $positionZ1) ** 2 ));
+		$length := (($positionX2 - $positionX1).pow(2) + ($positionY2 - $positionY1).pow(2) + ($positionZ2 - $positionZ1).pow(2)).sqrt()
+
+  	}
+
+  	//lia3D_setK //setter rigidity
+  	//lia3D_setL //setter length
+  	// lia3D_setD //setter visc_damp
+  	//lia2D_setD2 //setter damp
+  	//Lmin //setter lMin //lia2D_Lmax //setter lMax
+  	//lia2D_muscle //setter muscle
+}
+
+
+$sigLink3D := MAP{ obj::Link3D -> MAP {
+	   "$rigidity" -> "double",
+	   "$visc_damp" -> "double",
+	   "$vel_damp" -> "double",
+	   "$length" -> "double",
+	   "$distance_old" -> "double",
+	   "$positionX1" -> "double",
+	   "$positionX2" -> "double",
+	   "$posx_old1" -> "double",
+	   "$posx_old2" -> "double",
+	   "$positionY1" -> "double",
+	   "$positionY2" -> "double",
+	   "$posy_old1" -> "double",
+	   "$posy_old2" -> "double",
+	   "$positionZ1" -> "double",
+	   "$positionZ2" -> "double",
+	   "$posz_old1" -> "double",
+	   "$posz_old2" -> "double",
+	   "$lMin" -> "double",
+	   "$lMax" -> "double",
+	   "$muscle" -> "double",
+	   "$outForce1" -> ["double"],
+	   "$outForce2" -> ["double"],
+
+	   "position1" -> [[ ["double"] ], "void"],
+	   "position2" -> [[ ["double"] ], "void"],
+	   "trig" -> [[], "void"],
+	   "reset" -> [[], "void"],
+	   "resetF" -> [[], "void"],
+	   "resetL" -> [[], "void"]
+	   
+
+	   // "inter_sphere" -> [["obj"], "double"],
+}}
+
+$ret := @compilation($sigLink3D)
+print compiled Link3D
+
+@obj_def Ambient2D($forceX = 0.0, $forceY = 0.0, $randomFX = 0.0, $randomFY = 0.0, $damp = 0.0, $xMin = -100000.0, $xMax = 100000.0, $yMin = -100000.0,  $yMax = 100000.0, $dX = 0.0, $dY = 0.0) 
+{
+	@init
+	{
+		print init Ambient2D
+		// $forceX := 0.0
+		// $forceY := 0.0
+		// $randomFX := 0.0
+		// $randomFY := 0.0
+		// $damp := 0.0
+		// $xMin := -10000
+		// $xMax := 100000
+		// $yMin := -100000
+		// $yMax := 100000
+		// $dX := 0.0
+		// $dY := 0.0
+	}
+
+	@fun_def force($arrayXY) 
+	{
+		$forceX := $arrayXY[0]
+		$forceY := $arrayXY[1]
+	}
+
+	@fun_def randForce($arrayXY) 
+	{
+		$randomFX := $arrayXY[0]
+		$randomFY := $arrayXY[1]
+	}
+
+}
+
+
+// $sigAmbient2D := MAP{ obj::Ambient2D -> MAP {
+// 	   "force" -> [[ ["double"] ], "double"],
+// 	   "randForce" -> [[ ["double"] ], "double"]
+
+// }}
+
+// $ret := @compilation($sigAmbient2D)
+// print compiled Ambient2D
+
+
+@obj_def Ambient3D($forceX = 0.0, $forceY = 0.0, $forceZ = 0.0, $randomFX = 1.0, $randomFY = 1.0, $randomFZ = 1.0, $damp = 0.0, $xMin = -100000.0, $xMax = 100000.0, $yMin = -100000.0, $yMax = 100000.0, $zMin = -100000.0, $zMax = 100000.0, $dX = 0.0, $dY = 0.0, $dZ = 0.0) 
+{
+	@init
+	{
+		// $forceX := 0.0
+		// $forceY := 0.0
+		// $forceZ := 0.0
+		// $randomFX := 0.0
+		// $randomFY := 0.0
+		// $randomFZ := 0.0
+		// $damp := 0.0
+		// $xMin := -10000.0
+		// $xMax := 100000.0
+		// $yMin := -100000.0
+		// $yMax := 100000.0
+		// $zMin := -100000.0
+		// $zMax := 100000.0
+		// $dX := 0.0
+		// $dY := 0.0
+		// $dZ := 0.0
+		print Ambient3D
+	}
+
+
+	@fun_def force($arrayXYZ) 
+	{
+		$forceX := $arrayXYZ[0]
+		$forceY := $arrayXYZ[1] 
+		$forceZ := $arrayXYZ[2]
+
+	}
+
+	@fun_def randForce($arrayXYZ) 
+	{ 
+		$randomFX := $arrayXYZ[0]
+		$randomFY := $arrayXYZ[1]
+		$randomFZ := $arrayXYZ[2]
+	}
+	//trig {} //?
+}
+
+// $sigAmbient3D := MAP{ obj::Ambient3D -> MAP {
+
+
+// 	   "force" -> [[ ["double"] ], "double"],
+// 	   "randForce" -> [[ ["double"] ], "double"]
+
+// }}
+
+// $ret := @compilation($sigAmbient3D)
+// print compiled Ambient3D
+
+
+@obj_def Circle2D($posX = 0, $posY = 0, $rMin = 0, $rMax = 1, $fN = 0, $fT = 0, $kN = 0, $kT = 0, $rN = 0, $rT = 0, $dn = 0, $dt = 0, $dRN = 0, $dRT = 0, $d = 0, $g = 0, $dN = 0, $dT = 0) 
+{
+	@init
+	{
+		@local $posX_old := 0.0, $posY_old := 0.0
+		// print Circle2D
+		// $posX := 0.0
+	 //    $posY := 0.0
+	 //    $rMin := 0.0
+	 //    $rMax := 1.0
+	 //    $fN := 0.0
+	 //    $fT := 0.0
+	 //    $kN := 0.0
+	 //    $kT := 0.0
+	 //    $rN := 0.0
+	 //    $rT := 0.0
+	 //    $dn := 0.0
+	 //    $dt := 0.0
+	 //    $dRN := 0.0
+	 //    $dRT := 0.0 
+	 //    $d := 0.0
+	 //    $g := 0.0
+	 //    $dN := 0.0
+	 //    $dT := 0.0
+
+		$posX_old := $posX 
+		$posY_old := $posY
+
+	}
+	
+	// @fun_def posX_old($x)
+	// { 
+	// 	$posX_old := $x
+	// }
+
+	// @fun_def posY_old($y) 
+	// {
+	// 	$posY_old := $y
+	// }
+
+	@fun_def  setXY($arrayXY) 
+	{
+		$posX_old := $posX 
+		$posY_old := $posY
+		
+		$posX := $arrayXY[0]
+		$posY := $arrayXY[1]
+	}
+}
+
+
+// $sigCircle2D := MAP{ obj::Circle2D -> MAP {
+
+
+// 	   "setXY" -> [[ ["double"] ], "double"],
+// 	   // "randForce" -> [[ ["double"] ], "double"]
+
+// }}
+
+// $ret := @compilation($sigCircle2D)
+// print compiled Circle2D
+
+@obj_def Circle3D($vX = 1, $vY = 0, $vZ = 0, $x0 = 0, $y0 = 0, $z0 = 0, $rMin = 0, $rMax = 1, $fN = 0, $kN = 0, $kT = 0,  $d = 0, $pMax = 10000, $dN = 0, $dKN = 0) 
+{
+	@init
+	{
+		@local $posX_old := 0.0, $posY_old := 0.0, $posZ_old := 0.0
+		// $vX := 1
+		// $vY := 0
+		// $vZ := 0
+		// $x0 := 0
+		// $y0 := 0
+		// $z0 := 0
+		// $rMin := 0
+		// $rMax := 1
+		// $fN := 0
+		// $kN := 0
+		// $kT := 0
+		// $d := 0
+		// $pMax := 10000
+		// $dN := 0
+		// $dKN := 0
+		// print Circle3D
+		$posX_old := $x0 
+		$posY_old := $y0
+		$posZ_old := $z0
+	}
+	@fun_def setXYZ($arrayXYZ) 
+	{
+		$posX_old := $x0 
+		$posY_old := $y0
+		$posZ_old := $z0
+		
+		$x0 := $arrayXYZ[0]
+		$y0 := $arrayXYZ[1]
+		$z0 := $arrayXYZ[2]
+	}	
+}
+
+@obj_def Cylinder3D($vX = 1, $vY = 0, $vZ = 0, $x0 = 0, $y0 = 0, $z0 = 0, $rMin = 0, $rMax = 1, $fN = 0, $kN = 0, $d = 0, $rN = 0, $g = 0, $pMin = -10000, $pMax = 10000, $tFN = 0, $tKT = 0, $dN = 0, $dT = 0, $dKN = 0, $dKT = 0) 
+{
+	@init
+	{
+		print Cylinder3D
+		// $vX := 1
+		// $vY := 0
+		// $vZ := 0
+		// $x0 := 0
+		// $y0 := 0
+		// $z0 := 0
+		// $rMin := 0
+		// $rMax := 1
+		// $fN := 0
+		// $kN := 0
+		// $d := 0
+		// $rN := 0
+		// $g := 0
+		// $pMin := -10000
+		// $pMax := 10000
+		// $tFN := 0
+		// $tKT := 0
+		// $dN := 0
+		// $dT := 0
+		// $dKN := 0
+		// $dKT := 0
+	}
+}
+
+
+@obj_def Line2D($x1 = -1, $y1 = 0, $x2 = 1, $y2 = 0, $pMax = 1, $fN = 0, $fT = 0, $kN = 0, $dN = 0, $dT = 0, $dn = 0, $dt = 0) 
+{
+	@init
+	{
+		print Line2D $x1
+		// $x1 := -1.0
+		// $y1 := 0.0
+		// $x2 := 1.0
+		// $y2 := 0.0
+		// $pMax := 1.0
+		// $fN := 0.0
+		// $fT := 0.0
+		// $kN := 0.0
+		// $dN := 0.0
+		// $dT := 0.0
+		// $dn := 0.0
+		// $dt := 0.0
+	}
+}
+
+@obj_def Seg2D($x1 = -1, $y1 = 0, $x2= 1, $y2 = 0, $pMax = 1, $fN = 0, $fT = 0, $kN = 0, $dN = 0, $dT = 0, $dn = 0, $dt = 0) 
+{
+	@init
+	{
+		print Seg2D
+		// $x1 := -1.0
+		// $y1 := 0.0
+		// $x2 := 1.0
+		// $y2 := 0.0
+		// $pMax := 1.0
+		// $fN := 0.0
+		// $fT := 0.0
+		// $kN := 0.0
+		// $dN := 0.0
+		// $dT := 0.0
+		// $dn := 0.0
+		// $dt := 0.0
+	}
+}
+
+@obj_def Plane3D($vX = 0, $vY = 0, $vZ = 0, $x0 = 0, $y0 = 0, $z0 = 0, $fN = 0, $kN = 0,  $kT = 0,  $d = 0, $pMax = 10000.0, $dN = 0, $dKN = 0) 
+{
+	@init
+	{
+		print Plane3D
+		// $vX := 1
+		// $vY := 0
+		// $vZ := 0
+		// $x0 := 0
+		// $y0 := 0
+		// $z0 := 0
+		// $fN := 0
+		// $kN := 0
+		// $kT := 0
+		// $d := 0
+		// $pMax := 10000
+		// $dN := 0
+		// $dKN := 0
+	}
+}
+
+
+@obj_def Sphere3D($x0 = 0, $y0 = 0, $z0 = 0, $rMin = 0, $rMax = 1, $fN = 0, $kN = 0, $fRN = 0, $d = 0, $dN = 0, $g = 0, $dKN = 0,  $dRN = 0, $dGN = 0) 
+{
+	@init
+	{
+		@local $posX_old := 0, $posY_old := 0, $posZ_old := 0 //, $posX := 0, $posY := 0, $posZ := 0
+
+		// $x0 := 0
+		// $y0 := 0
+		// $z0 := 0
+		// $rMin := 0
+		// $rMax := 1
+		// $fN := 0
+		// $kN := 0
+		// $fRN := 0
+		// $d := 0
+		// $dN := 0
+		// $g := 0
+		// $dKN := 0
+		// $dRN := 0
+		// $dGN := 0
+		$posX_old := $x0
+		$posY_old := $y0
+		$posZ_old := $z0
+
+	}
+
+	@fun_def setXYZ($arrayXYZ) 
+	{
+		$posX_old := $x0
+		$posY_old := $y0
+		$posZ_old := $z0
+		$x0 := $arrayXYZ[0]
+		$y0 := $arrayXYZ[1]
+		$z0 := $arrayXYZ[2]
+	}
+
+}
+
+// $sigSphere3D := MAP{ obj::Sphere3D -> MAP {
+
+
+// 	   "setXY" -> [[ ["double"] ], "double"],
+// 	   // "randForce" -> [[ ["double"] ], "double"]
+
+// }}
+
+// $ret := @compilation($sigSphere3D)
+// print compiled Sphere3D
