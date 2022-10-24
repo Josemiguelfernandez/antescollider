@@ -12,9 +12,10 @@ NOTE 60 1 start_SC_multiserver
 // representation des serveurs dans Antesocofo
 
 
-$audio_card := "Digiface Dante (23970887)" // Studio1
+//$audio_card := "Digiface Dante (23970887)" // Studio1
 // $audio_card := "Digiface Dante (23979314)" // Studio2
-
+// $audio_card := "MacBook Pro Speakers"
+ $audio_card := [2,3]
 
 obj::sc_server("server1", 57110, device = $audio_card, outputs = 24) //, block_size = 128) 
 obj::sc_server("server2", 57111, device = $audio_card, outputs = 24) //, block_size = 128) 
