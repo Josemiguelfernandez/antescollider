@@ -1,0 +1,23 @@
+CLASS::AmbisonicEncoderOrder5In2
+SUMMARY::A Faust plugin
+RELATED::Classes/UGen
+CATEGORIES::Categories>Faust
+DESCRIPTION::
+A Faust plugin written by Pierre Lecomte.
+This plugin has 2 inputs and 36 outputs.
+A Faust plugin
+
+CLASSMETHODS::
+METHOD::ar,kr
+
+ARGUMENT::source  0
+
+ARGUMENT::source  1
+
+EXAMPLES::
+
+code::
+// TODO
+::
+
+KEYWORD::faust,plugin

@@ -1,0 +1,35 @@
+CLASS::AmbisonicEncoder
+SUMMARY::A Faust plugin
+RELATED::Classes/UGen
+CATEGORIES::Categories>Faust
+DESCRIPTION::
+A Faust plugin written by Pierre Lecomte.
+This plugin has 1 inputs and 64 outputs.
+A Faust plugin
+
+CLASSMETHODS::
+METHOD::ar,kr
+
+ARGUMENT::gain  0
+Minimum value: -20
+Maximum value: 20
+
+ARGUMENT::radius  0
+Minimum value: 0.75
+Maximum value: 50
+
+ARGUMENT::azimuth  0
+Minimum value: -180
+Maximum value: 180
+
+ARGUMENT::elevation  0
+Minimum value: -90
+Maximum value: 90
+
+EXAMPLES::
+
+code::
+// TODO
+::
+
+KEYWORD::faust,plugin
