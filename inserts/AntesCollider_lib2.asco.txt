@@ -115,7 +115,7 @@ $home := @user_directory() // this is the user dirctory $home + ""
 /// patch soundFiles
 // $path := $home + "/Library/Application\ Support/SuperCollider/sounds/"
 
-$path := $home + "/sounds/"
+$path := $home + "/Projets/Co/Fernandez/Manifeste23/sounds/"
 // $path := $home + "/sound_test/"
 
 // $path := $home + "/Users/josephfernandez/Documents/Lara-ali/bandes-d-ali"

@@ -47,6 +47,13 @@ From line 19 to 22 you can instantiate different scsynth servers, in this exempl
 - Fifth event 'mix_groups_HOA' creates High Order Ambisonic mix groups. You can define the order and decoder to be use (binaural or speakers)
 - Sixth event 'demo_mix_group' create audio synth chain
 
+### VST plugin
+
+download vstplugin from 
+https://git.iem.at/pd/vstplugin/-/releases
+and add it in
+/Users/username/Library/Application\ Support/SuperCollider/Extensions
+
 ### Sublime Text
 
 You can use alt+p in Sublime Text to evaluate portions of text (live coding). To do this you need to download the Package Antescofo from Sublime
