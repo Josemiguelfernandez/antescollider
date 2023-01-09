@@ -305,6 +305,17 @@ $pi := 3.14159265359
 	return $tab
 }
 
+@fun_def tab2map($tab) // return map k = tab elements, v = index tab
+{	
+	@local $map := map {}
+	forall $x in $tab.size()
+	{
+		$map.add_pair($tab[$x], $x) 
+	}
+	return $map
+}
+
+
 @fun_def @true ($x)
 	{return true}
 
@@ -344,6 +355,14 @@ $pi := 3.14159265359
 
 
 @fun_def @midic2hz($x)  {442 * @exp(($x-6900.0) * @log(2.0)/1200.)} // en midicents
+
+@fun_def @midic2hz_tab($tab)  {
+	[ 442 * @exp(($x-6900.0) * @log(2.0)/1200.) | $x in $tab ] // en midicents
+	} 
+
+@fun_def @transratio($x) {@exp(0.057762265 * ($x/100.))} // convert intervals to pitch ratios
+
+
 
 @fun_def @dur2sec($val) {$val*(60/$RT_TEMPO)}
 @fun_def @dur2mlsec($val) {$val*(60000/$RT_TEMPO)}
@@ -402,7 +421,7 @@ $pi := 3.14159265359
 @fun_def @sum($tab) {
 
 	 return @reduce(@+, $tab)
-}
+}	
 
 // order tab
 
@@ -695,6 +714,36 @@ $var_for_compare_value := <undef>
 {	
 	return $fftsize * @round(@ceil($irbuffer_numFrames/($fftsize/2)))
 }
+
+
+/// Regexp
+
+$template_command := "set\\([ ]*([A-Za-z0-9_-]+)[ ]*,.*\\[([A-Za-z0-9_-]+)[ ]*,"
+@r_compile($template_command, $template_command)
+
+@fun_def @extract_command($s)
+{
+   @local $res := @r_search($template_command, $s)
+   if ($res)
+     { return $res.drop(1).take(2) }
+   else
+     { return false }
+}
+
+// permet de recuperer la methode d_factor au milieu de la commande dans: "\$u, $i.($u.d_factor(@scale_compiled($i, 0, 1, 0.75, 4, 1)))"
+$template_method := "\\(\\$u\\.[ ]*([A-Za-z0-9_-]+)[ ]*\\("
+
+@r_compile($template_method, $template_method)
+
+@fun_def @extract_method($s)
+{
+   @local $res := @r_search($template_method, $s)
+   if ($res)
+     { return $res[1] }
+}
+
+////////////////
+
 
 print "COMPILE RAND_RANGE"
 

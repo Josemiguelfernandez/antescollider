@@ -51,9 +51,9 @@ oscsend knn_search_list "localhost" :12345 "/knn_search_list" //@persistent
 
 // send to oF GUI
 
-oscsend concat_x "localhost" : 6665 "/parameters/concat_xyz/c_x" //@persistent
+/*oscsend concat_x "localhost" : 6665 "/parameters/concat_xyz/c_x" //@persistent
 oscsend concat_y "localhost" : 6665 "/parameters/concat_xyz/c_y" //@persistent
-oscsend concat_z "localhost" : 6665 "/parameters/concat_xyz/c_z" //@persistent
+oscsend concat_z "localhost" : 6665 "/parameters/concat_xyz/c_z" //@persistent*/
 
 
 
@@ -67,13 +67,13 @@ oscrecv 3D_plane_oFx 6666 * $from_of_gui //@persistent
 
 
 
-oscsend osc_send_descriptors "192.168.1.12" : 9999 //@persistent // $host : $port //("/"+$name)
+/*oscsend osc_send_descriptors "192.168.1.12" : 9999 //@persistent // $host : $port //("/"+$name)
 
 oscsend send_osc @global "192.168.1.12" : 9999
 
 
 	// recever OSC from openFrameworks GUI
-oscrecv from_video 6667 * $from_video //@persistent // from Raph
+oscrecv from_video 6667 * $from_video //@persistent // from Raph*/
 
 
 // oscsend sample "169.254.157.190" : 5555 "/sample" @persistent
@@ -90,10 +90,15 @@ oscrecv from_video 6667 * $from_video //@persistent // from Raph
 // if (@is_undef($tracks)) { $tracks := map{} }
 // if (@is_undef($aux)) { $aux := map{} }
 
+/// bach 
+
+oscsend to_bach "localhost" :9543 "/rand_note" //@persistent
 
 oscrecv from_bach 65534 * $from_bach_notes // @persistent
 oscrecv from_bach2 6555 * $from_bach2 // @persistent
 oscrecv from_bach2 6556 * $from_bach3 // @persistent
+
+///////
 
 @global $home @persistent
 @global $path @persistent
@@ -108,12 +113,12 @@ oscrecv from_bach2 6556 * $from_bach3 // @persistent
 $home := @user_directory() // this is the user dirctory $home + ""
 
 /// patch soundFiles
-$path := $home + "/Library/Application\ Support/SuperCollider/sounds/"
+// $path := $home + "/Library/Application\ Support/SuperCollider/sounds/"
 
-// change sound file directory here
-// $path := $home + "/sounds/"
+$path := $home + "/sounds/"
 // $path := $home + "/sound_test/"
 
+// $path := $home + "/Users/josephfernandez/Documents/Lara-ali/bandes-d-ali"
 
 $SF_dir := @directory_read($path, 2, ["aif", "aiff", "WAVE"])
 
@@ -141,6 +146,10 @@ $hrir_dir := @directory_read($path_hrir, 2)
 $vst_file := $home + "/Library/Application\ Support/SuperCollider/tmp/vst_all"
 
 // (""+$vst_all_map.domain())
+
+// vst presets
+
+$vst_presets := $home + "/Library/Audio/Presets/"
 
 // Spat automation
 
@@ -1310,6 +1319,11 @@ whenever ($free_tracks)
 		$v.free($free_tracks)
 	}
 	// ($free_tracks+0.005) $tracks := map{} // clean dico
+	forall $k, $v in $SC_Servers
+	{
+		// print (""+$k)
+		$SC_Servers($k).insert("bus_index", 500) // reset all bus to index 500
+	}
 }
 
 whenever ($free_select_track)
@@ -2754,17 +2768,30 @@ if (@is_undef($ir_buf)) { $ir_buf := map{} }
 $envs_map := map{ 
 	("pointe", NIM{ 0 0, 0.5 1 "exp", 0.5 0 "exp_out"}), 
 	("rond", NIM{ 0 0, 0.5 1 "cubic_out", 0.5 0 "cubic"}), 
+	("baleine", NIM{ 0 0, 0.2 1 "cubic_out", 0.8 0 "cubic"}), 
+	("baleine_inv", NIM{ 0 0, 0.8 1 "cubic_out", 0.2 0 "cubic"}), 
 	("perc", NIM{ 0 0, 0.1 1 "exp", 0.9 0 "exp_out"}),
-	("inv", NIM{ 0 0, 0.9 1 "exp", 0.1 0 "sine"}),
+	("perc_acc", NIM{ 0 0, 0.02 1 "exp", 0.9 0 "circ_out"}),
+	("perc_sust", NIM{ 0 0, 0.01 1 "exp", 0.9 0 "sine_in"}),
+	("perc_rel", NIM{ 0 0, 0.01 1 "exp", 0.1 0.7, 0.6 0.7, 0.29 0 "sine_out"}),
+	("perc_s", NIM{ 0 0, 0.01 1 "exp", 0.9 0 "quart_in_out"}),
 	("perc_rond", NIM{ 0 0, 0.1 1 "exp_out", 0.5 0.9, 1 0 "quint_out"}),
+	("perc_elastic", NIM{ 0 0, 0.5 1 "elastic_out", 0.5 0 "sine_in"}),
+	("inv", NIM{ 0 0, 0.9 1 "exp", 0.1 0 "sine"}),
 	("m", NIM{ 0 0, 0.5 1 "circ", 0.2 0.5 "circ", 0.2 0.9 "sine", 0.5 0 "cubic_out"}),
 	("m2", NIM{ 0 0, 0.5 0.7 "cubic", 0.2 0.3 "circ_out", 0.2 1 "sine", 0.2 0 "cubic_out"}),
+	("m_carre", NIM{ 0 0, 0.005 1 "cubic", 0.295 1, 0.2 0, 0.2 1, 0.295 1, 0.005 0 "cubic_out"}),	
+	("u", NIM{ 0 0, 0.02 1 "cubic", 0.48 0.3 "circ_out", 0.48 1 "exp", 0.02 0 "cubic_out"}),
 	("carre", NIM{ 0 0, 0.005 1 "cubic", 0.99 1, 0.005 0 "cubic_out"}),
 	("carre2", NIM{ 0 0, 0.005 1 "cubic", 0.99 1, 0.1 0 "cubic"}),
-	("carre3", NIM{ 0 0, 0.05 1, 0.99 1, 0.05 0})
+	("carre3", NIM{ 0 0, 0.05 1, 0.99 1, 0.05 0}),
+	("bounce", NIM{ 0 0, 0.5 1 "bounce", 0.5 0 "bounce_out"}),
+	("bounce2", NIM{ 0 0, 0.5 1 "bounce_out", 0.5 0 "bounce_out"}),
+	("bounce2_inv", NIM{ 0 0, 0.5 1 "bounce_in", 0.5 0 "bounce_in"}),
+	("elastic", NIM{ 0 0, 0.5 1 "elastic_out", 0.5 0 "elastic_in"})
 }
 
-// ::plotnim($envs_map("inv"))
+::plotnim($envs_map("elastic"))
 
 @global $gran_buf @persistent
 @global $gran_buf_inc @persistent
@@ -3404,6 +3431,71 @@ if (@is_undef($SF_path)) { $SF_path := map{} }
 	}
 }
 
+@proc_def ::refresh_samples($server_name)
+{
+	@local $buff_id, $path_local
+
+	$SF_dir := @directory_read($path, 2, ["aif", "aiff", "WAVE"]) // read sf_dir again
+
+	$buff_id := $SC_Servers($server_name)("buffer_id")
+	// $SF_map.add_pair($server_name, map{}) // create a new map for store each sf in a server
+	print "refresh_samples..."
+	forall $k, $v in $SF_dir
+	{
+
+		if($v != ".DS_Store") // enleve ".DS_Store"
+		{
+
+			if($v.is_map()) // folder of folders of SF
+			{
+				forall $ke, $sf in $v
+				{	
+					if($sf != ".DS_Store") // enleve ".DS_Store"
+					{
+						// if($SF_path($sf).is_undef())
+						// print soundfiles (""+$sf)
+						// print (""+$SF_map($server_name)($sf).is_undef())
+						if($SF_map($server_name)($sf).is_undef())
+						{
+							$path_local := ($path+$k+"/"+$sf)
+							print load $sf in server $server_name
+							// print folder $k soundFile ($path+$k+"/"+$sf)
+							// print $server_name $buff_id ($path+$k+"/"+$sf)
+							// scServer "/b_allocRead" $SC_Buffers_index ($path+$k+"/"+$sf)
+							$Servers($server_name).b_allocRead($buff_id, $path_local) // load buffer in sc_server
+							// b_allocReadserver2 $buff_id ($path+$k+"/"+$sf) // pour server2
+							$SF_map($server_name).add_pair($sf, $buff_id)	// sf, sc_server_buffer_index
+							$SF_path.add_pair($sf, $path_local) // sf, path
+							// $SC_Buffers_index := $SC_Buffers_index + 1
+							$buff_id += 1
+							$SC_Servers($server_name).add_pair("buffer_id", $buff_id) // incremente le buff_id dans le dico des serveurs
+						}
+					}
+				}
+			}
+			else // all sf in the same folder
+			{
+				if($SF_map($server_name)($sf).is_undef())
+				{
+					$path_local := ($path+$v)
+					print load $sf in server $server_name
+					// print folder $k soundFile ($path+$k+"/"+$sf)
+					// print $server_name $buff_id ($path+$k+"/"+$sf)
+					// scServer "/b_allocRead" $SC_Buffers_index ($path+$k+"/"+$sf)
+					$Servers($server_name).b_allocRead($buff_id, $path_local) // load buffer in sc_server
+					// b_allocReadserver2 $buff_id ($path+$k+"/"+$sf) // pour server2
+					$SF_map($server_name).add_pair($v, $buff_id)	// sf, sc_server_buffer_index
+					$SF_path.add_pair($v, $path_local) // sf, path
+					// $SC_Buffers_index := $SC_Buffers_index + 1
+					$buff_id += 1
+					$SC_Servers($server_name).add_pair("buffer_id", $buff_id) // incremente le buff_id dans le dico des serveurs					
+				}
+			}
+		}
+	}
+}
+
+
 @proc_def ::load_samples2($server_name)
 {
 	@local $buff_id, $tab_inc := 0, $load_trig1 := true, $path_local, $sf
@@ -3543,7 +3635,7 @@ $localhost_meter := 0
 $FluidBufOnsetSlice := 0
 
 
-@obj_def sc_server($server_name, $port, $audio_bus = 20000, $inputs = 24, $outputs = 24, $sr = 48000, $device = "Built-in Microph", $block_size = 64, $num_buffers = 16384, $max_num_synth_defs = 8192, $max_nodes = 16384, $memSize = 1048576, $numWireBufs = 256, $max_logins = 64) // obj::sc_server("server1", 57111) $memSize = 65536 ---- 262144 4194304 2097152 --- 1048576 16777216 $max_num_synth_defs = 131072
+@obj_def sc_server($server_name, $port, $audio_bus = 81920, $inputs = 24, $outputs = 24, $sr = 48000, $device = "Built-in Microph", $block_size = 64, $hardware_buffer_size = 256, $num_buffers = 16384, $max_num_synth_defs = 8192, $max_nodes = 16384, $memSize = 1048576, $numWireBufs = 256, $max_logins = 64) // obj::sc_server("server1", 57111) $memSize = 65536 ---- 262144 4194304 2097152 --- 1048576 16777216 $max_num_synth_defs = 131072
 {
 	@local $server_boot, $server, $cpu, $rec_map := map{}, $device_in, $device_out
 
@@ -3609,7 +3701,11 @@ $FluidBufOnsetSlice := 0
 			abort $when // kill whenever test 
 
 			// lance un SC server depuis antescofo avec la commande system
-			@system("osascript -e 'tell app \"Terminal\" to do script \"/Applications/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 0 -l "+$max_logins+" -H \\\""+$device_in+"\\\" \\\""+$device_out+"\\\" \"' -e 'tell app \"Terminal\" to set custom title of front window to "+$port+"'") //"+($server_name+"_"+$port)+" \"$server_name\"
+			// @system("osascript -e 'tell app \"Terminal\" to do script \"/Applications/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 0 -l "+$max_logins+" -H \\\""+$device_in+"\\\" \\\""+$device_out+"\\\" \"' -e 'tell app \"Terminal\" to set custom title of front window to "+$port+"'") //"+($server_name+"_"+$port)+" \"$server_name\"
+			   @system("osascript -e 'tell app \"Terminal\" to do script \"/Applications/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -Z "+$hardware_buffer_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 0 -l "+$max_logins+" -H \\\""+$device_in+"\\\" \\\""+$device_out+"\\\" \"' -e 'tell app \"Terminal\" to set custom title of front window to "+$port+"'") //"+($server_name+"_"+$port)+" \"$server_name\"
+			// @system("osascript -e 'tell app \"Terminal\" to do script \"/Applications/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 0 -l "+$max_logins+" ' -e 'tell app \"Terminal\" to set custom title of front window to "+$port+"'") //"+($server_name+"_"+$port)+" \"$server_name\"
+			  // @system("/Applications/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 0 -l "+$max_logins+" -H \""+$device_in+"\" &") // -H "+$device_in+"  //\\\""+$device_in+"\\\" \\\""+$device_out+"\\\" ")
+
 				$Servers.insert($server_name, $THISOBJ) // objet dans une map pour l'appeler depuis d'autres objets 
 
 				$when_server_boot := {
@@ -3685,54 +3781,57 @@ $FluidBufOnsetSlice := 0
 			case "/b_allocReadChannel":
 				// print b_allocReadChannel buffer ($server[2]) in server $server_name
 			// Flucoma 
-			case "FluidBufOnsetSlice/processNew":
-			print  "FluidBufOnsetSlice/processNew" done
+			case "FluidBufOnsetSlice/process":
+			// print  "FluidBufOnsetSlice/process" done
 			$FluidBufOnsetSliceDone := $server.push_front($server_name)
-			print FluidBufOnsetSliceDone $FluidBufOnsetSliceDone
+			// print FluidBufOnsetSliceDone $FluidBufOnsetSliceDone
 			case "FluidBufStats/processNew":
-			print  "FluidBufStats/processNew" done
+			// print  "FluidBufStats/processNew" done
 			$FluidBufStatsDone := $server.push_front($server_name)
-			print FluidBufStatsDone $FluidBufStatsDone
+			// print FluidBufStatsDone $FluidBufStatsDone
 			case "FluidBufCompose/processNew":
-			print  "FluidBufCompose/processNew" done
+			// print  "FluidBufCompose/processNew" done
 			$FluidBufComposeDone := $server.push_front($server_name)
-			print FluidBufComposeDone $FluidBufComposeDone
+			// print FluidBufComposeDone $FluidBufComposeDone
 			case "FluidBufTrSlice/processNew":
-			print  "FluidBufTrSlice/processNew" done
+			// print  "FluidBufTrSlice/processNew" done
 			$FluidBufTrSliceDone := $server.push_front($server_name)
-			print FluidBufTrSliceDone $FluidBufTrSliceDone	
+			// print FluidBufTrSliceDone $FluidBufTrSliceDone	
 			case "FluidBufAmpSlice/processNew":
-			print  "FluidBufAmpSlice/processNew" done
+			// print  "FluidBufAmpSlice/processNew" done
 			$FluidBufAmpSliceDone := $server.push_front($server_name)
-			print FluidBufAmpSliceDone $FluidBufAmpSliceDone	
+			// print FluidBufAmpSliceDone $FluidBufAmpSliceDone	
 			case "FluidBufNoveltySlice/processNew":
-			print  "FluidBufNoveltySlice/processNew" done
+			// print  "FluidBufNoveltySlice/processNew" done
 			$FluidBufNoveltySliceDone := $server.push_front($server_name)
-			print FluidBufNoveltySliceDone $FluidBufNoveltySliceDone
+			// print FluidBufNoveltySliceDone $FluidBufNoveltySliceDone
 			case "FluidBufAmpGate/processNew":
-			print  "FluidBufAmpGate/processNew" done
+			// print  "FluidBufAmpGate/processNew" done
 			$FluidBufAmpGateDone := $server.push_front($server_name)
-			print FluidBufAmpGateDone $FluidBufAmpGateDone	
+			// print FluidBufAmpGateDone $FluidBufAmpGateDone	
 			case "FluidBufSpectralShape/processNew":
-			print  "FluidBufSpectralShape/processNew" done
+			// print  "FluidBufSpectralShape/processNew" done
 			$FluidBufSpectralShapeDone := $server.push_front($server_name)
-			print FluidBufSpectralShapeDone $FluidBufSpectralShapeDone	
+			// print FluidBufSpectralShapeDone $FluidBufSpectralShapeDone	
 			case "FluidBufLoudness/processNew":
-			print  "FluidBufLoudness/processNew" done
+			// print  "FluidBufLoudness/processNew" done
 			$FluidBufLoudnessDone := $server.push_front($server_name)
-			print FluidBufLoudnessDone $FluidBufLoudnessDone	
+			// print FluidBufLoudnessDone $FluidBufLoudnessDone	
 			case "FluidBufMFCC/processNew":
-			print  "FluidBufMFCC/processNew" done
+			// print  "FluidBufMFCC/processNew" done
 			$FluidBufMFCCDone := $server.push_front($server_name)
-			print FluidBufMFCCDone $FluidBufMFCCDone
+			// print FluidBufMFCCDone $FluidBufMFCCDone
 			case "FluidBufPitch/processNew":
-			print  "FluidBufPitch/processNew" done
+			// print  "FluidBufPitch/processNew" done
 			$FluidBufPitchDone := $server.push_front($server_name)
-			print FluidBufPitchDone $FluidBufPitchDone
+			// print FluidBufPitchDone $FluidBufPitchDone
 			case @true: // ninguno de los anteriores
 			print $server 
 
 		}
+		case "/n_set":
+		$node_set := $server	
+		print n_set $node_set
 		case "/b_info":
 		$buf_info := $server.push_front($server_name)
 		print buf_info $buf_info
@@ -4171,7 +4270,7 @@ $FluidBufOnsetSlice := 0
 
 }
 
-
+	
 @obj_def mix_group($group_name, $server_name, $num_channels = 8, $out_offset = 0, $pan = false, $destination = <undef>, $pan_init = -1, $out = true)
 {
 	@local $group_id, $bus, $node_id_out, $addmod_index := 0, $group_pan0, $rec_map := map{}
@@ -5822,7 +5921,31 @@ $FluidBufOnsetSlice := 0
 						$decoder_name := "HOA_Dode_Dec"+$order
 						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])
 						$num_ch := 12	
-					}					
+					}	
+					case "vigie":
+					if($hoa_decoder == "sc-hoa")
+					{
+						// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
+						$decoder_name := "HOA_Vigie_Dec"+$order
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])
+						$num_ch := 26
+					}	
+					case "Pierre":
+					if($hoa_decoder == "sc-hoa")
+					{
+						// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
+						$decoder_name := "HOA_Dec_Pierre"+$order
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])
+						$num_ch := 22
+					}
+					case "SamplingDecoder":
+					if($hoa_decoder == "sc-hoa")
+					{
+						// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
+						$decoder_name := "HOA_Dec_AmbiDec"+$order
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])
+						$num_ch := 24
+					}
 					else
 					{
 						if($hoa_decoder == "ambitools")
@@ -7635,8 +7758,21 @@ $FluidBufOnsetSlice := 0
 	@fun_def vst_gui($vst_module, $view) // vst_name, open = 1, close = 0
 	{
 		@local $vst_id
-		$vst_id := $vst_plugins($server_name)($group_name)($vst_module) // retrieve vst node_id
-		$Servers($server_name).u_cmd([$vst_id, 6, "/vis", $view]) // 6 Synthdef UGEN id
+		if($vst_all_map.is_defined($vst_module)) // VST existe?
+		{
+		if($vst_all_map($vst_module)("sdkversion")[4] == "3") // pour VST3
+		    {
+			$vst_module := $vst_module+".vst3"
+		    }
+			$vst_id := $vst_plugins($server_name)($group_name)($vst_module) // retrieve vst node_id
+			$Servers($server_name).u_cmd([$vst_id, 6, "/vis", $view]) // 6 Synthdef UGEN id
+		}
+		else
+		{
+			print "module not found"
+		}		
+		// $vst_id := $vst_plugins($server_name)($group_name)($vst_module) // retrieve vst node_id
+		// $Servers($server_name).u_cmd([$vst_id, 6, "/vis", $view]) // 6 Synthdef UGEN id
 		
 	}
 
@@ -9690,12 +9826,12 @@ $FluidBufOnsetSlice := 0
 }
 
 $track_amp_action := 0 // action à faire quand seuil amp
-
+$free_track := 0 // send info to program when track is free
 @obj_def crea_track_HOA($track_name, $mix_group, $synth_collection = [], $fade_in = 1, $amp = 0, $plane_spherical = 1, $spk_radius = 1.07, $max_radius = 5, $doppler = 1, $encoder = true, $in_channels = "mono", $xyz_init_pos = [0, 0, 0], $ext_id = false) // recuperar el nombre de la variable
 {	
     @init 
     {
-	    @local $group_id, $bus, $gbus, $hoa_bus, $hoa_inter_bus, $rev_bus, $ambi_bus, $node_id_out, $node_id_out2, $gui, $server_name, $group_name, $main_group_id, $rand_spat_pos := false, $t_trig := 0, $order, $hoa_num_ch, $rec_map := map{}, $decriptors_map := map{}, $amp_bpf_x_min, $amp_bpf_x_max, $out_name, $amp2_out := 0, $dae_list, $int_loop := 0, $struct_main_group_id, $struct_group_id, $HOA_global_track_xyz := [0, 0, 0]
+	    @local $group_id, $bus, $gbus, $hoa_bus, $hoa_inter_bus, $rev_bus, $ambi_bus, $node_id_out, $node_id_out2, $gui, $server_name, $group_name, $main_group_id, $rand_spat_pos := false, $t_trig := 0, $order, $hoa_num_ch, $rec_map := map{}, $decriptors_map := map{}, $sflist_map := map{}, $amp_bpf_x_min, $amp_bpf_x_max, $out_name, $amp2_out := 0, $dae_list, $xyz_list := [0, 0, 0],  $int_loop := 0, $struct_main_group_id, $struct_group_id, $HOA_global_track_xyz := [0, 0, 0], $HOA_xyz_factor := 1, $d_factor := 1, $proc_index, $sync_track := @rand_int(1000)+2000, $get_when := 0
 
 		// if($mix_group.is_tab()) 
 		// {
@@ -9805,6 +9941,11 @@ $track_amp_action := 0 // action à faire quand seuil amp
 				    // print encoder $encoder
 				    // print in_channels $in_channels
 				    // $hoa_inter_bus := $SC_Servers($server_name)("bus_index") // define nuevo audio bus
+					
+					/// OpenFrameworks_visual
+					$proc_index := $trajs_index
+					$trajs.add_pair($proc_index, $xyz_list)
+					$trajs_index += 1
 
 					switch //($encoder) + +$hoa_num_ch
 					{
@@ -9965,7 +10106,7 @@ $track_amp_action := 0 // action à faire quand seuil amp
 
     if($struct_group_id.member($node_id_mod))
     {
-    	print this synth id is already exist
+    	print this synth id already exist
     }
     else
     {
@@ -9981,14 +10122,14 @@ $track_amp_action := 0 // action à faire quand seuil amp
 	{
 		// print chain_synth1 $chain
 		$mod_name := $chain.car()
-
+		
 		// if($chain[0] == "VST")
 		// {
 		// $vst_module := $chain[1] // VST module name
 		
 		if($vst_all_map.is_defined($mod_name)) // VST existe?
 		{	    		
-				// $vst_module := $mod_name
+				$vst_module := $mod_name
 				// $mod_name := $vst_module
 	   //  		if($vst_all_map.is_defined($vst_module)) // VST existe?
 				// {
@@ -9996,7 +10137,8 @@ $track_amp_action := 0 // action à faire quand seuil amp
 					// {
 			if($vst_all_map($mod_name)("sdkversion")[4] == "3") // pour VST3
 		    {
-				$mod_name := $mod_name+".vst3"
+				// $mod_name := $mod_name+".vst3"
+				$vst_module := $mod_name+".vst3"
 		    }
 			// $vst_id := $vst_plugins($server_name)($group_name)($mod_name) // retrieve vst node_id
 						// $Servers($server_name).u_cmd([$vst_id, 6, "/vis", $view]) // 6 Synthdef UGEN id
@@ -10005,6 +10147,8 @@ $track_amp_action := 0 // action à faire quand seuil amp
 			// {
 			// 	print "module not found"
 			// }
+
+
 				switch ($action)
 				{
 					case "before_out":
@@ -10023,13 +10167,16 @@ $track_amp_action := 0 // action à faire quand seuil amp
 						$struct_group_id.insert(0, $node_id_mod) // root tree 0
 
 					}
-				$Servers($server_name).u_cmd([$node_id_mod, 6, "/open", $mod_name, 1, 0, 0]) // 6 = UGen id inside Synthdef
-				$vst_plugins($server_name)($mix_group)($track_name).insert($mod_name, $node_id_mod) // dictionaire pour les id des vst_plugins
-				// }
-				// else
-				// {
-				// 	print vst $vst_module does not exist
-				// }		    		
+				$Servers($server_name).u_cmd([$node_id_mod, 6, "/open", $vst_module, 1, 0, 0]) // 6 = UGen id inside Synthdef
+				$vst_plugins($server_name)($mix_group)($track_name).insert($vst_module, $node_id_mod) // dictionaire pour les id des vst_plugins
+
+			$params := $chain.cdr()
+			if($params.car() == "preset")
+			{
+				$Servers($server_name).u_cmd([$node_id_mod, 6, "/program_read", $vst_presets+$vst_all_map($mod_name)("vendor")+"/"+$mod_name+"/"+$params[1], 1]) // 6 = UGen id inside Synthdef
+				print preset (""+$vst_presets+$vst_all_map($mod_name)("vendor")+"/"+$mod_name+"/"+$params[1])
+			}
+
 		}
 		else
 		{
@@ -10132,7 +10279,7 @@ $track_amp_action := 0 // action à faire quand seuil amp
 			if($vst_all_map.is_defined($mod_name))
 				{	    		
 				
-					// $vst_module := $mod_name // VST module name	    		
+					$vst_module := $mod_name // VST module name	    		
 
 				// $mod_name := $vst_module
 
@@ -10142,7 +10289,7 @@ $track_amp_action := 0 // action à faire quand seuil amp
 				// {
 				if($vst_all_map($mod_name)("sdkversion")[4] == "3") // pour VST3
 				    {
-					$mod_name := $mod_name+".vst3"
+					$vst_module := $mod_name+".vst3"
 				    }
 					// $vst_id := $vst_plugins($server_name)($group_name)($mod_name) // retrieve vst node_id
 					// $Servers($server_name).u_cmd([$vst_id, 6, "/vis", $view]) // 6 Synthdef UGEN id
@@ -10172,13 +10319,15 @@ $track_amp_action := 0 // action à faire quand seuil amp
 						$struct_group_id.insert(0, $node_id_mod) // root tree 0
 
 					}
-				$Servers($server_name).u_cmd([$node_id_mod, 6, "/open", $mod_name, 1, 0, 0]) // 6 = UGen id inside Synthdef
-				$vst_plugins($server_name)($mix_group)($track_name).insert($mod_name, $node_id_mod) // dictionaire pour les id des vst_plugins
-					// }
-					// else
-					// {
-					// 	print vst $vst_module does not exist
-					// }
+				$Servers($server_name).u_cmd([$node_id_mod, 6, "/open", $vst_module, 1, 0, 0]) // 6 = UGen id inside Synthdef
+				$vst_plugins($server_name)($mix_group)($track_name).insert($vst_module, $node_id_mod) // dictionaire pour les id des vst_plugins
+
+				$params := $chain.cdr()
+				if($params.car() == "preset")
+				{
+					$Servers($server_name).u_cmd([$node_id_mod, 6, "/program_read", $vst_presets+$vst_all_map($mod_name)("vendor")+"/"+$mod_name+"/"+$params[1], 1]) // 6 = UGen id inside Synthdef
+					print preset (""+$vst_presets+$vst_all_map($mod_name)("vendor")+"/"+$mod_name+"/"+$params[1])
+				}
 			}
 			else
 			{
@@ -10279,7 +10428,7 @@ $track_amp_action := 0 // action à faire quand seuil amp
 			if($vst_all_map.is_defined($mod_name))
 				{	    		
 				
-					// $vst_module := $mod_name // VST module name	    		
+					$vst_module := $mod_name // VST module name	    		
 
 				// $mod_name := $vst_module
 
@@ -10288,9 +10437,9 @@ $track_amp_action := 0 // action à faire quand seuil amp
 				// if($vst_all_map.is_defined($mod_name)) // VST existe?
 				// {
 				if($vst_all_map($mod_name)("sdkversion")[4] == "3") // pour VST3
-				    {
-					$mod_name := $mod_name+".vst3"
-				    }
+			    {
+					$vst_module := $mod_name+".vst3"
+			    }
 					// $vst_id := $vst_plugins($server_name)($group_name)($mod_name) // retrieve vst node_id
 					// $Servers($server_name).u_cmd([$vst_id, 6, "/vis", $view]) // 6 Synthdef UGEN id
 				// }
@@ -10319,13 +10468,16 @@ $track_amp_action := 0 // action à faire quand seuil amp
 						$struct_group_id.insert(0, $node_id_mod) // root tree 0
 
 				}
-				$Servers($server_name).u_cmd([$node_id_mod, 6, "/open", $mod_name, 1, 0, 0]) // 6 = UGen id inside Synthdef
-				$vst_plugins($server_name)($mix_group)($track_name).insert($mod_name, $node_id_mod) // dictionaire pour les id des vst_plugins
-					// }
-					// else
-					// {
-					// 	print vst $vst_module does not exist
-					// }
+				$Servers($server_name).u_cmd([$node_id_mod, 6, "/open", $vst_module, 1, 0, 0]) // 6 = UGen id inside Synthdef
+				$vst_plugins($server_name)($mix_group)($track_name).insert($vst_module, $node_id_mod) // dictionaire pour les id des vst_plugins
+
+				$params := $chain.cdr()
+				if($params.car() == "preset")
+				{
+					$Servers($server_name).u_cmd([$node_id_mod, 6, "/program_read", $vst_presets+$vst_all_map($mod_name)("vendor")+"/"+$mod_name+"/"+$params[1], 1]) // 6 = UGen id inside Synthdef
+					print preset (""+$vst_presets+$vst_all_map($mod_name)("vendor")+"/"+$mod_name+"/"+$params[1])
+				}
+			
 			}
 			else
 			{
@@ -11629,12 +11781,38 @@ $track_amp_action := 0 // action à faire quand seuil amp
 			{
 				// scServer "n_set" $x $params
 				$Servers($server_name).n_set($x, $params)
+				forall $i in $params.size()-1 // store param/val in $struct map
+				{
+					$sc_struct($server_name)($x).add_pair($params[$i], $params[$i+1]) 
+				}
 			}
+
 		}
 		// scServer "n_set" ($synths_map($server_name)($mix_group)($track_name)($module)) 
 		// $sc_struct($server_name)($synths_map($server_name)($mix_group)($track_name)($module))("modfreq") := 100
 		// print (""+$sc_struct($server_name)($synths_map($server_name)($mix_group)($track_name)($module))("modfreq"))
 		// print node_add_pair (""+$sc_struct($server_name)($synths_map($server_name)($mix_group)($track_name)($module)))
+	}
+
+	@proc_def s_get($module, $param) // call param from server a faire directement dans antescofo $struct
+	{
+		// print getget (""+[$synths_map($server_name)($mix_group)($track_name)($module)[0], $param])
+		$Servers($server_name).s_get([$synths_map($server_name)($mix_group)($track_name)($module)[0], $param])
+		$Servers($server_name).sync($sync_track)
+		$get_when := {
+			whenever (($server_sync[0] == $server_name) && ($server_sync[1] == $sync_track))
+			{
+				print $node_set
+				abort $get_when
+			}
+		}		
+	}
+
+	@fun_def get($module, $param) // call param from server a faire directement dans antescofo $struct
+	{	
+		@local $nodeid
+		$nodeid := $synths_map($server_name)($mix_group)($track_name)($module)[0]
+		return $sc_struct($server_name)($nodeid)($param)	
 	}
 
 	@fun_def record($name, $headerFormat = "aiff", $sampleFormat = "int24", $num_frames = 65536, $fade_in = 0.1, $start_frame = 0, $leave_file_open = 1)
@@ -11855,25 +12033,86 @@ $track_amp_action := 0 // action à faire quand seuil amp
 
 	@fun_def preset($module, $preset)
 	{
-		@local $json_file, $node_id, $params_preset
+		@local $json_file, $node_id, $params_preset, $module_vst
 
-		$node_id := ($synths_map($server_name)($mix_group)($track_name)($module))
-		$json_file := @json_read($home + "/Library/Application\ Support/SuperCollider/TSupport/fxPresets/"+$module+".json")
-
-		if($json_file.is_undef())
+		if($vst_all_map.is_defined($module)) // VST existe?
 		{
-			print "this preset does not exist"
+			if($vst_all_map($module)("sdkversion")[4] == "3") // pour VST3
+		    {
+				$module_vst := $module+".vst3"
+		    }
+		    else
+		    {
+		    	$module_vst := $module
+		    }
+		    	$node_id :=	($vst_plugins($server_name)($mix_group)($track_name)($module_vst)) // dictionaire pour les id des vst_plugins
+
+				$Servers($server_name).u_cmd([$node_id, 6, "/program_read", $vst_presets+$vst_all_map($module)("vendor")+"/"+$module+"/"+$preset+".fxp", 1]) // 6 = UGen id inside Synthdef
+				print preset node $node_id (""+$vst_presets+$vst_all_map($module)("vendor")+"/"+$module+"/"+$preset+".fxp")
 		}
 		else
 		{
-			$params_preset := $json_file($module)($preset).map2tab()
+			$node_id := ($synths_map($server_name)($mix_group)($track_name)($module))
+			$json_file := @json_read($home + "/Library/Application\ Support/SuperCollider/TSupport/fxPresets/"+$module+".json")
 
-			forall $id in $node_id // pour toute les instances du Module
+			if($json_file.is_undef())
 			{
-				$Servers($server_name).n_set($id, $params_preset)
+				print "this preset does not exist"
 			}
+			else
+			{
+				$params_preset := $json_file($module)($preset).map2tab()
 
+				forall $id in $node_id // pour toute les instances du Module
+				{
+					$Servers($server_name).n_set($id, $params_preset)
+				}
+
+			}
+		}	
+
+
+	}
+
+	@fun_def save_preset($module, $preset) // save VST preset
+	{
+		@local $json_file, $node_id, $params_preset, $module_vst
+
+		if($vst_all_map.is_defined($module)) // VST existe?
+		{
+			if($vst_all_map($module)("sdkversion")[4] == "3") // pour VST3
+		    {
+				$module_vst := $module+".vst3"
+		    }
+		    else
+		    {
+		    	$module_vst := $module
+		    }
+		    	$node_id :=	($vst_plugins($server_name)($mix_group)($track_name)($module_vst)) // dictionaire pour les id des vst_plugins
+
+				$Servers($server_name).u_cmd([$node_id, 6, "/program_write", $vst_presets+$vst_all_map($module)("vendor")+"/"+$module+"/"+$preset+".fxp", 1]) // 6 = UGen id inside Synthdef
+				print save_preset node $node_id (""+$vst_presets+$vst_all_map($module)("vendor")+"/"+$module+"/"+$preset+".fxp")
 		}
+		/*else // not yet implemented ...
+		{
+			$node_id := ($synths_map($server_name)($mix_group)($track_name)($module))
+			$json_file := @json_read($home + "/Library/Application\ Support/SuperCollider/TSupport/fxPresets/"+$module+".json")
+
+			if($json_file.is_undef())
+			{
+				print "this preset does not exist"
+			}
+			else
+			{
+				$params_preset := $json_file($module)($preset).map2tab()
+
+				forall $id in $node_id // pour toute les instances du Module
+				{
+					$Servers($server_name).n_set($id, $params_preset)
+				}
+
+			}
+		}	*/
 	}
 
 	@fun_def preset_single($module, $num, $preset)
@@ -12195,7 +12434,7 @@ $track_amp_action := 0 // action à faire quand seuil amp
     }
 
 
-	@proc_def amp($amp, $add = 0, $free = false, $action = false)
+	@proc_def amp($ampli, $add = 0, $free = false, $action = false)
 	{
 		@local $nim, $lamp, $last_bpf_amp_curve
 
@@ -12205,19 +12444,20 @@ $track_amp_action := 0 // action à faire quand seuil amp
 		}		
 		// abort $last_bpf_amp_curve // to avoid interferences
 
-		if($amp.is_tab()) // if $val is bpf
+		if($ampli.is_tab()) // if $val is bpf
 		{
-			$nim := @build_nim_from_bpf($amp)
+			$nim := @build_nim_from_bpf($ampli)
 			// .CheckParam($module, $param, $MYSELF)
 			$amp_bpf_x_min := @min_key($nim)
 			$amp_bpf_x_max := @max_key($nim)
-			$lamp := $amp[0]
+			$lamp := $ampli[0]
 			$last_bpf_amp_curve := { curve @grain := 0.01, 
 				@action 
 				{
 					$Servers($server_name).n_set($node_id_out2, ["amp", $lamp+$add])
 					// $Servers($server_name).n_set($node_id_out, ["amp", $lamp+$add])	
 					// print amp $node_id_out2 $lamp
+					$amp := $lamp+$add // global amp
 				} 
 				{ $lamp : $nim }
 				==> { 	if($free.is_numeric()) // if free number then free track in number time
@@ -12235,12 +12475,52 @@ $track_amp_action := 0 // action à faire quand seuil amp
 		}
 		else
 		{
-			$Servers($server_name).n_set($node_id_out2, ["amp", $amp+$add])
+			$Servers($server_name).n_set($node_id_out2, ["amp", $ampli+$add])
 			// $Servers($server_name).n_set($node_id_out, ["amp", $amp+$add])
+			$amp := $ampli // global amp 
 		}
 	}
-	
-	@proc_def amp2($amp, $add = 0) //control encoder amp
+	@proc_def amp_add($ampli)
+	{
+		@local $nim, $lamp, $last_bpf_amp_curve
+
+		if($track_proc($server_name)($mix_group)($track_name).is_defined("amp_add"))
+		{
+			abort $track_proc($server_name)($mix_group)($track_name)("amp_add") // stop process to avoid interferences
+		}		
+		// abort $last_bpf_amp_curve // to avoid interferences
+
+		if($ampli.is_tab()) // if $val is bpf
+		{
+			$nim := @build_nim_from_bpf($ampli)
+			// .CheckParam($module, $param, $MYSELF)
+			$amp_bpf_x_min := @min_key($nim)
+			$amp_bpf_x_max := @max_key($nim)
+			$lamp := $ampli[0]
+			$last_bpf_amp_curve := { curve @grain := 0.01, 
+				@action 
+				{
+					$Servers($server_name).n_set($node_id_out2, ["amp", $lamp+$amp])
+					// $Servers($server_name).n_set($node_id_out, ["amp", $lamp+$add])	
+					// print amp $node_id_out2 $lamp
+					// $amp := $lamp+$add // global amp
+				} 
+				{ $lamp : $nim }				
+			}
+		$track_proc($server_name)($mix_group)($track_name).add_pair("amp_add", $last_bpf_amp_curve) // store curve in map to avoid interference between different groups
+		}
+		else
+		{
+			$Servers($server_name).n_set($node_id_out2, ["amp", $ampli+$amp])
+			// $Servers($server_name).n_set($node_id_out, ["amp", $amp+$add])
+			// $amp := $ampli // global amp 
+		}
+	}	
+	@fun_def get_amp()
+	{
+		return $amp
+	}
+	@proc_def amp2($ampli, $add = 0) //control encoder amp
 	{
 		@local $nim, $lamp, $last_bpf_amp_curve
 
@@ -12250,13 +12530,13 @@ $track_amp_action := 0 // action à faire quand seuil amp
 		}		
 		// abort $last_bpf_amp_curve // to avoid interferences
 
-		if($amp.is_tab()) // if $val is bpf
+		if($ampli.is_tab()) // if $val is bpf
 		{
-			$nim := @build_nim_from_bpf($amp)
+			$nim := @build_nim_from_bpf($ampli)
 			// .CheckParam($module, $param, $MYSELF)
 			$amp_bpf_x_min := @min_key($nim)
 			$amp_bpf_x_max := @max_key($nim)
-			$lamp := $amp[0]
+			$lamp := $ampli[0]
 			$last_bpf_amp_curve := { curve @grain := 0.01, 
 				@action 
 				{
@@ -12270,8 +12550,8 @@ $track_amp_action := 0 // action à faire quand seuil amp
 		}
 		else
 		{
-			// $Servers($server_name).n_set($node_id_out2, ["amp", $amp+$add])
-			$Servers($server_name).n_set($node_id_out, ["amp", $amp+$add])
+			// $Servers($server_name).n_set($node_id_out2, ["amp", $ampli+$add])
+			$Servers($server_name).n_set($node_id_out, ["amp", $ampli+$add])
 		}
 	}
 
@@ -12297,39 +12577,58 @@ $track_amp_action := 0 // action à faire quand seuil amp
 	// 	$SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1) // increment node_i
 	// }
 
-	@fun_def dae($dae_list)
+	@fun_def dae($dae_tab)
 	{
-		@local $inc_list := 0
-		forall $x in $dae_list
-		{
-			
-			$inc_list += 1
-		}
+		@local $dae_res
 
-		$Servers($server_name).n_set($node_id_out, ["coords", $dae_list])
+		$dae_res := [$dae_tab[0]*$d_factor, $dae_tab[1], $dae_tab[2]]
+		$Servers($server_name).n_set($node_id_out, ["coords", $dae_res])
+		// $dae_list_cart := @poltocar3D_tab($dae_res)
+		$trajs.insert($proc_index, @poltocar3D_tab($dae_res)) // to OpenFrameworks
 	}
 
+	@fun_def d_factor($d_fac) // distance factor
+	{
+		$d_factor := $d_fac
+	}
+
+	@proc_def d_factor_interp($start_dist, $end_dist, $dur, $type = "linear") // distance factor
+	{
+		@local $r_val, $last_curve
+
+		$last_curve := { curve @grain := 0.01, 
+			@action 
+			{	// change $radio_fac du processus
+				$THISOBJ.d_factor($r_val)
+			} 
+		    { $r_val {            
+			  		   {$start_dist} @type $type
+			  	$dur   {$end_dist}} 
+		    }
+		}
+	}
 	@proc_def dae_rand_lfo($range, $tpo = 60, $type = "linear") // [min0,max0,init_val0, min1,max1,init_val1, min_n,max_n,init_val_n], tempo, type_interpol
 	{
-	  	@local $dae_list_cart := [], $proc_index, $dae_list
+	  	@local $dae_list_cart := [] //, $proc_index //, $dae_list
 	    if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_multi_lfo_track")) // si ça existe abort et refait
 		{
 			$THISOBJ.dae_rand_lfo_abort()
 		}
 		$dae_list := [0 | ($range.size()/3)]
 		$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_multi_lfo_track", [ ::rand_lfo_multi($dae_list, $i/3, $range[$i], $range[$i+1], $range[$i+2], $type, $tpo)  | $i in $range.size() : 3 ]) // instantie un le processus dans le dico
-		$proc_index := $trajs_index
-		$trajs.add_pair($proc_index, $dae_list_cart)
-		$trajs_index += 1
+		// $proc_index := $trajs_index
+		// $trajs.add_pair($proc_index, $dae_list_cart)
+		// $trajs_index += 1
 
 		$int_loop := {
 			loop  10ms  
 			@abort { print "===> loop killed" $track_name }
 			{ 
 				// print dae_list (""+$dae_list)
-				$Servers($server_name).n_set($node_id_out, ["coords", $dae_list]) 
-				$dae_list_cart := @poltocar3D_tab($dae_list)
-				$trajs.insert($proc_index, $dae_list_cart)
+				// $Servers($server_name).n_set($node_id_out, ["coords", $dae_list]) 
+				$THISOBJ.dae($dae_list)
+				// $dae_list_cart := @poltocar3D_tab($dae_list)
+				// $trajs.insert($proc_index, $dae_list_cart)
 				// print dae_list_cart $dae_list_cart
 			}
 		}
@@ -12346,41 +12645,113 @@ $track_amp_action := 0 // action à faire quand seuil amp
 		}
 	}
 
+	@proc_def rand_lfo_amp_param_dfactor($mod_params_min_max1, $mod_params_min_max2, $amp_min_max_tab, $d_factor_min_max, $tpo= 60, $type = "linear") 
+	{
+		@local $rand_lfo_glob_val := [0], $res_val
+
+		if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"rand_lfo_glob")) // si ça existe abort et refait
+		{
+			// abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"rand_lfo_glob")
+			// abort $int_loop
+			$THISOBJ.rand_lfo_amp_param_dfactor_abort()
+		}
+		$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"rand_lfo_glob", ::rand_lfo_multi($rand_lfo_glob_val, 0, 0, 1, 0.5, $type, $tpo)) 
+		$int_loop := {
+			loop  10ms  
+			// @abort { print "===> loop killed" $track_name }
+			{ 	
+				$res_val := $rand_lfo_glob_val[0]
+				// $THISOBJ.dae($dae_list)
+				// print (""+$res_val)
+				$THISOBJ.set($mod_params_min_max1[0], [$mod_params_min_max1[1], @scale_compiled($res_val, 0, 1, $mod_params_min_max1[2], $mod_params_min_max1[3], 1)])
+				$THISOBJ.set($mod_params_min_max2[0], [$mod_params_min_max2[1], @scale_compiled($res_val, 0, 1, $mod_params_min_max2[2], $mod_params_min_max2[3], 1)])
+				$THISOBJ.amp(@scale_compiled($res_val, 0, 1, $amp_min_max_tab[0], $amp_min_max_tab[1], 1))
+				$THISOBJ.d_factor(@scale_compiled($res_val, 0, 1, $d_factor_min_max[0], $d_factor_min_max[1], 1))
+			}
+		}
+	}
+
+	@fun_def rand_lfo_amp_param_dfactor_abort()
+	{
+		abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"rand_lfo_glob")
+		abort $int_loop
+/*		forall $lfo in $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_multi_lfo_track") 
+		{
+			// abort dae_rand_lfo // abort loop 
+			// print aborte $lfo
+			abort $lfo
+		}*/
+	}
+
 	@fun_def xyz($pos_xyz) // Ambitools
 	{
-		@local $dae_list
+		@local $dae_tab
 
-		$dae_list := @cartopol3D_tab($pos_xyz)
-		print $dae_list
-		$Servers($server_name).n_set($node_id_out, ["coords", $dae_list])
+		$xyz_list := ($pos_xyz+$HOA_global_track_xyz)*$HOA_xyz_factor // update object global variable
+
+		$dae_tab := @cartopol3D_tab($xyz_list)
+		// print $dae_tab
+		$Servers($server_name).n_set($node_id_out, ["coords", $dae_tab])
+		$trajs.insert($proc_index, $xyz_list) // send to ::gui_oF_trajs() process
 	}	
 
 	@proc_def xyz_rand_lfo($range, $tpo = 60, $type = "linear") // [min0,max0,init_val0, min1,max1,init_val1, min_n,max_n,init_val_n], tempo, type_interpol
 	{
-	  	@local $dae_list_pol := [], $proc_index, $xyz_list
+	  	@local $xyz_rand_list // , $proc_index //, $xyz_list
 	    if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_multi_lfo_track")) // si ça existe abort et refait
 		{
 			$THISOBJ.dae_rand_lfo_abort()
 		}
-		$xyz_list := [0 | ($range.size()/3)]
-		$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_multi_lfo_track", [ ::rand_lfo_multi($xyz_list, $i/3, $range[$i], $range[$i+1], $range[$i+2], $type, $tpo)  | $i in $range.size() : 3 ]) // instantie un le processus dans le dico
-		$proc_index := $trajs_index
-		$trajs.add_pair($proc_index, ($xyz_list+$HOA_global_track_xyz))
-		$trajs_index += 1
+		$xyz_rand_list := [0 | ($range.size()/3)]
+		$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_multi_lfo_track", [ ::rand_lfo_multi($xyz_rand_list, $i/3, $range[$i], $range[$i+1], $range[$i+2], $type, $tpo)  | $i in $range.size() : 3 ]) // instantie un le processus dans le dico
+
 
 		$int_loop := {
 			loop  10ms  
 			// @abort { print "===> loop killed" $track_name }
 			{ 
-				// print xyz_list (""+$xyz_list)
-				$dae_list_pol := @cartopol3D_tab($xyz_list+$HOA_global_track_xyz)
-				$Servers($server_name).n_set($node_id_out, ["coords", $dae_list_pol]) 
+				// print xyz_rand_list (""+$xyz_rand_list)
+				$THISOBJ.xyz($xyz_rand_list)
+				// $dae_list_pol := @cartopol3D_tab(($xyz_list+$HOA_global_track_xyz)*$HOA_xyz_factor)
+				// $Servers($server_name).n_set($node_id_out, ["coords", $dae_list_pol]) 
 				// $dae_list_cart := @poltocar3D_tab($dae_list)
-				$trajs.insert($proc_index, $xyz_list+$HOA_global_track_xyz)
+				// $trajs.insert($proc_index, ($xyz_list+$HOA_global_track_xyz)*$HOA_xyz_factor)
 				// print dae_list_cart $dae_list_cart
 			}
 		}
 	}	
+
+	@proc_def xyz_rand($range, $loop = 1) // [min0,max0,init_val0, min1,max1,init_val1, min_n,max_n,init_val_n], tempo, type_interpol
+	{
+	  	@local $xyz_rand_list // , $proc_index //, $xyz_list
+	 //    if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_multi_lfo_track")) // si ça existe abort et refait
+		// {
+		// 	$THISOBJ.dae_rand_lfo_abort()
+		// }
+		$xyz_rand_list := [0 | ($range.size()/3)]
+		// $track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_multi_lfo_track", [ ::rand_lfo_multi($xyz_rand_list, $i/3, $range[$i], $range[$i+1], $range[$i+2], $type, $tpo)  | $i in $range.size() : 3 ]) // instantie un le processus dans le dico
+
+		$xyz_rand_list := [@rand_range_compiled($range[0], $range[1]), @rand_range_compiled($range[2], $range[3]), @rand_range_compiled($range[4], $range[5])]
+
+		abort $int_loop
+
+		$int_loop := {
+			loop  $loop 
+			// @abort { print "===> loop killed" $track_name }
+			{ 
+				// print xyz_rand_list (""+$xyz_rand_list)
+				$THISOBJ.xyz($xyz_rand_list)
+
+				$xyz_rand_list := [@rand_range_compiled($range[0], $range[1]), @rand_range_compiled($range[2], $range[3]), @rand_range_compiled($range[4], $range[5])]
+
+				// $dae_list_pol := @cartopol3D_tab(($xyz_list+$HOA_global_track_xyz)*$HOA_xyz_factor)
+				// $Servers($server_name).n_set($node_id_out, ["coords", $dae_list_pol]) 
+				// $dae_list_cart := @poltocar3D_tab($dae_list)
+				// $trajs.insert($proc_index, ($xyz_list+$HOA_global_track_xyz)*$HOA_xyz_factor)
+				// print dae_list_cart $dae_list_cart
+			}
+		}
+	}		
 
 	@fun_def xyz_rand_lfo_abort()
 	{
@@ -12392,11 +12763,23 @@ $track_amp_action := 0 // action à faire quand seuil amp
 			abort $lfo
 		}
 	}
-
+	@fun_def dae_list()
+	{
+		return $dae_list
+	}
+	@fun_def xyz_list()
+	{
+		return $xyz_list
+	}	
 	@fun_def HOA_global_track_xyz($xyz_offset)
 	{
 		$HOA_global_track_xyz := $xyz_offset
+		$THISOBJ.xyz($xyz_list) // update with global $xyz_list
 	}
+	@fun_def HOA_xyz_factor($xyz_factor)
+	{
+		$HOA_xyz_factor := $xyz_factor
+	}	
 
 	@fun_def traj_automation($name, $dur = false) // Ambitools
 	{ 
@@ -12429,6 +12812,59 @@ $track_amp_action := 0 // action à faire quand seuil amp
 		// }
 	}
 
+	// @proc_def traj_circ2($server_name, $track_id, $start_coords, $clockwise, $tpo) // , $clockwise = 1
+	@proc_def traj_circ2($start_coords, $clockwise, $tpo = 60) // Ambitools
+	{ 
+		@local $coords_val
+		// forall $x in ($synths_map($server_name)($mix_group)($track_name)($module)) // parcours la liste de node de la même synth
+		// {
+			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
+		{
+			// print abort_rand
+			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D")
+			abort $int_loop 
+		}
+		$coords_val := $start_coords
+			// ::ambi_orbit($server_name, $node_id_out, $node_id_out, $angle, $grain)
+			// $track_proc($server_name)($mix_group)($track_name).add_pair(($node_id_out+"_traj3D"), ::traj_circ2($server_name, $node_id_out, $start_coords, $clockwise, $tpo)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair(($node_id_out+"_traj3D"), ::traj_circ22($coords_val, $start_coords, $clockwise, $tpo)) // instantie un le processus dans le dico
+			// print track_proc (""+$track_proc($server_name)($mix_group))
+		// }
+		
+		$int_loop := {
+			loop  10ms  
+			// @abort { print "===> loop killed" $track_name }
+			{ 
+				$THISOBJ.dae($coords_val)
+				// print coords_val (""+$coords_val)
+
+			}
+		}
+	}
+
+//// deprecate use d_factor / d_factor_interp!!
+	@proc_def traj_radio_fac_interp($start_radio, $end_radio, $dur, $type = "linear") // Ambitools
+	{ 
+		@local $r_val, $traj_process
+/*			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
+		{
+			// print abort_rand
+			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
+		}*/	
+		$traj_process := $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D")
+		// print traj_process (""+$traj_process)
+		Curve
+		@grain := 0.01,
+		@action 
+		{	// change $radio_fac du processus
+			$traj_process.$radio_fac := $r_val
+		} 
+	    { $r_val {            
+		  		   {$start_radio} @type $type
+		  	$dur   {$end_radio}} 
+	    }
+
+	}
 	// @proc_def traj_circ_interp($server_name, $track_id, $start_coords, $end_coords, $duree, $type)
 	@fun_def traj_circ_interp($start_coords, $end_coords, $duree, $type = "linear")
 	{ 
@@ -12654,177 +13090,177 @@ $track_amp_action := 0 // action à faire quand seuil amp
 		$Servers($server_name).n_set($node_id_out, ["dopamnt", $dop_lev])
 	}
 
-	@fun_def traj_lib_ellipse($initT = 0, $endT=2, $a=2, $b=0.2, $alpha=0, $beta=0, $offsetX=0, $offsetY=0, $speed=0, $loop_num=1, $elev=0) 
+	@fun_def traj_lib_ellipse($initT = 0, $endT=2, $a=2, $b=0.2, $alpha=0, $beta=0, $offsetX=0, $offsetY=0, $speed=0, $loop_num=1, $elev=0, $ambi=1) 
 	{ 
 			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
 		{
 			// print abort_rand
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::ellipse($server_name, $node_id_out, $initT, $endT, $a, $b, $alpha, $beta, $offsetX, $offsetY, $speed, $loop_num, $elev)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::ellipse($server_name, $node_id_out, $initT, $endT, $a, $b, $alpha, $beta, $offsetX, $offsetY, $speed, $loop_num, $elev, $ambi=1)) // instantie un le processus dans le dico
 	}
 
-	@fun_def traj_lib_sin($iniT=-1, $targeT=1, $amp=1, $w=1, $offset=0, $speed=4, $loop_num=1, $elev=0) 
+	@fun_def traj_lib_sin($iniT=-1, $targeT=1, $amp=1, $w=1, $offset=0, $speed=4, $loop_num=1, $elev=0, $ambi=1) 
 	{ 
 			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
 		{
 			// print abort_rand
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::sin_trajectory($server_name, $node_id_out, $iniT, $targeT, $amp, $w, $offset, $speed, $loop_num, $elev)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::sin_trajectory($server_name, $node_id_out, $iniT, $targeT, $amp, $w, $offset, $speed, $loop_num, $elev, $ambi=1)) // instantie un le processus dans le dico
 	}	
 									
-	@fun_def traj_lib_lissajou($initT=-1, $endT=1, $a=1, $b=1, $m=1, $n=1, $speed=4, $loop_num=1, $elev=0) 
+	@fun_def traj_lib_lissajou($initT=-1, $endT=1, $a=1, $b=1, $m=1, $n=1, $speed=4, $loop_num=1, $elev=0, $ambi=1) 
 	{ 
 			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
 		{
 			// print abort_rand
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::lissajou($server_name, $node_id_out, $initT, $endT, $a, $b, $m, $n, $speed, $loop_num, $elev)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::lissajou($server_name, $node_id_out, $initT, $endT, $a, $b, $m, $n, $speed, $loop_num, $elev, $ambi=1)) // instantie un le processus dans le dico
 	}	
 
-	@fun_def traj_lib_lissajou_bis($initT=0, $targeT=1, $k=1, $speed=4, $loop_num=1, $elev=0) 
+	@fun_def traj_lib_lissajou_bis($initT=0, $targeT=1, $k=1, $speed=4, $loop_num=1, $elev=0, $ambi=1) 
 	{ 
 			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
 		{
 			// print abort_rand
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::lissajou_bis($server_name, $node_id_out, $initT, $targeT, $k, $speed, $loop_num, $elev)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::lissajou_bis($server_name, $node_id_out, $initT, $targeT, $k, $speed, $loop_num, $elev, $ambi=1)) // instantie un le processus dans le dico
 	}	
 
-	@fun_def traj_lib_deltoide($initT=-1, $endT=1, $r=0.2, $offsetX=0.2, $offsetY=0, $speed=4, $loop_num=1, $elev=0) 
+	@fun_def traj_lib_deltoide($initT=-1, $endT=1, $r=0.2, $offsetX=0.2, $offsetY=0, $speed=4, $loop_num=1, $elev=0, $ambi=1) 
 	{ 
 			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
 		{
 			// print abort_rand
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::deltoide($server_name, $node_id_out, $initT, $endT, $r, $offsetX, $offsetY, $speed, $loop_num, $elev)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::deltoide($server_name, $node_id_out, $initT, $endT, $r, $offsetX, $offsetY, $speed, $loop_num, $elev, $ambi=1)) // instantie un le processus dans le dico
 	}	
-	@fun_def traj_lib_rosace($initT=0, $targeT=2, $k=2, $speed=4, $loop_num=1, $elev=0) 
+	@fun_def traj_lib_rosace($initT=0, $targeT=2, $k=2, $speed=4, $loop_num=1, $elev=0, $ambi=1) 
 	{ 
 			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
 		{
 			// print abort_rand
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::rosace_trajectory($server_name, $node_id_out, $initT, $targeT, $k, $speed, $loop_num, $elev)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::rosace_trajectory($server_name, $node_id_out, $initT, $targeT, $k, $speed, $loop_num, $elev, $ambi=1)) // instantie un le processus dans le dico
 	}	
 
-	@fun_def traj_lib_rosace_var($initC=0, $cycle=2, $p=1, $q=2, $speed=4, $loop_num=1, $elev=0) 
+	@fun_def traj_lib_rosace_var($initC=0, $cycle=2, $p=1, $q=2, $speed=4, $loop_num=1, $elev=0, $ambi=1) 
 	{ 
 			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
 		{
 			// print abort_rand
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::rosace_trajectory_variation($server_name, $node_id_out, $initC, $cycle, $p, $q, $speed, $loop_num, $elev)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::rosace_trajectory_variation($server_name, $node_id_out, $initC, $cycle, $p, $q, $speed, $loop_num, $elev, $ambi=1)) // instantie un le processus dans le dico
 	}			
 
-	@fun_def traj_lib_gauss($iniT=-3, $targeT=1, $k=-1, $offset=0, $speed=4, $loop_num=1, $elev=0) 
+	@fun_def traj_lib_gauss($iniT=-3, $targeT=1, $k=-1, $offset=0, $speed=4, $loop_num=1, $elev=0, $ambi=1) 
 	{ 
 			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
 		{
 			// print abort_rand
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::gauss($server_name, $node_id_out,$iniT, $targeT, $k, $offset, $speed, $loop_num, $elev)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::gauss($server_name, $node_id_out,$iniT, $targeT, $k, $offset, $speed, $loop_num, $elev, $ambi=1)) // instantie un le processus dans le dico
 	}			
 										
-	@fun_def traj_lib_hypocycloide1($initT=0, $endT=2, $a=0.3, $b=0.3, $offsetX=0, $offsetY=0, $speed=4, $loop_num=1, $elev=0)
+	@fun_def traj_lib_hypocycloide1($initT=0, $endT=2, $a=0.3, $b=0.3, $offsetX=0, $offsetY=0, $speed=4, $loop_num=1, $elev=0, $ambi=1)
 	{ 
 			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
 		{
 			// print abort_rand
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::hypocycloide1($server_name, $node_id_out, $initT, $endT, $a, $b, $offsetX, $offsetY, $speed, $loop_num, $elev)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::hypocycloide1($server_name, $node_id_out, $initT, $endT, $a, $b, $offsetX, $offsetY, $speed, $loop_num, $elev, $ambi=1)) // instantie un le processus dans le dico
 	}			
 									
-	@fun_def traj_lib_hypocycloide2($initT=0, $endT=2, $a=0.3, $b=0.3, $offsetX=0, $offsetY=0, $speed=4, $loop_num=1, $elev=0)
+	@fun_def traj_lib_hypocycloide2($initT=0, $endT=2, $a=0.3, $b=0.3, $offsetX=0, $offsetY=0, $speed=4, $loop_num=1, $elev=0, $ambi=1)
 	{ 
 			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
 		{
 			// print abort_rand
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::hypocycloide2($server_name, $node_id_out, $initT, $endT, $a, $b, $offsetX, $offsetY, $speed, $loop_num, $elev)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::hypocycloide2($server_name, $node_id_out, $initT, $endT, $a, $b, $offsetX, $offsetY, $speed, $loop_num, $elev, $ambi=1)) // instantie un le processus dans le dico
 	}			
 							
-	@fun_def traj_lib_curvoide($initT=-1, $endT=1, $a=0.2, $b=0.2, $offsetX=0, $offsetY=0, $speed=4, $loop_num=1, $elev=0) 
+	@fun_def traj_lib_curvoide($initT=-1, $endT=1, $a=0.2, $b=0.2, $offsetX=0, $offsetY=0, $speed=4, $loop_num=1, $elev=0, $ambi=1) 
 	{ 
 			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
 		{
 			// print abort_rand
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::curvoide($server_name, $node_id_out, $initT, $endT, $a, $b, $offsetX, $offsetY, $speed, $loop_num, $elev))
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::curvoide($server_name, $node_id_out, $initT, $endT, $a, $b, $offsetX, $offsetY, $speed, $loop_num, $elev, $ambi=1))
 	}			
 
-	@fun_def traj_lib_hypo_var($initT=0, $endT=2, $R=1, $r=1/3, $offsetX=0, $offsetY=0, $speed=4, $loop_num=1, $elev=0)
+	@fun_def traj_lib_hypo_var($initT=0, $endT=2, $R=1, $r=1/3, $offsetX=0, $offsetY=0, $speed=4, $loop_num=1, $elev=0, $ambi=1)
 	{ 
 			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
 		{
 			// print abort_rand
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::hypocycloideVariations($server_name, $node_id_out, $initT, $endT, $R, $r, $offsetX, $offsetY, $speed, $loop_num, $elev)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::hypocycloideVariations($server_name, $node_id_out, $initT, $endT, $R, $r, $offsetX, $offsetY, $speed, $loop_num, $elev, $ambi=1)) // instantie un le processus dans le dico
 	}			
 
-	@fun_def traj_lib_epi($initT=0.01, $endT=2, $m=(2*$pi), $offsetX=0, $offsetY=0, $speed=4, $loop_num=1, $elev=0)
+	@fun_def traj_lib_epi($initT=0.01, $endT=2, $m=(2*$pi), $offsetX=0, $offsetY=0, $speed=4, $loop_num=1, $elev=0, $ambi=1)
 	{ 
 			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
 		{
 			// print abort_rand
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::epi($server_name, $node_id_out, $initT, $endT, $m, $offsetX, $offsetY, $speed, $loop_num, $elev)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::epi($server_name, $node_id_out, $initT, $endT, $m, $offsetX, $offsetY, $speed, $loop_num, $elev, $ambi=1)) // instantie un le processus dans le dico
 	}			
 		
 
-	@fun_def traj_lib_generic3D($initT=1, $targeT=3, $a=1,$b=1,$c=1, $offsetX=0, $offsetY=0, $offsetZ=1, $speed=1, $loop_num=1) 
+	@fun_def traj_lib_generic3D($initT=1, $targeT=3, $a=1,$b=1,$c=1, $offsetX=0, $offsetY=0, $offsetZ=1, $speed=1, $loop_num=1, $ambi=1) 
 	{ 
 			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
 		{
 			// print abort_rand
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::generic3D($server_name, $node_id_out, $initT, $targeT, $a, $b, $c, $offsetX, $offsetY, $offsetZ, $speed, $loop_num)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::generic3D($server_name, $node_id_out, $initT, $targeT, $a, $b, $c, $offsetX, $offsetY, $offsetZ, $speed, $loop_num, $ambi=1)) // instantie un le processus dans le dico
 	}
 
-	@fun_def traj_lib_helicoide3D($initT=1/2, $endT=4+1/2, $a=0.7, $b=0.2, $offsetX=0, $offsetY=0, $offsetZ=0, $speed=4, $loop_num=1) 
+	@fun_def traj_lib_helicoide3D($initT=1/2, $endT=4+1/2, $a=0.7, $b=0.2, $offsetX=0, $offsetY=0, $offsetZ=0, $speed=4, $loop_num=1, $ambi=1) 
 	{ 
 			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
 		{
 			// print abort_rand
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::helicoide3D($server_name, $node_id_out, $initT, $endT, $a, $b, $offsetX, $offsetY, $offsetZ, $speed, $loop_num)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::helicoide3D($server_name, $node_id_out, $initT, $endT, $a, $b, $offsetX, $offsetY, $offsetZ, $speed, $loop_num, $ambi=1)) // instantie un le processus dans le dico
 	}
 
-	@fun_def traj_lib_couronne3D($initT=-1, $endT=1, $a=1, $b=1, $n=1, $offsetX=0, $offsetY=0, $offsetZ=0, $speed=4, $loop_num=1) 
+	@fun_def traj_lib_couronne3D($initT=-1, $endT=1, $a=1, $b=1, $n=1, $offsetX=0, $offsetY=0, $offsetZ=0, $speed=4, $loop_num=1, $ambi=1) 
 	{ 
 			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
 		{
 			// print abort_rand
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::couronne3D($server_name, $node_id_out, $initT, $endT, $a, $b, $n, $offsetX, $offsetY, $offsetZ, $speed, $loop_num)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::couronne3D($server_name, $node_id_out, $initT, $endT, $a, $b, $n, $offsetX, $offsetY, $offsetZ, $speed, $loop_num, $ambi=1)) // instantie un le processus dans le dico
 	}
 
-	@fun_def traj_lib_clelie3D($initT=-1, $endT=1, $R=1, $n=1, $offsetX=0, $offsetY=0, $offsetZ=0, $speed=4, $loop_num=1) 
+	@fun_def traj_lib_clelie3D($initT=-1, $endT=1, $R=1, $n=1, $offsetX=0, $offsetY=0, $offsetZ=0, $speed=4, $loop_num=1, $ambi=1) 
 	{ 
 			if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
 		{
 			// print abort_rand
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::clelie3D($server_name, $node_id_out, $initT, $endT, $R, $n, $offsetX, $offsetY, $offsetZ, $speed, $loop_num)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::clelie3D($server_name, $node_id_out, $initT, $endT, $R, $n, $offsetX, $offsetY, $offsetZ, $speed, $loop_num, $ambi=1)) // instantie un le processus dans le dico
 	}
 
-	@fun_def traj_lib_lissajou3D($initT=0, $endT=4, $a=1, $b=1, $c=1, $n=1/2, $m=1/2, $offsetX=0, $offsetY=0, $offsetZ=0, $speed=4, $loop_num=1) 
+	@fun_def traj_lib_lissajou3D($initT=0, $endT=4, $a=1, $b=1, $c=1, $n=1/2, $m=1/2, $offsetX=0, $offsetY=0, $offsetZ=0, $speed=4, $loop_num=1, $ambi=1) 
 	{ 
 		// @local $num_params
 		// 	switch($traj)
@@ -12837,7 +13273,7 @@ $track_amp_action := 0 // action à faire quand seuil amp
 			abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D") 
 		}
 			// ::ambi_orbit($server_name, $node_id_out, $node_id_out, $angle, $grain)
-			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::lissajou3D($server_name, $node_id_out, $initT, $endT, $a, $b, $c, $n, $m, $offsetX, $offsetY, $offsetZ, $speed, $loop_num)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_traj3D", ::lissajou3D($server_name, $node_id_out, $initT, $endT, $a, $b, $c, $n, $m, $offsetX, $offsetY, $offsetZ, $speed, $loop_num, $ambi=1)) // instantie un le processus dans le dico
 			// print track_proc (""+$track_proc($server_name)($mix_group))
 	}	
 // ::ambi_orbit($track_id, $angle, $grain)
@@ -12888,6 +13324,11 @@ $track_amp_action := 0 // action à faire quand seuil amp
 			print track_proc (""+$track_proc($server_name)($mix_group))
 		// }
 	}
+	@fun_def traj_abort() 
+	{
+		abort $int_loop
+		abort $track_proc($server_name)($mix_group)($track_name)($node_id_out+"_traj3D")
+	}		
 
 	@fun_def ambi_rand_lfo_sphere($radio, $theta_min, $theta_max, $phi_min, $phi_max, $init_theta, $init_phi, $type, $period, $id = 0, $host = "192.168.1.12", $port = 9999, $descripteur = ["Loudness"], $scale = [0, 60, 0, 1, 1] ) 
 	{ 
@@ -13036,10 +13477,20 @@ $track_amp_action := 0 // action à faire quand seuil amp
 		// print abort_rand
 		abort $track_proc($server_name)($mix_group)($track_name)("_traj3D") 
 	}
-		$track_proc($server_name)($mix_group)($track_name).add_pair("_traj3D", ::source_comete_solo($server_name, $track_name, $mix_group, $dir, $amp_bpf_x_max, $radio, $start_angle, $start_elev, $end_angle, $end_elev, $period, $type, $loop, $id)) // instantie un le processus dans le dico
+		$track_proc($server_name)($mix_group)($track_name).add_pair("_traj3D", ::source_comete_solo2($server_name, $track_name, $mix_group, $dir, $amp_bpf_x_max, $radio, $start_angle, $start_elev, $end_angle, $end_elev, $period, $type, $loop, $id)) // instantie un le processus dans le dico
 	}	
+		// $tracks($nota_name).source_comete_solo2(0.1, @rand_range(0, 50), @rand_range(0, 360), @rand_range(0, 90), @rand_range(0, 360), 60, "linear", 1, 1, 1)	
+	// @proc_def source_comete_solo3($duree, $radio, $start_angle, $start_elev, $end_angle, $end_elev, $period, $type, $loop, $id)
 
-
+	@fun_def source_comete_solo3($duree, $radio, $start_angle, $start_elev, $end_angle, $end_elev, $period, $type, $loop = 0) 
+	{ 
+		if($track_proc($server_name)($mix_group)($track_name).is_defined("_traj3D")) // si ça existe abort et refait
+	{
+		// print abort_rand
+		abort $track_proc($server_name)($mix_group)($track_name)("_traj3D") 
+	}
+		$track_proc($server_name)($mix_group)($track_name).add_pair("_traj3D", ::source_comete_solo3($server_name, $track_name, $mix_group, $duree, $radio, $start_angle, $start_elev, $end_angle, $end_elev, $period, $type, $loop)) // instantie un le processus dans le dico
+	}	
 	@fun_def rand_lfo_basic_track_pos_x($min, $max, $init_val, $tpo, $type) 
 	{ 
 		if($track_proc($server_name)($mix_group)($track_name).is_defined("_traj_x")) // si ça existe abort et refait
@@ -13232,6 +13683,12 @@ $track_amp_action := 0 // action à faire quand seuil amp
 				}
 			} 
 			{ $lpar : $nim }
+			==> {
+					forall $node in $nodes // rajoute changement parametre module dans $struct
+					{
+						$sc_struct($server_name)($node).add_pair($param, $lpar) 
+					}
+				}
 	}
 		$track_proc($server_name)($mix_group)($track_name).add_pair("bpf_param"+$module+$param, $last_bpf_param_curve) // store curve in map to avoid interference between different groups
 	}
@@ -13506,6 +13963,19 @@ $track_amp_action := 0 // action à faire quand seuil amp
 		}	
 	}
 
+	@fun_def rand_lfo_dyn_bpf($module, $param, $init_val, $bpf_end_val, $type, $tpo) 
+	{ 
+
+		forall $x in ($synths_map($server_name)($mix_group)($track_name)($module)) // parcours la liste de node de la même synth
+		{
+			if($track_proc($server_name)($mix_group)($track_name)($x).is_defined($module+$param)) // si ça existe abort et refait
+		{
+			print abort_rand
+			abort $track_proc($server_name)($mix_group)($track_name)($x)($module+$param) 
+		}																								   //  ($server_name, $module, $param, $init_val, $bpf_end_val, $type, $tpo)
+			$track_proc($server_name)($mix_group)($track_name)($x).add_pair(($module+$param), ::rand_lfo_dyn_bpf($server_name, $x, $param, $init_val, $bpf_end_val, $type, $tpo)) // instantie un le processus dans le dico
+		}	
+	}	
 
 	@fun_def rand_lfo_single($module, $num, $param, $min, $max, $init_val, $type, $tpo) // seulement quand une un track a plusieurs instances du même module
 	{ 
@@ -14103,10 +14573,25 @@ $track_amp_action := 0 // action à faire quand seuil amp
 
 	@fun_def vst_gui($vst_module, $view) // vst_name, open = 1, close = 0
 	{
-		@local $vst_id
-		$vst_id := $vst_plugins($server_name)($mix_group)($track_name)($vst_module) // retrieve vst node_id
+		// @local $vst_id
+		// $vst_id := $vst_plugins($server_name)($mix_group)($track_name)($vst_module) // retrieve vst node_id
 
-		$Servers($server_name).u_cmd([$vst_id, 6, "/vis", $view]) // 6 Synthdef UGEN id
+		// $Servers($server_name).u_cmd([$vst_id, 6, "/vis", $view]) // 6 Synthdef UGEN id
+
+		@local $vst_id
+		if($vst_all_map.is_defined($vst_module)) // VST existe?
+		{
+			if($vst_all_map($vst_module)("sdkversion")[4] == "3") // pour VST3
+		    {
+				$vst_module := $vst_module+".vst3"
+		    }
+			$vst_id := $vst_plugins($server_name)($mix_group)($track_name)($vst_module) // retrieve vst node_id
+			$Servers($server_name).u_cmd([$vst_id, 6, "/vis", $view]) // 6 Synthdef UGEN id
+		}
+		else
+		{
+			print "module not found"
+		}			
 		
 	}
 
@@ -14167,9 +14652,46 @@ $track_amp_action := 0 // action à faire quand seuil amp
 		print sample (""+$SF_map($server_name)($sample))
 	}
 
+	@fun_def play_sampleHOA($sample, $ampli = 0, $coord = [1, 0, 0], $loop = 0) // only track no_encoder
+	{
+		$THISOBJ.mod_add_top(["TPlaybuf2_HOA"+$order, "buf", $SF_map($server_name)($sample), "amp", $ampli, "coords", $coord, "globTBus", $bus, "loop", $loop])
+		print sample (""+$SF_map($server_name)($sample))
+	}	
+	@fun_def play_sample2($sample, $ampli = 0, $loop = 0)
+	{
+		$THISOBJ.mod_add_top(["TPlaybuf2_ste", "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop])
+		print sample (""+$SF_map($server_name)($sample))
+	}
+
+	@proc_def play_sample_ste_HOA($sample, $ampli = 0, $coords = [1, -90, 0, 1, 90, 0], $loop = 0) // only track no_encoder
+	{
+		// $THISOBJ.mod_add_top(["TPlaybuf2_HOA_ste"+$order, "buf", $SF_map($server_name)($sample), "amp", $ampli, "coords", $coord, "globTBus", $bus, "loop", $loop])
+		$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+		$sflist_map.add_pair($sample, $node_id_mod)
+		$Servers($server_name).s_new(["TPlaybuf2_HOA_ste"+$order, $node_id_mod, 2, $node_id_out, "globTBus", $bus, "buf", $SF_map($server_name)($sample), "coords", $coords, "amp", $ampli, "loop", $loop])
+		// print (""+["TPlaybuf2_HOA_ste"+$order, $node_id_mod, 2, $node_id_out, "globTBus", $bus, "buf", $SF_map($server_name)($sample), "coords", $coords, "amp", $ampli, "loop", $loop])
+		$SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+
+		print sample (""+$SF_map($server_name)($sample))
+	}
+
+	@fun_def play_sampleHOA_stop($sample, $fade_out = 0.1) 
+	{
+		$Servers($server_name).n_set($sflist_map($sample), [matrix_out, $fade_out, free, 0])
+	}
+
+	@fun_def play_sampleHOA_stopAll($sample, $fade_out = 0.1) 
+	{	
+		forall $k, $v in $sflist_map
+		{
+			$Servers($server_name).n_set($v, [matrix_out, $fade_out, free, 0])
+		}
+	}
+	// hacer map para controlar stop samples specificos 
 	@fun_def play_sample_stop($sample, $fade_out = 0.1) // hacer map con samplers tocados para stop
 	{
 		$THISOBJ.set("TPlaybuf2", ["matrix_ramp", $fade_out, "free", 0])
+		$THISOBJ.set("TPlaybuf2_ste", ["matrix_out", $fade_out, "free", 0])
 	}
 
 	@fun_def play_sample8($sample, $ampli = 0, $loop = 0)
@@ -14388,7 +14910,7 @@ $track_amp_action := 0 // action à faire quand seuil amp
 
 			// print antesborrar (""+$sc_struct($server_name)($main_group_id))
 			// print borrar (""+$struct_main_group_id.occurs($group_id))
-
+			$free_track := $track_name
 			0.1 $track_proc($server_name)($mix_group).remove($track_name) // delete track_proc from map
 			$SC_Groups($mix_group)("sub_group").remove($track_name) // delete sub_group objects
 			$struct_main_group_id.remove($struct_main_group_id.occurs($group_id))
@@ -14396,7 +14918,7 @@ $track_amp_action := 0 // action à faire quand seuil amp
 			$sc_struct($server_name).remove($group_id) // enleve group key de la MAP $sc_struct 
 			$synths_map($server_name)($mix_group).remove($track_name) // delete synths_map from map
 			$tracks.remove($track_name)
-			
+			$trajs.remove($proc_index)
 			
 			0.5 abort $THISOBJ // abort objet after 1 time
 			}
@@ -16725,6 +17247,379 @@ whenever ($track_amp_action==$track_amp_action)
 	}
 }
 
+//// Groups of tracks for trajectories
+
+@obj_def tracks_group($tracks_tab) //create objet/buffer with parameters
+{
+	@init 
+    {
+	    @local $tracks_map, $global_xyz_rand_lfo_proc := 0, $list_track, $tracks_xyz_list, $tracks_amp_list, $tracks_param_list, $global_xyz_rand_dist, $set_list_dist
+	    $tracks_map := @tab2map($tracks_tab)
+	}
+/*	@proc_def amp($ampli)
+	{
+		@local $nim, $lamp, $last_bpf_amp_curve := 0, $amp_retrieve_list := $THISOBJ.retrieve_amp()
+	
+		abort $last_bpf_amp_curve // to avoid interferences
+		print amp_retrieve_list $amp_retrieve_list
+		if($ampli.is_tab()) // if $val is bpf
+		{
+			$nim := @build_nim_from_bpf($ampli)
+			$lamp := $ampli[0]
+			$last_bpf_amp_curve := { curve @grain := 0.01, 
+				@action 
+				{
+					forall $i in $tracks_tab.size()
+					{
+						$tracks($tracks_tab[$i]).amp($amp_retrieve_list[$i]+$lamp)
+					}
+				} 
+				{ $lamp : $nim }
+				
+			}
+		}
+		else
+		{
+			forall $t in $tracks_tab
+			{
+				$tracks($t).amp($amp_retrieve_list[$i]+$amp)
+			}
+		}
+	}*/
+	@fun_def size() 
+	{
+		return $tracks_tab.size()
+	}		
+	@fun_def amp($ampli) 
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).amp($ampli)
+		}
+	}	
+	@fun_def amp_add($ampli) // relative amp
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).amp_add($ampli)
+		}
+	}	
+	@fun_def set($module, $params) 
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).set($module, $params)
+		}
+	}
+	@fun_def set_list($module, $param, $params_list) 
+	{
+		forall $i in $tracks_tab.size()
+		{
+			$tracks($tracks_tab[$i]).set($module, [$param, $params_list[$i]])
+		}
+	}	
+	@proc_def set_list_interp($module, $param, $params_list0, $params_list1, $time, $type = "linear") 
+	{
+		curve  @grain := 0.01,  
+		@action
+		{ // interpolation
+			$THISOBJ.set_list($module, $param, ($params_list1*$y)+($params_list0*(1-$y)))
+		}
+        {
+        $y
+            {
+				 {0.} @type := $type
+            $time {1.} 
+            }
+        }		
+	}	
+	
+	@fun_def set_xyz($xyz_tab) // xyz for each track 
+	{
+		forall $i in $tracks_tab.size()
+		{
+			$tracks($tracks_tab[$i]).xyz($xyz_tab[$i])
+		}
+	}	
+	@fun_def reset_xyz($xyz_reset = [0, 0, 0]) // xyz for all tracks
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).xyz($xyz_reset)
+		}
+	}	
+	@fun_def HOA_global_track_xyz($xyz)
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).HOA_global_track_xyz($xyz)
+		}
+	}
+	@proc_def global_xyz_rand_lfo($range, $tpo = 60, $type = "linear")
+	{
+		@local $xyz_retrieve_list := $THISOBJ.retrieve_xyz()
+
+		forall $i in $tracks_tab.size() // create new $range list from last position (retrieve_xyz())
+		{
+			$range[2] := $xyz_retrieve_list[$i][0]
+			$range[5] := $xyz_retrieve_list[$i][1]
+			$range[8] := $xyz_retrieve_list[$i][2]
+		}
+		abort $global_xyz_rand_lfo_proc // if exist before abort to avoid interferences
+		$global_xyz_rand_lfo_proc := ::global_xyz_rand_lfo($THISOBJ, $range, $tpo, $type)
+		$list_track := $global_xyz_rand_lfo_proc.$tracks_list
+	}
+	@fun_def global_xyz_rand_lfo_abort()
+	{
+		abort $global_xyz_rand_lfo_proc
+	}	
+	@fun_def global_xyz_rand_dist($pos)
+	{
+		// print global_xyz_rand_dist $pos
+		// print distance3D @distance3D([0, 0, 0], $pos)
+		$global_xyz_rand_dist := @distance3D([0, 0, 0], $pos)
+	}		
+
+	@proc_def set_list_dist($module, $param, $params_list, $scale = [0.5, 4.5, 0.5, 4.5]) 
+	{
+		abort $set_list_dist
+		$set_list_dist := {
+			whenever ($global_xyz_rand_dist == $global_xyz_rand_dist)
+			{
+				print distance3D_fun $global_xyz_rand_dist
+				// set_list($module, $param, $params_list) 
+				$THISOBJ.set_list($module, $param, $params_list * @scale($global_xyz_rand_dist, $scale[0], $scale[1], $scale[2], $scale[3], 1))
+
+			}
+		}
+	}	
+	@fun_def set_list_dist_abort()
+	{
+		abort $set_list_dist
+	}			
+	@fun_def global_xyz_rand_lfo_print()
+	{
+		print global_xyz_rand_lfo_proc (""+$global_xyz_rand_lfo_proc)
+		print tracks_list (""+$global_xyz_rand_lfo_proc.$tracks_list)
+		print tracks_map (""+$tracks_map)
+		print member (""+$global_xyz_rand_lfo_proc.$tracks_list.member($free_track))
+		($global_xyz_rand_lfo_proc.$tracks_list).remove($tracks_map($free_track))
+		print remove (""+$global_xyz_rand_lfo_proc.$tracks_list)
+	}
+
+	@fun_def xyz_rand_lfo($range, $tpo = 60, $type = "linear")
+	{
+		@local $xyz_retrieve_list
+		$xyz_retrieve_list := $THISOBJ.retrieve_xyz()
+
+		forall $i in $tracks_tab.size()
+		{
+			$range[2] := $xyz_retrieve_list[$i][0]
+			$range[5] := $xyz_retrieve_list[$i][1]
+			$range[8] := $xyz_retrieve_list[$i][2]
+			print new_range (""+$range)
+			$tracks($tracks_tab[$i]).xyz_rand_lfo($range, $tpo, $type)
+		}
+	}
+	@fun_def xyz_rand_lfo_abort()
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).xyz_rand_lfo_abort()
+		}
+	}	
+
+	@fun_def dae_rand_lfo($range, $tpo = 60, $type = "linear") // [min0,max0,init_val0, min1,max1,init_val1, min_n,max_n,init_val_n], tempo, type_interpol
+	{
+		// @local $xyz_retrieve_list
+		// $xyz_retrieve_list := $THISOBJ.retrieve_xyz()
+		forall $i in $tracks_tab.size()
+		{
+			$tracks($tracks_tab[$i]).dae_rand_lfo($range[$i], $tpo, $type)
+		}
+	}
+
+	@fun_def d_factor($d_fac)
+	{
+		forall $i in $tracks_tab.size()
+		{
+			$tracks($tracks_tab[$i]).d_factor($d_fac)
+		}
+	}
+
+	@fun_def d_factor_interp($start_dist, $end_dist, $dur, $type = "linear")
+	{
+		forall $i in $tracks_tab.size()
+		{
+			$tracks($tracks_tab[$i]).d_factor_interp($start_dist, $end_dist, $dur, $type)
+		}
+	}	
+	// @proc_def rand_lfo_amp_param_dfactor($mod_params_min_max1, $mod_params_min_max2, $amp_min_max_tab, $d_factor_min_max, $tpo= 60, $type = "linear") 
+	@fun_def rand_lfo_amp_param_dfactor($mod_params_min_max1, $mod_params_min_max2, $amp_min_max_tab, $d_factor_min_max, $tpo = 60, $type = "linear")
+	{
+		forall $i in $tracks_tab.size()
+		{
+			$tracks($tracks_tab[$i]).rand_lfo_amp_param_dfactor($mod_params_min_max1, $mod_params_min_max2, $amp_min_max_tab, $d_factor_min_max, $tpo, $type)
+		}
+	}	
+
+	@fun_def rand_lfo_amp_param_dfactor_abort()
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).rand_lfo_amp_param_dfactor_abort()
+		}
+	}
+	@fun_def dae_rand_lfo_abort()
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).dae_rand_lfo_abort()
+		}
+	}
+
+	@fun_def HOA_xyz_factor($xyz_factor)
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).HOA_xyz_factor($xyz_factor)
+		}
+	}
+	@fun_def rand_lfo($module, $param, $min, $max, $init_val, $type, $tpo)
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).rand_lfo($module, $param, $min, $max, $init_val, $type, $tpo)
+		}
+	}
+	@fun_def rand_lfo_dyn_bpf($module, $param, $min, $bpf_end_val, $type, $tpo)
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).rand_lfo_dyn_bpf($module, $param, $min, $bpf_end_val, $type, $tpo)
+		}
+	}	
+	@fun_def lfo_abort($module, $param)
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).lfo_abort($module, $param)
+		}
+	}	
+	@fun_def traj_circ2($start_coords, $clockwise, $tpo = 60)
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).traj_circ2($start_coords, $clockwise, $tpo)
+		}
+	}
+
+	@fun_def traj_abort()
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).traj_abort()
+		}
+	}		
+	@fun_def traj_radio_fac_interp($start_radio, $end_radio, $dur, $type = "linear")
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).traj_radio_fac_interp($start_radio, $end_radio, $dur, $type)
+		}
+	}
+	@fun_def retrieve_xyz()
+	{
+		$tracks_xyz_list := [] // clear list before
+		forall $t in $tracks_tab
+		{
+			$tracks_xyz_list.push_back($tracks($t).xyz_list()) // create list from last xyz
+		}
+		return $tracks_xyz_list
+	}	
+	@fun_def retrieve_amp()
+	{
+		$tracks_amp_list := [] // clear list before
+		forall $t in $tracks_tab
+		{
+			$tracks_amp_list.push_back($tracks($t).get_amp()) // create list from last xyz
+		}
+		return $tracks_amp_list
+	}	
+	@fun_def retrieve_param($module, $param)
+	{
+		$tracks_param_list := [] // clear list before
+		forall $t in $tracks_tab
+		{
+			$tracks_param_list.push_back($tracks($t).get($module, $param)) // create list from last param
+		}
+		return $tracks_param_list
+	}	
+	@proc_def xyz_interpol2point($dest_xyz, $time, $type = "linear")
+	{
+		@local $dest_xyz_list, $xyz_retrieve_list := $THISOBJ.retrieve_xyz()
+		$dest_xyz_list := [ $dest_xyz | ($tracks_tab.size()) ] // create list dest points
+		curve  @grain := 0.01,  
+		@action
+		{ // interpolation
+			$THISOBJ.set_xyz(($dest_xyz_list*$y)+($xyz_retrieve_list*(1-$y)))
+		}
+        {
+        $y
+            {
+				 {0.} @type := $type
+            $time {1.} 
+            }
+        }
+	}	
+	@proc_def xyz_interpol2list($dest_xyz_list, $time = 1, $type = "linear")
+	{
+		@local $xyz_retrieve_list := $THISOBJ.retrieve_xyz()
+		curve  @grain := 0.01,  
+		@action
+		{ // interpolation
+			$THISOBJ.set_xyz(($dest_xyz_list*$y)+($xyz_retrieve_list*(1-$y)))
+		}
+        {
+        $y
+            {
+				 {0.} @type := $type
+            $time {1.} 
+            }
+        }
+	}	
+	@proc_def free($time = 1)
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).free($time)
+		}
+		0.1 abort $THISOBJ
+
+	}	
+	@react ($free_track == $free_track) // receive free track 
+	{
+		if ($tracks_tab.member($free_track)) // filter reac from others instances
+		{
+			print receive free track $free_track
+			if($global_xyz_rand_lfo_proc.$tracks_list.member($free_track))
+			{
+				// print global_xyz_rand_lfo_proc_lista (""+$global_xyz_rand_lfo_proc.$tracks_list)
+				// print (""+$tracks_group_inst1.$global_xyz_rand_lfo_proc.$tracks_list.remove(0))
+				_ := $global_xyz_rand_lfo_proc.$tracks_list.remove($tracks_map($free_track))
+				$tracks_map.remove($free_track)
+				$tracks_tab.remove($tracks_map($free_track))
+			}
+		}
+
+	}
+	@abort
+	{
+		abort $global_xyz_rand_lfo_proc
+	}
+}
+
+
 //// buffer objets
 
 @global $buffers @persistent
@@ -17918,6 +18813,100 @@ $rt_analyse := []
 	}
 }
 
+// Global obj to control different track methods
+@obj_def sin_lfo_glob($r_low, $r_hi, $t)
+{
+   @local $suscriber := MAP{}, $x, $receive, $amp, $offset, $grain, $period, $sin_proc := 0
+		@init 
+		{
+		    $amp := ($r_hi - $r_low)/2
+		    $offset := $r_hi - $amp
+		    $grain := 0.01
+		    $period := (1/$t)
+
+			// abort $curve_int_proc
+			$THISOBJ.diffuse()
+		}
+		@fun_def add_suscriber($x, $f)
+	   	{
+			// $suscriber := @cons([$x, $f], $suscriber)
+			@local $int_name, $params, $method
+
+			$method := @extract_method(""+$f)
+
+
+			if ($method == "set")
+			{
+				// print es set 
+				$params := @extract_command(""+$f)
+				// @slice(""+$f, 12, 15)
+				// print commande $params
+				$int_name := $x.$track_name+$method+($params[0])+($params[1])
+
+			}
+			else
+			{
+				// print $method
+				$int_name := $x.$track_name+$method
+
+			}
+			// print int_name $int_name
+			$suscriber.add_pair($int_name, [$x, $f])
+
+	  	}
+		@fun_def tpo($temp)
+	  	{
+			$period := (1/$temp)
+	  	}	  
+		@fun_def minmax($mi, $ma)
+	  	{
+			$r_low := $mi
+			$r_hi := $ma
+	  	}		  		
+		@fun_def unsuscribe($x, $n, $n1 = "module", $n2 = "param")
+	  	{
+			// $suscriber := @cons([$x, $f], $suscriber)
+			@local $int_name := $x.$track_name+$n
+			if($n == "set")
+			{
+				$int_name := $x.$track_name+$n+""+$n1+""+$n2
+			}
+			else
+			{
+				$int_name := $x.$track_name+$n
+			}
+			$suscriber.remove($int_name)
+	  	}	  	 
+		@proc_def diffuse()
+		{
+			// $curve_int_proc := { 
+
+		    loop $period // @tempo := $t
+		    {
+				  abort $sin_proc	
+				  $sin_proc := {
+						curve
+						@grain := 0.01 //($grain * $period/60.)
+						@action := {
+							   $receive := (@sin($x) * $amp + $offset)  //+ $offset
+							   // print sin_ $receive
+							   forall $k, $v in $suscriber { _ := ($v[1])($v[0], $receive) }
+						}                       
+						   { $x {    { 0  }
+								$period { (2* $pi )}  }  // NON Pi = 3.1415926... d'où 3.1416 pas 3.141516 ????
+							}
+			   }
+
+		    }
+
+			// }
+   	}
+	@abort
+	{
+	 @clear($suscriber)
+	}
+}
+
 
 @proc_def saw_lfo_proc($group, $module, $param, $r_low, $r_hi, $t, $dir) 
 @abort
@@ -18059,6 +19048,103 @@ $rt_analyse := []
 	}
 }
 
+@obj_def saw_lfo_glob($r_low, $r_hi, $t, $dir) 
+{
+    @local $suscriber := MAP{}, $receive, $amp, $offset, $sin_proc, $grain, $period, $init, $end
+    	@init 
+		{
+		    $amp := ($r_hi - $r_low)/2
+		    $offset := $r_hi - $amp
+		    $sin_proc := 0
+		    $grain := 0.01
+		    if ($dir == 1)
+		    {
+			$init := 0
+			$end := 1
+		    }
+		    else
+		    {
+			$init := 1
+				$end := 0
+		    }
+		    $period := (1/$t)
+		    $THISOBJ.diffuse()
+		}
+		@fun_def add_suscriber($x, $f)
+	    {
+			// $suscriber := @cons([$x, $f], $suscriber)
+			@local $int_name, $params, $method
+
+			$method := @extract_method(""+$f)
+
+
+			if ($method == "set")
+			{
+				// print es set 
+				$params := @extract_command(""+$f)
+				// @slice(""+$f, 12, 15)
+				// print commande $params
+				$int_name := $x.$track_name+$method+($params[0])+($params[1])
+
+			}
+			else
+			{
+				// print $method
+				$int_name := $x.$track_name+$method
+
+			}
+			// print int_name $int_name
+			$suscriber.add_pair($int_name, [$x, $f])
+
+	  	}		
+	  	@fun_def tpo($temp)
+	  	{
+			$period := (1/$temp)
+	  	}	
+		@fun_def minmax($mi, $ma)
+	  	{
+			$r_low := $mi
+			$r_hi := $ma
+	  	}	
+	  	@fun_def unsuscribe($x, $n, $n1 = "module", $n2 = "param")
+	  	{
+			// $suscriber := @cons([$x, $f], $suscriber)
+			@local $int_name := $x.$track_name+$n
+			if($n == "set")
+			{
+				$int_name := $x.$track_name+$n+$n1+$n2
+			}
+			else
+			{
+				$int_name := $x.$track_name+$n
+			}
+			$suscriber.remove($int_name)
+	  	}
+	  	@proc_def diffuse()
+		{
+		    loop $period // @tempo := $t
+		    {
+				  abort $sin_proc
+				  $sin_proc := {
+						curve
+						@grain := 0.01 //($grain * $period/60.)
+						@action := {
+							  
+							forall $k, $v in $suscriber { _ := ($v[1])($v[0], $receive) }
+
+						}                       
+							{ $receive 	{ 	{ $init }
+							   $period { $end }  } 
+							}
+			   }
+
+		    }
+		}
+	@abort
+	{
+	 @clear($suscriber)
+	}
+}
 
 @proc_def lfo_tri($group, $module, $param, $r_low, $r_hi, $t) 
 @abort
@@ -18169,6 +19255,94 @@ $rt_analyse := []
 			}
 		}
 	}
+}
+
+
+@obj_def lfo_tri_glob($r_low, $r_hi, $t) 
+{
+	@local $suscriber := MAP{}, $receive, $period, $sin_proc
+		@init 
+		{
+			$period := (1/$t)
+			$THISOBJ.diffuse()
+		}
+		@fun_def add_suscriber($x, $f)
+	    {
+			// $suscriber := @cons([$x, $f], $suscriber)
+			@local $int_name, $params, $method
+
+			$method := @extract_method(""+$f)
+
+
+			if ($method == "set")
+			{
+				// print es set 
+				$params := @extract_command(""+$f)
+				// @slice(""+$f, 12, 15)
+				// print commande $params
+				$int_name := $x.$track_name+$method+($params[0])+($params[1])
+
+			}
+			else
+			{
+				// print $method
+				$int_name := $x.$track_name+$method
+
+			}
+			// print int_name $int_name
+			$suscriber.add_pair($int_name, [$x, $f])
+
+	  	}
+	  	@fun_def tpo($temp)
+	  	{
+			$period := (1/$temp)
+	  	}	
+		@fun_def minmax($mi, $ma)
+	  	{
+			$r_low := $mi
+			$r_hi := $ma
+	  	}		 
+		@fun_def unsuscribe($x, $n, $n1 = "module", $n2 = "param")
+	  	{
+			// $suscriber := @cons([$x, $f], $suscriber)
+			@local $int_name := $x.$track_name+$n
+			if($n == "set")
+			{
+				$int_name := $x.$track_name+$n+$n1+$n2
+			}
+			else
+			{
+				$int_name := $x.$track_name+$n
+			}
+			$suscriber.remove($int_name)
+	  	}
+		@proc_def diffuse()
+		{	  		  	 	
+			loop $period
+			{
+				// abort $sin_proc
+				  $sin_proc := {
+					curve @Grain := 0.005s, 
+					@Action := {
+
+							   forall $k, $v in $suscriber { _ := ($v[1])($v[0], $receive) }
+						}
+					{
+						$receive
+						{
+										{ $r_low } /*@type "exp"*/
+						$period * 0.5 	{ $r_hi  } 
+						$period * 0.5 	{ $r_low }
+
+						}
+					}
+				}
+			}
+		}
+		@abort
+		{
+		 @clear($suscriber)
+		}		
 }
 
 
@@ -18334,6 +19508,106 @@ $rt_analyse := []
 // $toto := 6.6742e-11
 // print (""+$toto)
 
+@obj_def brown_lfo_glob($min, $max, $drunk_step, $init_val, $type, $tpo) 
+{
+	@local $suscriber := MAP{}, $receive, $v1, $v2, $duree, $curve_proc, $curve_int_proc, $drunk_val, $delay
+	@init 
+	{
+		$v1 := $init_val
+		$v2 := @drunk($init_val, $min, $max, $drunk_step)
+		$curve_int_proc := 0
+
+		$delay := @rand(1.) + 0.5
+		// $drunk_val := @drunk($drunk_val, -0.062, 1.813, $drunk_step)
+		$THISOBJ.diffuse()
+	}
+	@fun_def add_suscriber($x, $f)
+    {
+		// $suscriber := @cons([$x, $f], $suscriber)
+		@local $int_name, $params, $method
+
+		$method := @extract_method(""+$f)
+
+
+		if ($method == "set")
+		{
+			// print es set 
+			$params := @extract_command(""+$f)
+			// @slice(""+$f, 12, 15)
+			// print commande $params
+			$int_name := $x.$track_name+$method+($params[0])+($params[1])
+
+		}
+		else
+		{
+			// print $method
+			$int_name := $x.$track_name+$method
+
+		}
+		// print int_name $int_name
+		$suscriber.add_pair($int_name, [$x, $f])
+
+  	}	
+	@fun_def tpo($temp)
+  	{
+		$tpo := $temp
+  	}	  	
+	@fun_def minmax($mi, $ma)
+  	{
+		$min := $mi
+		$max := $ma
+  	}	  	
+	@fun_def unsuscribe($x, $n, $n1 = "module", $n2 = "param")
+  	{
+		// $suscriber := @cons([$x, $f], $suscriber)
+		@local $int_name := $x.$track_name+$n
+		if($n == "set")
+		{
+			$int_name := $x.$track_name+$n+$n1+$n2
+		}
+		else
+		{
+			$int_name := $x.$track_name+$n
+		}
+		$suscriber.remove($int_name)
+  	}  	
+	@proc_def diffuse()
+	{  	
+		group @tempo := $tpo
+		{
+		Loop $delay @exclusive //@tempo := $tpo
+		{
+			abort $curve_int_proc
+
+			$v1 := $v2
+			$v2 := @drunk($v1, $min, $max, $drunk_step) //@rand_range($min, $max) // @rand($max-$min)+$min
+			$delay := @rand(1.) + 0.5
+			$duree := $delay
+
+			$curve_int_proc := {  
+				curve
+				   // @tempo := $tpo
+				   @Grain := 0.01 //0.01s 
+				   @action :=  { 
+
+							forall $k, $v in $suscriber { _ := ($v[1])($v[0], $receive) }
+
+					    }
+
+				   { $receive {
+						  {$v1} @type := $type
+					  $duree {$v2} 
+					  }
+				   }
+			    }
+			}
+		}
+	}
+	@abort
+	{
+	 @clear($suscriber)
+	}
+}
 
 @proc_def rand_lfo_basic($group, $module, $param, $min, $max, $init_val, $type, $tpo, $gui) 
 @abort
@@ -18503,6 +19777,8 @@ $rt_analyse := []
 {
 	// TODO
 	// $sc_struct($group)($module).add_pair($param, $val) // enregistre la dernière valeur dans la main Map
+	$sc_struct($server_name)($module).add_pair($param, $val) 
+
 	$jlg_count_rand -= 1
 	print "--> reste " $jlg_count_rand
 	abort $curve_int_proc
@@ -18603,7 +19879,7 @@ $rt_analyse := []
 
    $curve_int_proc := {  curve
       // @tempo := $tpo
-      @Grain := 2 ms //0.01s 
+      @Grain := 5 ms //0.01s 
       @action :=  { 
             $res[$index] := $val
          }
@@ -18618,6 +19894,43 @@ $rt_analyse := []
    }
 }
 
+@proc_def rand_lfo_multi($res, $index, $min, $max, $init_val, $type, $tpo) 
+{
+   @local $v1, $v2, $duree, $val, $curve_int_proc, $delay
+
+   $v1 := $init_val
+   $v2 := $init_val
+   $curve_int_proc := 0
+
+   $delay := @rand(1.) + 0.5
+
+   group @tempo := $tpo
+   {
+   Loop $delay @exclusive
+   {
+   abort $curve_int_proc
+
+   $v1 := $v2
+   $v2 := @rand_range($min, $max) // @rand($max-$min)+$min
+   $delay := @rand(1.) + 0.5
+   $duree := $delay
+
+   $curve_int_proc := {  curve
+      // @tempo := $tpo
+      @Grain := 5 ms //0.01s 
+      @action :=  { 
+            $res[$index] := $val
+         }
+
+                  { $val {
+                 {$v1} @type := $type
+                 $duree {$v2} 
+               }
+            }
+         }
+      }
+   }
+}
 // for pvoc UGENS, avoid play buf after record position
 
 
@@ -18683,8 +19996,81 @@ $rt_analyse := []
       }
    }
 }
+// @proc_def rand_lfo_basic($group, $module, $param, $min, $max, $init_val, $type, $tpo, $gui) 
 
+@proc_def rand_lfo_dyn_bpf($server_name, $module, $param, $init_val, $bpf_end_val, $type, $tpo)
+@abort
+{
+	abort $curve_int_proc
+} 
+{
+   @local $v1, $v2, $duree, $val, $curve_int_proc, $min := 0.0, $pos, $delay, $nim, $x_interpol
 
+	$nim := @build_nim_from_bpf($bpf_end_val)
+	$end_val_interpol := $bpf_end_val[0]
+	$last_bpf_amp_curve := { curve @grain := 0.01, 
+		@action 
+		{
+			$pos := $end_val_interpol-$init_val
+		} 
+		{ $end_val_interpol : $nim }
+		
+	}
+
+   $v1 := $init_val
+   // $pos := $ref_obj.$rec_pos
+   $v2 := @rand_range_compiled($min, $end_val_interpol)
+   $curve_int_proc := 0
+
+   $delay := 0.001
+   $duree := $delay
+
+   group @tempo := $tpo
+   {
+   Loop $delay @exclusive
+   {
+   abort $curve_int_proc
+   	// print delay $delay
+   	// print duree $duree
+	// $pos := $ref_obj.$rec_pos
+	   $v1 := $v2
+	   $v2 := @rand_range_compiled($min, $end_val_interpol ) // @rand($max-$min)+$min
+	   if($pos == 0.0)
+	   {
+	   	   		$delay := 0.001
+	   			$duree := $delay 
+	   }
+	   else
+	   {
+	   		$delay := @rand_range_compiled(0.8, 1.2)*$pos
+	   		$duree := $delay 
+	   }
+   
+            // print v1 $v1
+            // print v2 $v2
+            // print pos $pos
+   $curve_int_proc := {  curve
+      // @tempo := $tpo
+      @Grain := 5 ms //0.01s 
+      @action :=  { 
+            // $res[$index] := $val
+
+            // print val $val
+            // print rec_pos ($ref_obj.$rec_pos)
+            $Servers($server_name).n_set($module, [$param, $val])
+         }
+
+                  { $val {
+                 		{$v1} @type := $type
+                 $duree {$v2} 
+               }
+            }
+         }
+
+           
+      }
+   }
+}
 
 @proc_def rand_lfo_vst($server_name, $vst_name, $vst_nodeID, $param, $min, $max, $init_val, $type, $tpo) 
 @abort
@@ -19016,6 +20402,7 @@ $rt_analyse := []
 }
 
 @global $jlg_count_xyz := 0
+
 @proc_def rand_lfo_track_pos_xyz($server_name, $track_name, $mix_group, $min_x, $max_x, $init_val_x, $min_y, $max_y, $init_val_y, $min_z, $max_z, $init_val_z, $tpo, $type = "linear") 
 @abort
 {
@@ -19090,6 +20477,42 @@ $rt_analyse := []
 		}
 	}
 }
+
+@proc_def global_xyz_rand_lfo($obj, $range, $tpo = 60, $type = "linear") // [min0,max0,init_val0, min1,max1,init_val1, min_n,max_n,init_val_n], tempo, type_interpol
+{
+  	@local $dae_list_pol := [], $proc_index, $xyz_list, $multi_tab, $tracks_list
+
+  	$tracks_list := $obj.$tracks_tab
+ //    if($track_proc($server_name)($mix_group)($track_name).is_defined($node_id_out+"_multi_lfo_track")) // si ça existe abort et refait
+	// {
+	// 	$THISOBJ.dae_rand_lfo_abort()
+	// }
+	$xyz_list := [0 | ($range.size()/3)]
+	// $track_proc($server_name)($mix_group)($track_name).add_pair($node_id_out+"_multi_lfo_track", [ ::rand_lfo_multi($xyz_list, $i/3, $range[$i], $range[$i+1], $range[$i+2], $type, $tpo)  | $i in $range.size() : 3 ]) // instantie un le processus dans le dico
+	// ::rand_lfo_multi($xyz_list, 0, $range[0], $range[1], $range[2], $type, $tpo) // range -> min, max, init_val
+	 $multi_tab := [ ::rand_lfo_multi($xyz_list, $i/3, $range[$i], $range[$i+1], $range[$i+2], $type, $tpo)  | $i in $range.size() : 3 ]
+	// $proc_index := $trajs_index
+	// $trajs.add_pair($proc_index, $xyz_list)
+	// $trajs_index += 1
+
+	$int_loop := {
+		loop  10ms  
+		// @abort { print "===> loop killed" $track_name }
+		{ 
+			// print xyz_list (""+$xyz_list)
+			// $dae_list_pol := @cartopol3D_tab($xyz_list)
+			forall $trk in $tracks_list
+			{
+				$tracks($trk).HOA_global_track_xyz($xyz_list)
+				$obj.global_xyz_rand_dist($xyz_list) // send back to objet
+			}
+			// $Servers($server_name).n_set($node_id_out, ["coords", $dae_list_pol]) 
+			// $dae_list_cart := @poltocar3D_tab($dae_list)
+			// $trajs.insert($proc_index, $xyz_list)
+			// print dae_list_cart $dae_list_cart
+		}
+	}
+}	
 
 @proc_def rand_lfo_basic_x_y_z($min, $max, $init_val, $type, $tpo) 
 @abort
@@ -19235,6 +20658,8 @@ $rt_analyse := []
 // 	}
 // }
 
+
+
 @obj_def rand_lfo_glob($min, $max, $init_val, $type, $tpo)
 {
    @local $listener, $receive, $v1, $v2, $duree, $val, $curve_int_proc, $delay
@@ -19295,6 +20720,109 @@ $rt_analyse := []
 	 @clear($listener)
    }
 }
+
+@obj_def rand_lfo_glob2($min, $max, $init_val, $tpo = 60, $type = "linear")
+{
+   @local $suscriber := MAP{}, $curve_int_proc, $receive
+		@init 
+		{
+			// $listener := MAP{}
+			// oscrecv osc $port $prefix $receive
+			$v1 := $init_val
+			$v2 := $init_val
+			$curve_int_proc := 0
+
+			$delay := @rand(1.) + 0.5
+
+			abort $curve_int_proc
+			$THISOBJ.diffuse()
+		}
+		@fun_def add_suscriber($x, $f)
+	   	{
+			// $suscriber := @cons([$x, $f], $suscriber)
+			@local $int_name, $params, $method
+
+			$method := @extract_method(""+$f)
+
+
+			if ($method == "set")
+			{
+				print es set 
+				$params := @extract_command(""+$f)
+				// @slice(""+$f, 12, 15)
+				print commande $params
+				$int_name := $x.$track_name+$method+($params[0])+($params[1])
+
+			}
+			else
+			{
+				print $method
+				$int_name := $x.$track_name+$method
+
+			}
+			print int_name $int_name
+			$suscriber.add_pair($int_name, [$x, $f])
+
+	  	}
+		@fun_def tpo($temp)
+	  	{
+			$tpo := $temp
+	  	}	  
+		@fun_def minmax($mi, $ma)
+	  	{
+			$min := $mi
+			$max := $ma
+	  	}		  		
+		@fun_def unsuscribe($x, $n, $n1 = "module", $n2 = "param")
+	  	{
+			// $suscriber := @cons([$x, $f], $suscriber)
+			@local $int_name := $x.$track_name+$n
+			if($n == "set")
+			{
+				$int_name := $x.$track_name+$n+$n1+$n2
+			}
+			else
+			{
+				$int_name := $x.$track_name+$n
+			}
+			$suscriber.remove($int_name)
+	  	}	  	 
+		@proc_def diffuse()
+		{
+			$curve_int_proc := { 
+				group @tempo := $tpo
+				{
+				 Loop $delay @exclusive //@tempo := $tpo
+				 {
+				
+
+				  $v1 := $v2
+				  $v2 := @rand_range(0.0, 1.0) // @rand($max-$min)+$min
+				  $delay := @rand(1.) + 0.5
+				  $duree := $delay
+
+				   curve
+					    // @tempo := $tpo
+					    	@Grain := 0.01 //0.01s 
+					    	@action :=  { 
+					    		// forall $e in $suscriber { _ := ($e[1])($e[0], $receive) }
+					    		forall $k, $v in $suscriber { _ := ($v[1])($v[0], $receive) }
+					    	}
+					    	{ $receive {
+							   {$v1} @type := $type
+						   $duree {$v2} 
+						   }
+					   }
+					}
+				}
+			}
+   	}
+   @abort
+   {
+	 @clear($suscriber)
+   }
+}
+
 
 // ::rand_lfo_glob_send($rand_lfo_instance, $server_name, $node_params)
 @obj_def rand_lfo_glob_obj_send($rand_lfo_instance, $server_name, $node_params)
@@ -20971,7 +22499,63 @@ $space_group_index := 0
 	}
 }
 
+// $tracks($nota_name).source_comete_solo2(                          0.1, @rand_range(0, 50), @rand_range(0, 360), @rand_range(0, 90), @rand_range(0, 360), 60, "linear", 1, 1, 1)	
 
+@proc_def source_comete_solo3($server_name, $track_name, $mix_group, $duree, $radio, $start_angle, $start_elev, $end_angle, $end_elev, $period, $type, $loop)
+@abort
+{
+	// TODO
+	// $sc_struct($group)($module).add_pair($param, $val) // enregistre la dernière valeur dans la main Map
+	// print "abort"
+	abort $curve_int_proc
+	$trajs.remove($proc_index)
+	// $space_group.remove($proc_index)
+}
+{
+	@local $phi, $theta, $curve_int_proc, $poltocar, $proc_index, $xyz := [0, 0, 0], $HOA_local_x := 0, $HOA_local_y := 0, $HOA_local_z := 0, $radio_res, $radio_fac := 1, $tempo_fac := 1 , $inc := 0, $descp_node_id, $desc_val := 0, $track_bus_in, $track_id, $desc_id, $elev := 1, $params
+
+
+	$track_id := $tracks($track_name).$node_id_out
+	$track_bus_in := $tracks($track_name).$bus
+
+	$curve_int_proc := 0
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $xyz)
+	$trajs_index += 1
+
+	$space_group($server_name)($mix_group)("val").add_pair($track_id, $xyz)
+
+
+	group @tempo := ($period*$tempo_fac)
+	{
+		Loop $duree @exclusive //@tempo := $tpo
+		{
+			abort $curve_int_proc
+
+			$curve_int_proc := {  curve
+				   // @tempo := $tpo
+				   @Grain := 0.033 //0.01s 
+				   @action :=  { 
+								$radio_res := $radio * $radio_fac
+								$Servers($server_name).n_set($track_id, ["coords", [$radio_res, $phi, $theta]])	
+							 	$poltocar := @poltocar3D_compiled($radio_res, $phi, $theta) // to oFx							 		
+
+								$xyz[0] := $poltocar[0]
+								$xyz[1] := $poltocar[1]
+								$xyz[2] := $poltocar[2]
+					    }
+
+				   { $phi, $theta {
+					  {$start_angle, $start_elev} @type := $type
+					  $duree {$end_angle, $end_elev} 
+					  }
+				   }
+			    }
+			$inc += 1			    
+		} until ($inc >= $loop)
+	}
+}
 @proc_def source_comete_solo_ste($server_name, $track_name, $mix_group, $dir, $duree, $radio, $start_angle, $start_elev, $end_angle, $end_elev, $period, $type, $loop, $id)
 @abort
 {
@@ -21082,13 +22666,13 @@ $space_group_index := 0
 				   @Grain := 0.033 //0.01s 
 				   @action :=  { 
 								$radio_res := $radio * $radio_fac
-							 	$poltocar := @poltocar3D_compiled($radio_res, $phi, $theta*$elev)
+							 	$poltocar := @poltocar3D_compiled($radio_res, $phi*$dir, $theta*$elev)
 							 		
 									$xyz[0] := $poltocar[0]
 									$xyz[1] := $poltocar[1]
 									$xyz[2] := $poltocar[2]
 									// print dae(""+[$radio, $phi, $theta])
-									$Servers($server_name).n_set($track_id, ["coords", [$radio_res, $phi, $theta]])	
+									$Servers($server_name).n_set($track_id, ["coords", [$radio_res, $phi*$dir, $theta]])	
 
 					    }
 
@@ -21106,6 +22690,148 @@ $space_group_index := 0
 	}
 }
 
+@proc_def traj_circ2($server_name, $track_id, $start_coords, $clockwise, $tpo) // , $clockwise = 1
+@abort
+{
+	// TODO
+	// $sc_struct($group)($module).add_pair($param, $val) // enregistre la dernière valeur dans la main Map
+	// print "abort"
+
+	// $space_group.remove($proc_index)
+	abort $curve_int_proc
+	$trajs.remove($proc_index)
+}
+{
+	@local $coords, $phi, $theta, $curve_int_proc := 0, $poltocar, $proc_index, $xyz := [0, 0, 0], $HOA_local_x := 0, $HOA_local_y := 0, $HOA_local_z := 0, $radio, $radio_res, $radio_fac := 1, $tempo_fac := 1 , $inc := 0, $descp_node_id, $desc_val := 0, $track_bus_in, $desc_id, $elev, $params, $angle
+
+
+	$proc_index := $trajs_index
+	$trajs.add_pair($proc_index, $xyz)
+	$trajs_index += 1
+
+	$radio := $start_coords[0]
+	$angle := $start_coords[1]
+	$elev := $start_coords[2]
+
+		abort $curve_int_proc
+		$curve_int_proc := {
+			Loop 0.01 @tempo := $tpo //@exclusive //@tempo := $tpo
+			{
+				if($clockwise == 1 && $angle > 180)
+				{
+					$angle := $angle - 360
+				}
+				else
+				{
+					$angle := $angle
+				}
+				if($clockwise == -1 && $angle < -180)
+				{
+					$angle := $angle + 360
+				}		
+				else
+				{
+					$angle := $angle
+				}
+				$radio_res := $radio*$radio_fac 
+				$Servers($server_name).n_set($track_id, ["coords", [$radio_res, $angle, $elev]])	
+				// print type $type
+				// print radio_fac $radio_fac
+			 	$poltocar := @poltocar3D_compiled($radio_res, $angle, $elev) // to oFx							 		
+				$xyz[0] := $poltocar[0]
+				$xyz[1] := $poltocar[1]
+				$xyz[2] := $poltocar[2]
+				$angle += 1*$clockwise
+			} //until ($inc >= $loop)
+		}
+
+/*			abort $curve_int_proc
+
+			$curve_int_proc := {  curve
+				   // @tempo := $tpo
+				   @Grain := 0.033 //0.01s 
+				   @action :=  { 
+				   				$radio_res := $radio * $radio_fac
+								// print dae(""+[$radio_res, $angle, $theta])
+								if($clockwise == 1 && $phi > 180)
+								{
+									$phi := $phi - 360
+								}
+								else
+								{
+									$phi := $phi
+								}
+								if($clockwise == -1 && $phi < -180)
+								{
+									$phi := $phi + 360
+								}		
+								else
+								{
+									$phi := $phi
+								}
+								// print phi $phi					
+								$Servers($server_name).n_set($track_id, ["coords", [$radio_res, $phi, $theta]])	
+								// print type $type
+
+							 	$poltocar := @poltocar3D_compiled($radio_res, $phi, $theta) // to oFx							 		
+								$xyz[0] := $poltocar[0]
+								$xyz[1] := $poltocar[1]
+								$xyz[2] := $poltocar[2]
+					    }
+
+				   { $radio, $phi, $theta {
+					  {($start_coords[0]), $start_angle, ($start_coords[2])} @type := $type
+					  $duree {($end_coords[0]), $end_angle, ($end_coords[2])} 
+					  }
+				   }
+			    }*/
+		    
+		// 	$inc += 1			
+
+		// } until ($inc >= $loop)
+		// $duree  $trajs.remove($proc_index)
+	// }
+}
+
+@proc_def traj_circ22($coords, $start_coords, $clockwise, $tpo) // , $clockwise = 1
+{
+	@local $phi, $theta, $curve_int_proc := 0, $poltocar, $proc_index, $xyz := [0, 0, 0], $HOA_local_x := 0, $HOA_local_y := 0, $HOA_local_z := 0, $radio, $radio_res, $radio_fac := 1, $tempo_fac := 1 , $inc := 0, $descp_node_id, $desc_val := 0, $track_bus_in, $desc_id, $elev, $params, $angle
+
+
+	// $proc_index := $trajs_index
+	// $trajs.add_pair($proc_index, $xyz)
+	// $trajs_index += 1
+
+	$radio := $start_coords[0]
+	$angle := $start_coords[1]
+	$elev := $start_coords[2]
+
+		abort $curve_int_proc
+		$curve_int_proc := {
+			Loop 0.01 @tempo := $tpo //@exclusive //@tempo := $tpo
+			{
+				if($clockwise == 1 && $angle > 180)
+				{
+					$angle := $angle - 360
+				}
+				else
+				{
+					$angle := $angle
+				}
+				if($clockwise == -1 && $angle < -180)
+				{
+					$angle := $angle + 360
+				}		
+				else
+				{
+					$angle := $angle
+				}
+
+				$coords[1] := $angle
+				$angle += 1*$clockwise
+			} 
+		}
+}
 
 @proc_def traj_circ_interp($server_name, $track_id, $start_coords, $end_coords, $duree, $type) // , $clockwise = 1
 @abort
@@ -21591,8 +23317,20 @@ $trajs_index := 0
 		Loop 0.05
 		{
 			of_traj ($trajs.range().flatten())
-			print of_traj ($trajs.range().flatten())
+			// print of_traj ($trajs.range().flatten())
 		}
+	}
+}
+
+whenever of_gui ($of_gui==$of_gui)
+{
+	if($of_gui ==1)
+	{
+		$of_gui_proc := ::gui_oF_trajs()
+	}
+	else
+	{
+		abort $of_gui_proc
 	}
 }
 
@@ -23420,6 +25158,32 @@ whenever ($from_sc_server2==$from_sc_server2)
 		$SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
 }
 
+@proc_def HOAmbi_grain_xyz_track_buf($buf, $envbuf, $rate, $dur, $pos, $coords, $amp, $track_HOA_NE) 
+{
+	@local $node_id_mod, $server_name, $main_group_name, $main_group_id, $order, $xyz_offset, $hoa_bus
+
+		$server_name := $tracks($track_HOA_NE).$server_name
+		$main_group_name := $tracks($track_HOA_NE).$group_name
+		// $main_group_id := $tracks($track_HOA_NE).$node_id_out
+		$main_group_id := $tracks($track_HOA_NE).$node_id_out
+		$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+		$hoa_bus := $tracks($track_HOA_NE).$bus
+		$order :=  $tracks($track_HOA_NE).$order
+
+		//$space_group($server_name)($main_group_name)("val").add_pair($main_group_id, $xyz)
+		// print $main_group_id
+		// print $main_group_name
+		// print (""+$space_group($server_name)($main_group_name))
+
+		$xyz_offset := $space_group($server_name)($main_group_name)("xyz_offset")
+
+		// scServer "s_new" ("HOA_Grain_xyz"+$order) $node_id_mod 0 $main_group_id globTBus $hoa_bus buf $buf envbuf $envbuf pos $pos env_dur $dur t_trig 1 x $x y $y z $z amp $amp rate $rate 
+		$Servers($server_name).s_new(["HOAmbi_Grain_xyz"+$order, $node_id_mod, 2, $main_group_id, "globTBus", $hoa_bus, "buf", $buf, "envbuf", $envs($server_name)($envbuf), "pos", $pos, "env_dur", $dur, "t_trig", 1, "coords", $coords+$xyz_offset, "amp", $amp, "rate", $rate])
+		// print server_test (""+["HOA_Grain_xyz"+$order, $node_id_mod, 0, $main_group_id, "globTBus", $hoa_bus, "buf", $SF_map($server_name)($buf), "envbuf", $envs($server_name)($envbuf), "pos", $pos, "env_dur", $dur, "t_trig", 1, "x", $x+$HOA_global_x, "y", $y+$HOA_global_y, "z", $z+$HOA_global_z, "xoffset", $xyz_offset[0], "yoffset", $xyz_offset[1], "zoffset", $xyz_offset[2], "amp", $amp, "rate", $rate, "spk_radius", $spk_radius])
+		// print ("s_new"+$server_name) ("HOA_Grain_xyz"+$order) $node_id_mod 0 $main_group_id globTBus $hoa_bus buf ($SF_map($server_name)($buf)) envbuf ($envs($server_name)($envbuf)) pos $pos env_dur $dur t_trig 1 "x" ($x+$HOA_global_x) "y" ($y+$HOA_global_y) "z" ($z+$HOA_global_z) "xoffset" ($xyz_offset[0]) "yoffset" ($xyz_offset[1]) "zoffset" ($xyz_offset[2]) "amp" $amp "rate" $rate "spk_radius" $spk_radius
+
+		$SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+}
 // position en secondes
 @proc_def HOA_grain_xyz_track2($buf, $envbuf, $rate, $dur, $pos, $x, $y, $z, $amp, $track_HOA_NE, $spk_radius = 1.07) 
 {
@@ -23730,7 +25494,7 @@ whenever ($from_sc_server2==$from_sc_server2)
 	{ 
 		$env_dur_max := $env_d_max
 	}
-	@fun_def pos_min($_min) 
+	@fun_def pos_min($p_min) 
 	{ 
 		$pos_min := $p_min
 	}
@@ -23942,7 +25706,7 @@ whenever ($from_sc_server2==$from_sc_server2)
 	{ 
 		$env_dur_max := $env_d_max
 	}
-	@fun_def pos_min($_min) 
+	@fun_def pos_min($p_min) 
 	{ 
 		$pos_min := $p_min
 	}
@@ -23953,6 +25717,428 @@ whenever ($from_sc_server2==$from_sc_server2)
 	@fun_def buf($bf) 
 	{ 
 		$buf := $bf
+	}		
+	@fun_def envbuf($eb) 
+	{ 
+		$envbuf := $eb
+	}	
+	@fun_def amp($a) 
+	{ 
+		$amp := $a
+	}	
+	@fun_def tempo_grain($tpo)
+	{ 
+		$inner_tempo := $tpo
+	}	
+	@fun_def tempo_loop($tpo)
+	{ 
+		$loop_tempo := $tpo
+	}				
+	@proc_def free($t = 1)
+	{
+	   @local $lamp, $amp_init, $amp_end := -90, $type := "linear"
+	   $amp_init := $amp
+	   Curve
+	   @grain := 0.01,
+	   @action {
+			
+				$THISOBJ.amp($lamp)
+				// print amp $amp
+	} 
+	   { $lamp {            
+				    {$amp_init} @type := $type
+			 $t   {$amp_end}} 
+	   }
+    $t abort $THISOBJ	
+    }	
+    @abort
+	{
+		$THISOBJ.free()
+	}
+}
+
+@obj_def HOAmbi_grain_xyz_rand_fix_track_buf($buf, $envbuf, $rate_min, $rate_max, $pos_min, $pos_max, $ryth_min, $ryth_max, $env_dur_min, $env_dur_max, $x_min, $x_max, $y_min, $y_max, $z_min, $z_max, $amp, $track_HOA_NE, $grain_group) 
+{
+	@local $cartopol, $rand_x, $rand_y, $rand_z, $env_dur, $rate, $pos, $ryth_rand, $server_name, $main_group_name, $curve_xyz := 0, $inner_tempo := 60, $loop_tempo := 60
+	@init 
+    {
+		$ryth_rand := @rand_range($ryth_min, $ryth_max)
+
+		group @tempo $inner_tempo 
+		{
+			loop circle_rand $ryth_rand
+			{
+				
+				// print (@cartopol(12, $angle_inc_rand))
+				$rand_x := @rand_range($x_min, $x_max)
+				$rand_y := @rand_range($y_min, $y_max)
+				$rand_z := @rand_range($z_min, $z_max)
+				$rate := @rand_range($rate_min, $rate_max)	
+				$pos := @rand_range($pos_min, $pos_max)
+				$env_dur := @rand_range($env_dur_min, $env_dur_max)
+				$ryth_rand := @rand_range($ryth_min, $ryth_max)
+				$cartopol := @cartopol3D_compiled($rand_x, $rand_y, $rand_z)
+				// $pos := $angle_inc_rand.scale(0, 360, 0., 1., 1)
+
+				::HOAmbi_grain_xyz_track_buf($buf, $envbuf, $rate, $env_dur, $pos, $cartopol, $amp, $track_HOA_NE)
+				@command("of_grains"+$grain_group) @dur2mlsec($env_dur) $rand_x $rand_y $rand_z
+
+			}
+		}
+	}
+	@fun_def rand_x_min($r_min) 
+	{ 
+		$x_min := $r_min
+	}
+	@fun_def rand_x_max($r_max) 
+	{ 
+		$x_max := $r_max
+	}
+	@proc_def x_interpol($i_x_min, $i_x_max, $t, $type = "linear") 
+	{ 
+	    @local $l_min, $l_max, $x_min_init, $x_max_end
+	   $x_min_init := $x_min //init position x_min
+	   $x_max_end := $x_max //init position x_max
+	   Curve
+	   @grain := 0.01,
+	   @action {
+			
+				$THISOBJ.rand_x_min($l_min)
+				$THISOBJ.rand_x_max($l_max)
+	} 
+	   { $l_min, $l_max {            
+				    {$x_min, $x_max} @type := $type
+			 $t   {$i_x_min, $i_x_max}} 
+	   }
+	}	
+	@proc_def y_interpol($i_y_min, $i_y_max, $t, $type = "linear") 
+	{ 
+	    @local $l_min, $l_max, $y_min_init, $y_max_end
+	   $y_min_init := $y_min //init position x_min
+	   $y_max_end := $y_max //init position x_max
+	   Curve
+	   @grain := 0.01,
+	   @action {
+			
+				$THISOBJ.rand_y_min($l_min)
+				$THISOBJ.rand_y_max($l_max)
+	} 
+	   { $l_min, $l_max {            
+				    {$y_min, $y_max} @type := $type
+			 $t   {$i_y_min, $i_y_max}} 
+	   }
+	}	
+	@proc_def z_interpol($i_z_min, $i_z_max, $t, $type = "linear") 
+	{ 
+	    @local $l_min, $l_max, $z_min_init, $z_max_end
+	   $z_min_init := $z_min //init position x_min
+	   $z_max_end := $z_max //init position x_max
+	   Curve
+	   @grain := 0.01,
+	   @action {
+			
+				$THISOBJ.rand_z_min($l_min)
+				$THISOBJ.rand_z_max($l_max)
+	} 
+	   { $l_min, $l_max {            
+				    {$z_min, $z_max} @type := $type
+			 $t   {$i_z_min, $i_z_max}} 
+	   }
+	}		
+    @proc_def xyz_interpol($bpf, $loop = 0) 
+    {
+		@local $nim, $xyz_pos, $inc := 0, $nim_dur, $periode
+		$nim := @build_nim_from_bpf($bpf)
+		$nim_dur := @max_key($nim)
+
+		$xyz_pos := $bpf[0]
+		$periode := (60/$loop_tempo)*$nim_dur
+		abort $curve_xyz
+		$curve_xyz := { loop $periode
+		{
+			curve @grain := 0.01, 
+			@tempo := $loop_tempo,
+			@action 
+			{
+					$THISOBJ.rand_x_min($xyz_pos[0])
+					$THISOBJ.rand_x_max($xyz_pos[1])
+					$THISOBJ.rand_y_min($xyz_pos[2])
+					$THISOBJ.rand_y_max($xyz_pos[3])
+					$THISOBJ.rand_z_min($xyz_pos[4])
+					$THISOBJ.rand_z_max($xyz_pos[5])	
+					$periode := (60/$loop_tempo)*$nim_dur // actualise la valeur de la periode							
+			} 
+			{ $xyz_pos : $nim }
+			$inc += 1			    
+		} until ($inc >= $loop)
+		}
+    }		
+	@fun_def xyz_interpol_stop() 
+	{ 
+		abort $curve_xyz
+	}
+	@fun_def rand_y_min($r_min) 
+	{ 
+		$y_min := $r_min
+	}
+	@fun_def rand_y_max($r_max) 
+	{ 
+		$y_max := $r_max
+	}
+	@fun_def rand_z_min($r_min) 
+	{ 
+		$z_min := $r_min
+	}
+	@fun_def rand_z_max($r_max) 
+	{ 
+		$z_max := $r_max
+	}			
+	@fun_def ryth_min($r_min) 
+	{ 
+		$ryth_min := $r_min
+	}
+	@fun_def ryth_max($r_max) 
+	{ 
+		$ryth_max := $r_max
+	}	
+	@fun_def rate_min($r_min) 
+	{ 
+		$rate_min := $r_min
+	}
+	@fun_def rate_max($r_max) 
+	{ 
+		$rate_max := $r_max
+	}	
+	@fun_def env_dur_min($env_d_min) 
+	{ 
+		$env_dur_min := $env_d_min
+	}
+	@fun_def env_dur_max($env_d_max) 
+	{ 
+		$env_dur_max := $env_d_max
+	}
+	@fun_def pos_min($p_min) 
+	{ 
+		$pos_min := $p_min
+	}
+	@fun_def pos_max($p_max) 
+	{ 
+		$pos_max := $p_max
+	}	
+	@fun_def buf($bf) 
+	{ 
+		$buf := $bf
+	}		
+	@fun_def envbuf($eb) 
+	{ 
+		$envbuf := $eb
+	}	
+	@fun_def amp($a) 
+	{ 
+		$amp := $a
+	}	
+	@fun_def tempo_grain($tpo)
+	{ 
+		$inner_tempo := $tpo
+	}	
+	@fun_def tempo_loop($tpo)
+	{ 
+		$loop_tempo := $tpo
+	}				
+	@proc_def free($t = 1)
+	{
+	   @local $lamp, $amp_init, $amp_end := -90, $type := "linear"
+	   $amp_init := $amp
+	   Curve
+	   @grain := 0.01,
+	   @action {
+			
+				$THISOBJ.amp($lamp)
+				// print amp $amp
+	} 
+	   { $lamp {            
+				    {$amp_init} @type := $type
+			 $t   {$amp_end}} 
+	   }
+    $t abort $THISOBJ	
+    }	
+    @abort
+	{
+		$THISOBJ.free()
+	}
+}
+
+@obj_def HOAmbi_grain_xyz_rand_fix_track_buf_list($buf_list, $envbuf, $rate_min, $rate_max, $pos_min, $pos_max, $ryth_min, $ryth_max, $env_dur_min, $env_dur_max, $x_min, $x_max, $y_min, $y_max, $z_min, $z_max, $amp, $track_HOA_NE, $grain_group) 
+{
+	@local $cartopol, $rand_x, $rand_y, $rand_z, $env_dur, $rate, $pos, $ryth_rand, $server_name, $main_group_name, $curve_xyz := 0, $inner_tempo := 60, $loop_tempo := 60
+	@init 
+    {
+		$ryth_rand := @rand_range($ryth_min, $ryth_max)
+
+		group // @tempo $inner_tempo 
+		{
+			loop circle_rand $ryth_rand
+			{
+				
+				// print (@cartopol(12, $angle_inc_rand))
+				$rand_x := @rand_range($x_min, $x_max)
+				$rand_y := @rand_range($y_min, $y_max)
+				$rand_z := @rand_range($z_min, $z_max)
+				$rate := @rand_range($rate_min, $rate_max)	
+				$pos := @rand_range($pos_min, $pos_max)
+				$env_dur := @rand_range($env_dur_min, $env_dur_max)
+				$ryth_rand := @rand_range($ryth_min, $ryth_max)
+				$cartopol := @cartopol3D_compiled($rand_x, $rand_y, $rand_z)
+				// $pos := $angle_inc_rand.scale(0, 360, 0., 1., 1)
+
+				::HOAmbi_grain_xyz_track_buf(@choose($buf_list), $envbuf, $rate, $env_dur, $pos, $cartopol, $amp, $track_HOA_NE)
+				@command("of_grains"+$grain_group) @dur2mlsec($env_dur) $rand_x $rand_y $rand_z
+
+			}
+		}
+	}
+	@fun_def rand_x_min($r_min) 
+	{ 
+		$x_min := $r_min
+	}
+	@fun_def rand_x_max($r_max) 
+	{ 
+		$x_max := $r_max
+	}
+	@proc_def x_interpol($i_x_min, $i_x_max, $t, $type = "linear") 
+	{ 
+	    @local $l_min, $l_max, $x_min_init, $x_max_end
+	   $x_min_init := $x_min //init position x_min
+	   $x_max_end := $x_max //init position x_max
+	   Curve
+	   @grain := 0.01,
+	   @action {
+			
+				$THISOBJ.rand_x_min($l_min)
+				$THISOBJ.rand_x_max($l_max)
+	} 
+	   { $l_min, $l_max {            
+				    {$x_min, $x_max} @type := $type
+			 $t   {$i_x_min, $i_x_max}} 
+	   }
+	}	
+	@proc_def y_interpol($i_y_min, $i_y_max, $t, $type = "linear") 
+	{ 
+	    @local $l_min, $l_max, $y_min_init, $y_max_end
+	   $y_min_init := $y_min //init position x_min
+	   $y_max_end := $y_max //init position x_max
+	   Curve
+	   @grain := 0.01,
+	   @action {
+			
+				$THISOBJ.rand_y_min($l_min)
+				$THISOBJ.rand_y_max($l_max)
+	} 
+	   { $l_min, $l_max {            
+				    {$y_min, $y_max} @type := $type
+			 $t   {$i_y_min, $i_y_max}} 
+	   }
+	}	
+	@proc_def z_interpol($i_z_min, $i_z_max, $t, $type = "linear") 
+	{ 
+	    @local $l_min, $l_max, $z_min_init, $z_max_end
+	   $z_min_init := $z_min //init position x_min
+	   $z_max_end := $z_max //init position x_max
+	   Curve
+	   @grain := 0.01,
+	   @action {
+			
+				$THISOBJ.rand_z_min($l_min)
+				$THISOBJ.rand_z_max($l_max)
+	} 
+	   { $l_min, $l_max {            
+				    {$z_min, $z_max} @type := $type
+			 $t   {$i_z_min, $i_z_max}} 
+	   }
+	}		
+    @proc_def xyz_interpol($bpf, $loop = 0) 
+    {
+		@local $nim, $xyz_pos, $inc := 0, $nim_dur, $periode
+		$nim := @build_nim_from_bpf($bpf)
+		$nim_dur := @max_key($nim)
+		print RT_TEMPO $RT_TEMPO
+		$xyz_pos := $bpf[0]
+		$periode := (60/$RT_TEMPO)*$nim_dur
+		abort $curve_xyz
+		$curve_xyz := { loop $periode
+		{
+			curve @grain := 0.01, 
+			@tempo := $RT_TEMPO,
+			@action 
+			{
+					$THISOBJ.rand_x_min($xyz_pos[0])
+					$THISOBJ.rand_x_max($xyz_pos[1])
+					$THISOBJ.rand_y_min($xyz_pos[2])
+					$THISOBJ.rand_y_max($xyz_pos[3])
+					$THISOBJ.rand_z_min($xyz_pos[4])
+					$THISOBJ.rand_z_max($xyz_pos[5])	
+					$periode := (60/$RT_TEMPO)*$nim_dur // actualise la valeur de la periode							
+			} 
+			{ $xyz_pos : $nim }
+			$inc += 1			    
+		} until ($inc >= $loop)
+		}
+    }		
+	@fun_def xyz_interpol_stop() 
+	{ 
+		abort $curve_xyz
+	}
+	@fun_def rand_y_min($r_min) 
+	{ 
+		$y_min := $r_min
+	}
+	@fun_def rand_y_max($r_max) 
+	{ 
+		$y_max := $r_max
+	}
+	@fun_def rand_z_min($r_min) 
+	{ 
+		$z_min := $r_min
+	}
+	@fun_def rand_z_max($r_max) 
+	{ 
+		$z_max := $r_max
+	}			
+	@fun_def ryth_min($r_min) 
+	{ 
+		$ryth_min := $r_min
+	}
+	@fun_def ryth_max($r_max) 
+	{ 
+		$ryth_max := $r_max
+	}	
+	@fun_def rate_min($r_min) 
+	{ 
+		$rate_min := $r_min
+	}
+	@fun_def rate_max($r_max) 
+	{ 
+		$rate_max := $r_max
+	}	
+	@fun_def env_dur_min($env_d_min) 
+	{ 
+		$env_dur_min := $env_d_min
+	}
+	@fun_def env_dur_max($env_d_max) 
+	{ 
+		$env_dur_max := $env_d_max
+	}
+	@fun_def pos_min($p_min) 
+	{ 
+		$pos_min := $p_min
+	}
+	@fun_def pos_max($p_max) 
+	{ 
+		$pos_max := $p_max
+	}	
+	@fun_def buf($bf) 
+	{ 
+		$buf_list := $bf
 	}		
 	@fun_def envbuf($eb) 
 	{ 
@@ -24220,7 +26406,7 @@ whenever ($from_sc_server2==$from_sc_server2)
 
 	// $env_dur := @rand_range($env_dur_min, $env_dur_max)
 
-	group @tempo $inner_tempo 
+	group @tempo $RT_TEMPO //$inner_tempo 
 	{
 		loop circle_rand $env_dur
 		{
@@ -24699,7 +26885,7 @@ whenever ($from_sc_server2==$from_sc_server2)
 	{ 
 		$env_dur_max := $env_d_max
 	}
-	@fun_def pos_min($_min) // seulement quand une un track a plusieurs instances du même module
+	@fun_def pos_min($p_min) // seulement quand une un track a plusieurs instances du même module
 	{ 
 		$pos_min := $p_min
 	}
@@ -24773,7 +26959,172 @@ whenever ($from_sc_server2==$from_sc_server2)
 	}	
 }
 
+@obj_def HOAmbi_grain_xyz_rand_pos_mod2_track($buf_list, $envbuf, $rate_min, $rate_max, $pos_min, $pos_max, $ryth_min, $ryth_max, $env_dur_min, $env_dur_max, $x_min, $x_max, $y_min, $y_max, $z_min, $z_max, $rand_lfo_x_min, $rand_lfo_x_max, $rand_lfo_y_min, $rand_lfo_y_max, $rand_lfo_z_min, $rand_lfo_z_max, $pos_lfo_min, $pos_lfo_max, $amp, $track_HOA_NE, $grain_group) 
+{
+	@init 
+    {
+		@local $cartopol, $rand_x := 0, $rand_y := 0, $rand_z := 0, $env_dur := 0.1, $rate := 1, $pos := 0, $ryth_rand := 0.1, $tpo := 60, $rrand_x, $rrand_y, $rrand_z, $rrate, $r_env_dur, $pos_lfo, $lfo_rand_x, $lfo_rand_y, $lfo_rand_z, $lfo_rand_rate, $lfo_rand_pos_lfo, $lfo_rand_env_dur, $server_name, $inner_tempo := 60, $loop_tempo := 60, $buf_tab, $buf_prob := 1, $curv_prob := 0
 
+		group @tempo $inner_tempo 
+		{
+			$lfo_rand_x := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_x($THISOBJ), $rand_lfo_x_min, $rand_lfo_x_max, 0.5, "linear", $tpo)
+			$lfo_rand_y := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_y($THISOBJ), $rand_lfo_y_min, $rand_lfo_y_max, 0.5, "linear", $tpo)
+			$lfo_rand_z := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_z($THISOBJ), $rand_lfo_z_min, $rand_lfo_z_max, 0.5, "linear", $tpo)
+			$lfo_rand_rate := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_rate($THISOBJ), $rate_min, $rate_max, 1, "linear", $tpo)
+			$lfo_rand_pos_lfo := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_pos_lfo($THISOBJ), $pos_lfo_min, $pos_lfo_max, 0., "linear", $tpo)
+			$lfo_rand_env_dur := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_env_dur($THISOBJ), $env_dur_min, $env_dur_max, 0.01, "linear", $tpo)
+
+			// $buf_tab := [$buf, $buf]
+			$ryth_rand := @rand_range($ryth_min, $ryth_max)
+			// $server_name := $SC_Groups($mix_group_decoder)("server_name")
+
+			loop circle_rand $ryth_rand
+			{
+				// if(@rand(1) < $buf_prob)
+				// {
+				// 	$buf := $buf_tab[0]
+				// }
+				// else 
+				// {
+				// 	$buf := $buf_tab[1]
+				// }
+				$rrand_x := @rand_range($x_min, $x_max)
+				$rrand_y := @rand_range($y_min, $y_max)
+				$rrand_z := @rand_range($z_min, $z_max)
+				// $rrate := @rand_range($rate_min, $rate_max)
+				$pos := @rand_range($pos_min, $pos_max)
+				$r_env_dur := @rand_range($env_dur_min, $env_dur_max)
+				$ryth_rand := @rand_range($ryth_min, $ryth_max)
+				$cartopol := @cartopol3D_compiled($rand_x+$rrand_x, $rand_y+$rrand_y, $rand_z*$rrand_z)
+
+				// print $buf $envbuf $rate $env_dur ($pos+$pos_lfo) ($rand_x+$rrand_x) ($rand_y+$rrand_y) ($rand_z*$rrand_z) $amp $mix_group_decoder
+				::HOAmbi_grain_xyz_track_buf(@choose($buf_list), $envbuf, $rate, $r_env_dur, $pos, $cartopol, $amp, $track_HOA_NE)
+
+				// ::HOA_grain_xyz_track($buf, $envbuf, $rate, $r_env_dur, $pos, $cartopol, $amp, $track_HOA_NE)
+				@command("of_grains"+$grain_group) @dur2mlsec($r_env_dur) ($rand_x+$rrand_x) ($rand_y+$rrand_y) ($rand_z*$rrand_z)
+
+			}
+		}
+	}
+
+	@proc_def rand_lfo_basic_obj($param, $min, $max, $init_val, $type, $tpo) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		::rand_lfo_basic_obj($param, $min, $max, $init_val, $type, $tpo)	
+		// $rand_x := $min
+	}
+	@fun_def rand_x($x) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$rand_x := $x
+	}
+	@fun_def rand_y($y) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$rand_y := $y
+	}
+	@fun_def rand_z($z) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$rand_z := $z
+	}
+	@fun_def rate($rate_val) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$rate := $rate_val
+	}
+	@fun_def pos_lfo($pos_val) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$pos_lfo := $pos_val
+	}
+	@fun_def env_dur($env_dur_val) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$env_dur := $env_dur_val
+	}
+	@fun_def ryth_min($r_min) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$ryth_min := $r_min
+	}
+	@fun_def ryth_max($r_max) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$ryth_max := $r_max
+	}	
+	@fun_def env_dur_min($env_d_min) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$env_dur_min := $env_d_min
+	}
+	@fun_def env_dur_max($env_d_max) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$env_dur_max := $env_d_max
+	}
+	@fun_def pos_min($p_min) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$pos_min := $p_min
+	}
+	@fun_def pos_max($p_max) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$pos_max := $p_max
+	}
+	@fun_def tpo($t) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		print temp $t
+		$lfo_rand_env_dur.$tpo := $t
+		$lfo_rand_x.$tpo := $t
+		$lfo_rand_y.$tpo := $t
+		$lfo_rand_z.$tpo := $t
+		$lfo_rand_rate.$tpo := $t
+		$lfo_rand_pos_lfo.$tpo := $t
+		$lfo_rand_env_dur.$tpo := $t
+	}
+	@proc_def buf($bf) //, $t = 0, $type = "linear") // seulement quand une un track a plusieurs instances du même module
+	{ 
+		// @local $lprob
+		// $buf_tab.remove(0)
+		// $buf_tab.push_back($bf)
+		// abort $curv_prob
+		// $curv_prob := { Curve
+		// 	   @grain := 0.01,
+		// 	   @action { $buf_prob := $lprob} 
+		// 	   { $lprob {            
+		// 				 {1} @type := $type
+		// 			 $t   {0}} 
+		// 	   }
+		// }
+		$buf_list := $bf
+	}		
+	@fun_def envbuf($eb) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$envbuf := $eb
+	}	
+	@fun_def amp($a) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$amp := $a
+	}	
+	@fun_def tempo_grain($tpo)
+	{ 
+		$inner_tempo := $tpo
+	}	
+	@fun_def buf_prob($prob)
+	{ 
+		$buf_prob := $prob
+	}			
+	@proc_def free($t = 1)
+	{
+	   @local $lamp, $amp_init, $amp_end := -90, $type := "linear"
+	   $amp_init := $amp
+	   Curve
+	   @grain := 0.01,
+	   @action {
+			
+				$THISOBJ.amp($lamp)
+				// print amp $amp
+	} 
+	   { $lamp {            
+				    {$amp_init} @type := $type
+			 $t   {$amp_end}} 
+	   }
+    $t abort $THISOBJ	
+    }	
+    @abort
+	{
+		$THISOBJ.free()
+	}	
+}
 @obj_def HOA_grain_polar_vol_rand_lfo($buf, $envbuf, $rate_min, $rate_max, $ryth_min, $ryth_max, $env_dur_min, $env_dur_max, $radio_min, $radio_max, $theta_min, $theta_max, $phi_min, $phi_max, $init_radio, $init_theta, $init_phi, $pos_lfo_min, $pos_lfo_max, $amp, $mix_group_decoder, $grain_group, $spk_radius = 1.07) 
 {
 	@init 
@@ -25172,7 +27523,181 @@ whenever ($from_sc_server2==$from_sc_server2)
 	}		
 }
 
+@obj_def HOAmbi_grain_polar_vol_rand_pos2($buf_list, $envbuf, $rate_min, $rate_max, $ryth_min, $ryth_max, $env_dur_min, $env_dur_max, $radio_min, $radio_max, $theta_min, $theta_max, $phi_min, $phi_max, $pos_min, $pos_max, $amp, $track_HOA_NE, $grain_group) 
+{
+	@init 
+    {
+		@local $server_name, $main_group_name, $main_group_id, $node_id_mod, $hoa_bus, $order, $rand_radio := 0, $rand_theta := 0, $rand_phi := 0, $rand_pos, $rand_env_dur, $rand_rate, $ryth_rand := 0.1, $tpo := 120, $node_inc, $in_buf
 
+
+		$ryth_rand := @rand_range($ryth_min, $ryth_max)
+		// $server_name := $tracks($track_HOA_NE).$server_name
+		// $main_group_name := $tracks($track_HOA_NE).$group_name
+		// $main_group_id := $tracks($track_HOA_NE).$node_id_out
+		// // $node_inc := $SC_Servers($server_name)("node_id") // last id
+		// $hoa_bus := $tracks($track_HOA_NE).$bus
+		// $order :=  $tracks($track_HOA_NE).$order
+
+		// if($SF_map.is_defined($server_name)) // si serveur a chargé les SF
+		// {
+		// 	if($SF_map($server_name).is_defined($buf)) // If it's a soundfile in the SF_dir
+		// 	{
+		// 		$in_buf := $SF_map($server_name)($buf)
+		// 	}
+		// 	else // if not defined use the buffer id number
+		// 	{
+		// 		$in_buf := $buf
+		// 	}
+		// }
+		// else // if not defined use the buffer id number
+		// {
+		// 	$in_buf := $buf
+		// }
+
+		if($space_group($server_name)($main_group_name).is_defined("xyz_offset")) // if visualization actif
+		{
+			print already defined "xyz_offset"
+		}
+		else
+		{
+			$space_group($server_name)($main_group_name).add_pair("xyz_offset", [0, 0, 0]) // store xyz position in map for oFx visualization
+		}
+
+		loop circle_rand $ryth_rand
+		{
+			
+			$xyz_offset := $space_group($server_name)($main_group_name)("xyz_offset")
+
+
+			// $rrate := @rand_range($rate_min, $rate_max)
+			$rand_radio := @rand_range($radio_min, $radio_max)
+			$rand_theta := @rand_range($theta_min, $theta_max)
+			$rand_phi := @rand_range($phi_min, $phi_max) // -180 // offset -180
+
+			$rand_pos := @rand_range($pos_min, $pos_max)
+
+			$rand_env_dur := @rand_range($env_dur_min, $env_dur_max)
+			$rand_rate := @rand_range($rate_min, $rate_max)
+
+			$ryth_rand := @rand_range($ryth_min, $ryth_max)
+
+			$poltocar := @poltocar3D_compiled($rand_radio, $rand_phi, $rand_theta)
+
+			// $node_inc := $SC_Servers($server_name)("node_id") // last id
+
+			// print (""+["HOA_Grain_xyz"+$order, $node_inc, 0, $main_group_id, "globTBus", $hoa_bus, "buf", @choose($buf_list), "envbuf", $envs($server_name)($envbuf), "pos", $rand_pos, "env_dur", $rand_env_dur, "t_trig", 1, "coords", [$rand_radio, $rand_phi, $rand_theta]+$xyz_offset, "amp", $amp, "rate", $rand_rate])
+			// $Servers($server_name).s_new(["HOAmbi_Grain_xyz"+$order, $node_inc, 2, $main_group_id, "globTBus", $hoa_bus, "buf", @choose($buf_list), "envbuf", $envs($server_name)($envbuf), "pos", $rand_pos, "env_dur", $rand_env_dur, "t_trig", 1, "coords", [$rand_radio, $rand_phi, $rand_theta]+$xyz_offset, "amp", $amp, "rate", $rand_rate])
+
+			// $Servers($server_name).s_new(["HOA_Grain_xyz"+$order, $node_inc, 2, $main_group_id, "globTBus", $hoa_bus, "buf", $in_buf, "envbuf", $envs($server_name)($envbuf), "pos", $rand_pos, "env_dur", $rand_env_dur, "t_trig", 1, "x", $poltocar[0]+$HOA_global_x, "y", $poltocar[1]+$HOA_global_y, "z", $poltocar[2]+$HOA_global_z, "xoffset", $xyz_offset[0], "yoffset", $xyz_offset[1], "zoffset", $xyz_offset[2], "amp", $amp, "rate", $rand_rate, "spk_radius", $spk_radius])
+				// @proc_def HOAmbi_grain_xyz_track_buf($buf, $envbuf, $rate, $dur, $pos, $coords, $amp, $track_HOA_NE) 
+				// print (""+[@choose($buf_list), $envbuf, $rand_rate, $rand_env_dur, $rand_pos, [$rand_radio, $rand_phi, $rand_theta], $amp, $track_HOA_NE])
+			::HOAmbi_grain_xyz_track_buf(@choose($buf_list), $envbuf, $rand_rate, $rand_env_dur, $rand_pos, [$rand_radio, $rand_phi, $rand_theta], $amp, $track_HOA_NE)
+
+			// $node_inc := $SC_Servers($server_name)("node_id") + 1
+			// $SC_Servers($server_name).add_pair("node_id", $node_inc + 1)
+
+			// ::HOA_grain_xyz($server_name, $order, $node_id_mod, $main_group_id, $buf, $envbuf, $rate, $env_dur, $pos_lfo, $poltocar[0]+$HOA_global_x, $poltocar[1]+$HOA_global_y, $poltocar[2]+$HOA_global_z, $amp, $mix_group_decoder)
+			@command("of_grains"+$grain_group) @dur2mlsec($rand_env_dur) ($poltocar[0]+$xyz_offset[0]) ($poltocar[1]+$xyz_offset[1]) ($poltocar[2]+$xyz_offset[2])
+		}
+	}
+	@fun_def rate_min($rmin) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$rate_min := $rmin
+	}
+	@fun_def rate_max($rmax) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$rate_max := $rmax
+	}
+
+	@fun_def ryth_min($rymin) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$ryth_min := $rymin
+	}
+	@fun_def ryth_max($rymax) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$ryth_max := $rymax
+	}
+
+	@fun_def env_dur_min($edmin) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$env_dur_min := $edmin
+	}
+	@fun_def env_dur_max($edmax) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$env_dur_max := $edmax
+	}
+
+	@fun_def radio_min($rdmin) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$radio_min := $rdmin
+	}
+	@fun_def radio_max($rdmax) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$radio_max := $rdmax
+	}
+	
+
+	@fun_def theta_min($tmin) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$theta_min := $tmin
+	}
+	@fun_def theta_max($tmax) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$theta_max := $tmax
+	}
+
+	@fun_def phi_min($phmin) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$phi_min := $phmin
+	}
+	@fun_def phi_max($phmax) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$phi_max := $phmax
+	}	
+
+	@fun_def pos_min($posmin) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$pos_min := $posmin
+	}
+	@fun_def pos_max($posmax) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$pos_max := $posmax
+	}	
+
+	@fun_def buf($bf) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$buf_list := $bf
+	}		
+	@fun_def envbuf($eb) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$envbuf := $eb
+	}	
+	@fun_def amp($a) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$amp := $a
+	}		
+	@proc_def free($t = 1)
+	{
+	   @local $lamp, $amp_init, $amp_end := -90, $type := "linear"
+	   $amp_init := $amp
+	   Curve
+	   @grain := 0.01,
+	   @action {
+			
+				$THISOBJ.amp($lamp)
+				// print amp $amp
+	} 
+	   { $lamp {            
+				    {$amp_init} @type := $type
+			 $t   {$amp_end}} 
+	   }
+    $t abort $THISOBJ	
+    }	
+    @abort
+	{
+		$THISOBJ.free()
+	}		
+}
 
 @obj_def HOA_grain_rot_rand($buf, $envbuf, $rate_min, $rate_max, $ryth_min, $ryth_max, $env_dur_min, $env_dur_max, $pos_min, $pos_max, $dir, $duree, $radio, $start_angle, $start_elev, $end_angle, $end_elev, $period, $type, $id, $amp, $mix_group_decoder, $grain_group, $spk_radius = 1.07) 
 {
@@ -27083,6 +29608,436 @@ whenever ($from_sc_server2==$from_sc_server2)
 	}	
 }
 
+@obj_def HOAmbi_grain_rot_rand_lfo2($buf_list, $envbuf, $rate_min, $rate_max, $ryth_min, $ryth_max, $env_dur_min, $env_dur_max, $pos_min, $pos_max, $dir, $duree, $radio, $start_angle, $start_elev, $end_angle, $end_elev, $period, $type, $id, $amp, $track_HOA_NE, $grain_group) 
+{
+	@init 
+    {
+		@local $phi, $theta, $poltocar, $xyz_offset, $server_name, $main_group_name, $main_group_id, $node_id_mod, $bus, $order, $rand_pos, $pos_lfo, $env_dur := 0.1, $rate := 1, $ryth_rand := 0.1, $tpo := 120, $node_inc, $radio_res, $radio_fac := 1, $tempo_fac := 1, $curve_int_proc := 0, $elev := 1, $nim, $lamp, $last_bpf_a_curve := 0, $last_bpf_r_curve := 0, $lradio, $last_bpf_ele_curve := 0, $lelev, $last_bpf_per_curve := 0, $lperiod, $lfo_rand_radio, $lfo_rand_theta, $lfo_rand_phi, $lfo_rand_rate, $lfo_rand_pos_lfo, $lfo_rand_env_dur, $lfo_rand_ryth, $lryth, $last_bpf_ryth_curve := 0, $levd, $last_bpf_env_dur_curve := 0, $on_off := 1, $lfo_maps := map {}  // , $inc := 0
+
+		// $lfo_rand_radio := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_radio($THISOBJ), $radio_min, $radio_max, $init_radio, "linear", $tpo)
+		// $lfo_rand_theta := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_theta($THISOBJ), $theta_min, $theta_max, $init_theta, "linear", $tpo)
+		// $lfo_rand_phi := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_phi($THISOBJ), $phi_min, $phi_max, $init_phi, "linear", $tpo)
+		$lfo_rand_env_dur := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_env_dur($THISOBJ), $env_dur_min, $env_dur_max, 0.01, "linear", $tpo) //, "lfo_env_dur")		
+		$lfo_rand_rate := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_rate($THISOBJ), $rate_min, $rate_max, 1, "linear", $tpo) //, "lfo_rate")
+		$lfo_rand_pos_lfo := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_pos_lfo($THISOBJ), $pos_min, $pos_max, $pos_min, "linear", $tpo) //, "lfo_pos")
+		$lfo_rand_ryth := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_ryth($THISOBJ), $ryth_min, $ryth_max, $ryth_min, "linear", $tpo) //, "lfo_ryth")
+
+		// $ryth_rand := @rand_range($ryth_min, $ryth_max)
+		$ryth_rand := $ryth_min
+		$server_name := $tracks($track_HOA_NE).$server_name
+		$main_group_name := $tracks($track_HOA_NE).$group_name
+		$main_group_id := $tracks($track_HOA_NE).$node_id_out
+		// $node_inc := $SC_Servers($server_name)("node_id") // last id
+		$bus := $tracks($track_HOA_NE).$bus
+		$order :=  $tracks($track_HOA_NE).$order
+
+		// print NEW_Recipiente server_name $server_name
+		// print NEW_Recipiente main_group_name $main_group_name
+		// print NEW_Recipiente main_group_id $main_group_id
+		// print NEW_Recipiente bus $bus
+		// print NEW_Recipiente order $order	
+
+		if($space_group($server_name)($main_group_name).is_defined("xyz_offset")) // if visualization actif
+		{
+			print already defined "xyz_offset"
+		}
+		else
+		{
+			$space_group($server_name)($main_group_name).add_pair("xyz_offset", [0, 0, 0]) // store xyz position in map for oFx visualization
+		}
+
+		group @tempo := ($period*$tempo_fac)
+		{
+			Loop $duree @exclusive //@tempo := $tpo
+			{
+				abort $curve_int_proc
+
+				$curve_int_proc := {  curve
+					   // @tempo := $tpo
+					   @Grain := 0.02 //0.01s 
+					   @action :=  { 
+									$radio_res := $radio * $radio_fac
+									// $poltocar := @poltocar3D_compiled($radio_res, ($theta*$elev)-90, ($phi*(-$dir))-90)
+									$poltocar := @poltocar3D_compiled($radio_res, $phi*$dir, $theta)
+
+					 //   				$xyz[0] := $poltocar[0]
+										// $xyz[1] := $poltocar[1]
+										// $xyz[2] := $poltocar[2]
+										// print phi $phi theta $theta
+										// $Servers($server_name).n_set($track_id, ["x", $xyz[0]+$HOA_global_x+$HOA_local_x, "y", $xyz[1]+$HOA_global_y+$HOA_local_y, "z", $xyz[2]+$HOA_global_z+$HOA_local_z])		            
+										// print xyz (""+$xyz.concat([@rand_range(0, 1)]))
+										// test_pos1 $xyz
+										// osc_send_descriptors ("/spatc/"+$id+"/xyzw") ($xyz.concat([@rand_range(0, 1)]))
+
+							 // @command("n_set"+$server_name) $group $param $val
+						    }
+
+					   { $phi, $theta {
+						  {$start_angle, $start_elev} @type := $type
+						  $duree {$end_angle, $end_elev} 
+						  }
+					   }
+				    }
+				// $inc += 1			    
+			} //until ($inc >= $loop)
+		}
+
+		loop circle_rand $ryth_rand
+		{
+			if($on_off)
+			{
+				$xyz_offset := $space_group($server_name)($main_group_name)("xyz_offset")
+
+				// $ryth_rand := @rand_range($ryth_min, $ryth_max)
+				// $rand_pos := @rand_range($pos_min, $pos_max)
+
+				// $rand_env_dur := @rand_range($env_dur_min, $env_dur_max)
+				// $rand_rate := @rand_range($rate_min, $rate_max)
+
+				// $poltocar := @poltocar3D($rand_radio , $rand_theta, $rand_phi)
+
+				// print (@choose($buf_list)) ($envs($server_name)($envbuf)) "pos" $pos_lfo "env_dur" $env_dur "t_trig" 1 "coords" ([$radio_res, $phi, $theta]+$xyz_offset) "amp" $amp "rate" $rate
+				// $Servers($server_name).s_new(["HOA_Grain_xyz"+$order, $node_inc, 2, $main_group_id, "globTBus", $bus, "buf", $SF_map($server_name)($buf), "envbuf", $envs($server_name)($envbuf), "pos", $pos_lfo, "env_dur", $env_dur, "t_trig", 1, "x", $poltocar[0]+$HOA_global_x, "y", $poltocar[1]+$HOA_global_y, "z", $poltocar[2]+$HOA_global_z, "xoffset", $xyz_offset[0], "yoffset", $xyz_offset[1], "zoffset", $xyz_offset[2], "amp", $amp, "rate", $rate, "spk_radius", $spk_radius])
+				$node_inc := $SC_Servers($server_name)("node_id") // last id				
+				$Servers($server_name).s_new(["HOAmbi_Grain_xyz"+$order, $node_inc, 2, $main_group_id, "globTBus", $bus, "buf", @choose($buf_list), "envbuf", $envs($server_name)($envbuf), "pos", $pos_lfo, "env_dur", $env_dur, "t_trig", 1, "coords", [$radio_res, $phi, $theta]+$xyz_offset, "amp", $amp, "rate", $rate])
+
+				// $node_inc += 1
+				$SC_Servers($server_name).add_pair("node_id", $node_inc + 1)
+
+				// ::HOA_grain_xyz($server_name, $order, $node_id_mod, $main_group_id, $buf, $envbuf, $rate, $env_dur, $pos_lfo, $poltocar[0]+$HOA_global_x, $poltocar[1]+$HOA_global_y, $poltocar[2]+$HOA_global_z, $amp, $track_HOA_NE)
+				@command("of_grains"+$grain_group) @dur2mlsec($env_dur) ($poltocar[0]+$xyz_offset[0]) ($poltocar[1]+$xyz_offset[1]) ($poltocar[2]+$xyz_offset[2])
+			}
+		}		
+	}
+	@fun_def radio($t) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$radio := $t
+	}
+
+	@proc_def radio_fac($r)
+	{
+		@local $nim 
+
+		if($r.is_tab()) // if $val is bpf
+		{
+			abort $last_bpf_r_curve // to avoid interferences
+
+			$nim := @build_nim_from_bpf($r)
+			$lradio_fac := $r[0]
+			$last_bpf_r_curve := { curve @grain := 0.01, 
+				@action 
+				{
+					$radio_fac := $lradio_fac // $Servers($server_name).n_set($node_id_out, ["a", $la])	
+				} 
+				{ $lradio_fac : $nim }
+			}
+		}
+		else
+		{
+			$radio_fac := $r	
+		}
+	}	
+	@proc_def rand_lfo_basic_obj($param, $min, $max, $init_val, $type, $tpo) //, $key) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		// $lfo_maps.add_pair($key, ::rand_lfo_basic_obj($param, $min, $max, $init_val, $type, $tpo))
+			::rand_lfo_basic_obj($param, $min, $max, $init_val, $type, $tpo)
+		// $rand_x := $min
+	}
+
+	@fun_def rate($rate_val) 
+	{ 
+		$rate := $rate_val
+		// print rate $rate_val
+	}
+
+	@fun_def on_off($of) 
+	{ 
+		$on_off := $of
+		// print rate $rate_val
+	}
+
+	@fun_def pos_lfo($pos_val) 
+	{ 
+		$pos_lfo := $pos_val
+		// print pos_val $pos_val
+	}
+	@fun_def env_dur($env_dur_val) 
+	{ 
+		$env_dur := $env_dur_val
+		// print env_dur $env_dur_val
+	}
+
+	@fun_def rate_min($rate_m) 
+	{ 
+		abort $lfo_rand_rate
+
+		$lfo_rand_rate := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_rate($THISOBJ), $rate_m, $rate_max, 1, "linear", $tpo)
+		// $rate := $rate_val
+		$rate_min := $rate_m
+	}
+	@fun_def rate_max($rate_ma) 
+	{ 
+		abort $lfo_rand_rate
+
+		$lfo_rand_rate := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_rate($THISOBJ), $rate_min, $rate_ma, 1, "linear", $tpo)
+		$rate_max := $rate_ma
+	}	
+	@fun_def pos_min($pos_m) 
+	{ 
+		abort $lfo_rand_pos_lfo
+
+		$lfo_rand_pos_lfo := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_pos_lfo($THISOBJ), $pos_m, $pos_max, 0., "linear", $tpo)
+		$pos_min := $pos_m
+		// $pos_lfo := $pos_val
+	}
+	@fun_def pos_max($pos_ma) 
+	{ 
+		abort $lfo_rand_pos_lfo
+		$lfo_rand_pos_lfo := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_pos_lfo($THISOBJ), $pos_min, $pos_ma, 0., "linear", $tpo)
+		$pos_max := $pos_ma
+		// $pos_lfo := $pos_val
+	}
+
+	@fun_def env_dur_min($env_dur_m) 
+	{ 
+		abort $lfo_rand_env_dur
+		$lfo_rand_env_dur := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_env_dur($THISOBJ), $env_dur_m, $env_dur_max, 0.01, "linear", $tpo)
+		$env_dur_min := $env_dur_m
+	}
+	@fun_def env_dur_max($env_dur_ma) 
+	{ 
+		abort $lfo_rand_env_dur
+		$lfo_rand_env_dur := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_env_dur($THISOBJ), $env_dur_min, $env_dur_ma, 0.01, "linear", $tpo)
+		$env_dur_max := $env_dur_ma
+	}
+	
+	@fun_def ryth($ry) 
+	{ 
+		$ryth_rand := $ry
+		// print env_dur $env_dur_val
+	}	
+	@fun_def dir($d) 
+	{ 
+		$dir := $d
+	}
+	@proc_def elev($r)
+	{
+		@local $nim 
+
+		if($r.is_tab()) // if $val is bpf
+		{
+			abort $last_bpf_ele_curve // to avoid interferences
+
+			$nim := @build_nim_from_bpf($r)
+			$lelev := $r[0]
+			$last_bpf_ele_curve := { curve @grain := 0.01, 
+				@action 
+				{
+					$elev := $lelev // $Servers($server_name).n_set($node_id_out, ["a", $la])	
+				} 
+				{ $lelev : $nim }
+			}
+		}
+		else
+		{
+			$elev := $r	
+		}
+	}	
+	@proc_def period($r)
+	{
+		@local $nim 
+
+		if($r.is_tab()) // if $val is bpf
+		{
+			abort $last_bpf_per_curve // to avoid interferences
+
+			$nim := @build_nim_from_bpf($r)
+			$lperiod := $r[0]
+			$last_bpf_per_curve := { curve @grain := 0.01, 
+				@action 
+				{
+					$period := $lperiod // $Servers($server_name).n_set($node_id_out, ["a", $la])	
+				} 
+				{ $lperiod : $nim }
+			}
+		}
+		else
+		{
+			$period := $r	
+		}
+	}
+	// @fun_def rate($rate_val) // seulement quand une un track a plusieurs instances du même module
+	// { 
+	// 	$rate := $rate_val
+	// }
+	// @fun_def rate_min($rate_m) // seulement quand une un track a plusieurs instances du même module
+	// { 
+	// 	$rate_min := $rate_m
+	// }
+	// @fun_def rate_max($rate_ma) // seulement quand une un track a plusieurs instances du même module
+	// { 
+	// 	$rate_max := $rate_ma
+	// }
+
+	// @fun_def env_dur_min($env_dur_m) // seulement quand une un track a plusieurs instances du même module
+	// { 
+	// 	$env_dur_min := $env_dur_m
+	// }
+	// @fun_def env_dur_max($env_dur_ma) // seulement quand une un track a plusieurs instances du même module
+	// { 
+	// 	$env_dur_max := $env_dur_ma
+	// }
+	@fun_def ryth_min($r_m) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		// $ryth_min := $r_min
+
+		abort $lfo_rand_ryth
+		$lfo_rand_ryth := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_ryth($THISOBJ), $r_m, $ryth_max, 0.01, "linear", $tpo)
+		$ryth_min := $r_m
+
+	}
+	@fun_def ryth_max($r_ma) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		// $ryth_max := $r_max
+
+		abort $lfo_rand_ryth
+		$lfo_rand_ryth := $THISOBJ.rand_lfo_basic_obj(@set_HOA_rand_ryth($THISOBJ), $ryth_min, $r_ma, 0.01, "linear", $tpo)
+		$ryth_max := $r_ma	
+	}	
+
+	@proc_def ryth_bpf($ry)
+	{
+		@local $nim 
+		if($ry.is_tab()) // if $val is bpf
+		{
+			abort $lfo_rand_ryth
+			abort $last_bpf_ryth_curve // to avoid interferences
+
+			$nim := @build_nim_from_bpf($ry)
+			$lryth := $ry[0]
+			$last_bpf_ryth_curve := { curve @grain := 0.01, 
+				@action 
+				{
+					$ryth_rand := $lryth	
+					// print rythm $lryth			
+				} 
+				{ $lryth : $nim }
+			}
+		}
+		else
+		{
+			print not tab
+		}
+	}
+
+	@proc_def env_dur_bpf($ev)
+	{
+		@local $nim 
+		if($ev.is_tab()) // if $val is bpf
+		{
+			abort $lfo_rand_env_dur
+			abort $last_bpf_env_dur_curve // to avoid interferences
+
+			$nim := @build_nim_from_bpf($ev)
+			$levd := $ev[0]
+			$last_bpf_env_dur_curve := { curve @grain := 0.01, 
+				@action 
+				{
+					$env_dur := $levd	
+					// print rythm $lryth			
+				} 
+				{ $levd : $nim }
+			}
+		}
+		else
+		{
+			print not tab
+		}
+	}
+
+
+	// @fun_def ryth_min($r_min) // seulement quand une un track a plusieurs instances du même module
+	// { 
+	// 	$ryth_min := $r_min
+	// }
+	// @fun_def ryth_max($r_max) // seulement quand une un track a plusieurs instances du même module
+	// { 
+	// 	$ryth_max := $r_max
+	// }	
+	// @fun_def pos_min($p_min) // seulement quand une un track a plusieurs instances du même module
+	// { 
+	// 	$pos_min := $p_min
+	// }
+	// @fun_def pos_max($p_max) // seulement quand une un track a plusieurs instances du même module
+	// { 
+	// 	$pos_max := $p_max
+	// }	
+	
+	@fun_def tpo($t) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		print temp $t
+		$lfo_rand_env_dur.$tpo := $t
+		// $lfo_rand_radio.$tpo := $t
+		// $lfo_rand_theta.$tpo := $t
+		// $lfo_rand_phi.$tpo := $t
+		$lfo_rand_rate.$tpo := $t
+		$lfo_rand_pos_lfo.$tpo := $t
+		$lfo_rand_ryth.$tpo := $t
+		// $lfo_rand_env_dur.$tpo := $t
+	}
+	@fun_def buf($bf) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$buf_list := $bf
+	}		
+	@fun_def envbuf($eb) // seulement quand une un track a plusieurs instances du même module
+	{ 
+		$envbuf := $eb
+	}	
+
+	@proc_def amp($a)
+	{
+		@local $nim 
+		if($a.is_tab()) // if $val is bpf
+		{
+			abort $last_bpf_a_curve // to avoid interferences
+
+			$nim := @build_nim_from_bpf($a)
+			$lamp := $a[0]
+			$last_bpf_a_curve := { curve @grain := 0.01, 
+				@action 
+				{
+					$amp := $lamp // $Servers($server_name).n_set($node_id_out, ["a", $la])	
+				} 
+				{ $lamp : $nim }
+			}
+		}
+		else
+		{
+			$amp := $a		
+		}
+	}
+	@proc_def free($t = 1)
+	{
+	   @local $lamp, $amp_init, $amp_end := -90, $type := "linear"
+	   $amp_init := $amp
+	   Curve
+	   @grain := 0.01,
+	   @action {
+			
+				$THISOBJ.amp($lamp)
+				// print amp $amp
+	} 
+	   { $lamp {            
+				    {$amp_init} @type := $type
+			 $t   {$amp_end}} 
+	   }
+    $t abort $THISOBJ	
+    }	
+    @abort
+	{
+		$THISOBJ.free()
+	}			
+}
 
 @obj_def HOA_grain_rot_rand_lfo2_mod($buf, $envbuf, $rate_min, $rate_max, $ryth_min, $ryth_max, $env_dur_min, $env_dur_max, $pos_min, $pos_max, $dir, $duree, $radio, $start_angle, $start_elev, $end_angle, $end_elev, $period, $type, $id, $amp, $track_HOA_NE, $grain_group, $spk_radius = 1.07) 
 {
@@ -28525,7 +31480,7 @@ if (@is_undef($flu_stats)) { $flu_stats := map{} }
 
 @proc_def FluidBufFlatten($server_name, $ana_name, $source_buf, $startFrame = 0, $numFrames = -1, $startChan = 0, $numChans = -1, $destination_buf = 0, $axis = 1)
 {
-	@local $proc_id
+	@local $proc_id, $when
 
 	$when := $MYSELF
 	$proc_id := $SC_Servers($server_name)("node_id") // current node id for this server
@@ -28822,9 +31777,9 @@ if (@is_undef($flu_compose)) { $flu_compose := map{} }
 [ "/cmd", "FluidBufSpectralShape", "FluidBufSpectralShape/processNew", 1246, 0, 252416, 6656, 0, -1, 38, 1, 15, 0, -1, 95, 0, 0, 1024, -1, -1, 1024, 1, DATA[40] ] centroid spread skewness kurtosis
 */
 
-$SpectralShape := map{(["centroid"], 1), (["spread"], 2), (["centroid, spread"], 3)}
+$SpectralShape := map{(["centroid"], 1), (["spread"], 2), (["centroid", "spread"], 3)}
 
-// print (""+$SpectralShape(["centroid, spread"]))
+// print (""+$SpectralShape(["centroid", "spread"]))
 																	// server, source, startFrame: 0, numFrames: -1, startChan: 0, numChans: -1, features, 	select, minFreq: 0, maxFreq: -1, rolloffPercent: 95, unit: 0, power: 0, windowSize: 1024, hopSize: -1, fftSize: -1, padding: 1, freeWhenDone: true, action
 @proc_def FluidBufSpectralShape($server_name, $ana_name, $source_buf, $startFrame = 0, $numFrames = -1, $startChan = 0, $numChans = -1, $features_buf = 0, $extra1 = 1, $select = ["centroid"], $minFreq = 0, $maxFreq = -1, $rolloffPercent = 95, $unit = 0, $power = 0, $windowSize = 1024, $hopSize = -1, $fftSize = -1, $windowSize2 = 1024, $padding = 1)
 {
