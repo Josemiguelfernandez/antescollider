@@ -16,6 +16,9 @@ https://supercollider.github.io/downloads
 - Flucoma
     - https://github.com/flucoma/flucoma-sc/releases (For M1 use nightly build release)
 
+-vb Ugens
+    - https://github.com/v7b1/vb_UGens/releases
+
 4.- Run the install.sh script, it will put the content of SuperCollider_add folder into SuperCollider folder /Users/username/Library/Application\ Support/SuperCollider/ :
 
 * The content of 'TSupport': inside /Users/username/Library/Application\ Support/SuperCollider/ 
