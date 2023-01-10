@@ -19,7 +19,8 @@ https://supercollider.github.io/downloads
 4.- Run the install.sh script, it will put the content of SuperCollider_add folder into SuperCollider folder /Users/username/Library/Application\ Support/SuperCollider/ :
 
 * The content of 'TSupport': inside /Users/username/Library/Application\ Support/SuperCollider/ 
-* The content 'synthdefs': inside inside /Users/username/Library/Application\ Support/SuperCollider/synthdefs
+* The content 'synthdefs': inside /Users/username/Library/Application\ Support/SuperCollider/synthdefs
+* The content of 'SC_Ambitools' : inside /Users/username/Library/Application\ Support/SuperCollider/Extensions
 * The content of 'Extensions': inside /Users/username/Library/Application\ Support/SuperCollider/Extensions
 * Create a folder named 'Sounds' inside /Users/username/Library/Application\ Support/SuperCollider/
 
