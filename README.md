@@ -12,11 +12,11 @@ https://supercollider.github.io/downloads
 
 - SC3plugins
     - https://supercollider.github.io/sc3-plugins/
-(For M1 you need to compile from sources)
+(For M1 you may need to compile from sources)
 - Flucoma
     - https://github.com/flucoma/flucoma-sc/releases (For M1 use nightly build release)
 
--vb Ugens
+- vb Ugens
     - https://github.com/v7b1/vb_UGens/releases
 
 4.- Run the install.sh script, it will put the content of SuperCollider_add folder into SuperCollider folder /Users/username/Library/Application\ Support/SuperCollider/ :
