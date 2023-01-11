@@ -1,0 +1,716 @@
+@insert "inserts/extra_functions4_compiled.asco.txt"
+@insert "inserts/AntesCollider_lib2.asco.txt"
+@insert "inserts/pm_obj_comp.asco.txt"
+@insert "inserts/Trajectory_Score_Lib.asco.txt"
+@insert "inserts/vbap.asco.txt"
+
+antescofo::bypass_temporeset on
+antescofo::suivi 0 // pas de suivi!!
+tempo off
+antescofo::tempo 52
+//////// Processus
+
+@proc_def ::pitch_seq_in($track, $in, $durs, $pitch, $dev, $tempo, $track_bus, $amp = 0)
+{
+	@local $durtab, $fact_dur := 1, $pitch_seq_amp := 0
+
+	$durtab := @choose($durs)
+
+	loop $durtab @label pitch_seq @tempo $tempo ;$tempo1 ;@tempo 20 
+	{
+		$tracks($track).group_add([[AudioInput, input, $in, amp, $amp], [TMFxPitch2, pitch, @choose($pitch)+@rand($dev)], [OutEnv1_HOA7, env, @choose($envs(server1).domain()), dur, $durtab*$fact_dur, coords, [@rand_range(0.5, 2), @rand_range(-180, 180), 0], amp, 0, globTBus, $track_bus]])		
+		$durtab := @choose($durs)
+	}
+}
+
+whenever ($notify_5 == $notify_5)
+{
+	$Servers("server5").notify(1)
+}
+// bpm 52
+
+// Input instruments
+
+
+$fl := 30 // RME DANTE Loopback
+$htb := 31 // RME DANTE Loopback
+$cl := 32// RME DANTE Loopback
+$bsn := 33 // RME DANTE Loopback
+$cor1 := 34 // RME DANTE Loopback
+$cor2 := 35 // RME DANTE Loopback
+$trp := 36 // RME DANTE Loopback
+$trb := 37 // RME DANTE Loopback
+$vln := 38 // RME DANTE Loopback
+$alto := 39 // RME DANTE Loopback
+$vlc := 40 // RME DANTE Loopback
+$cb := 41 // RME DANTE Loopback
+
+//// Instruments coordinates position dae (distance, azimut, elevation)
+
+$fl_dae := [3.0, -72, 0.0]
+$htb_dae := [3.0, 108, 0.0]
+$cl_dae := [3.85, -162, 0.0]
+$bsn_dae := [3.85, 18, 0.0]
+$cor1_dae := [3.0, -108, 0.0]
+$cor2_dae := [3, 72, 0.0]
+$trp_dae := [3.85, -48, 0.0]
+$trb_dae := [3.85, 132, 0.0]
+$vln_dae := [3.85, 162, 0.0]
+$alto_dae := [3.85, -18, 0.0]
+$vlc_dae := [3.85, -132, 0.0]
+$cb_dae := [3.85, 48, 0.0]
+
+//// Instruments cartesian coordinates position
+
+$fl_cart := @poltocar3D_tab($fl_dae)
+$htb_cart := @poltocar3D_tab($htb_dae)
+$cl_cart := @poltocar3D_tab($cl_dae)
+$bsn_cart := @poltocar3D_tab($bsn_dae)
+$cor1_cart := @poltocar3D_tab($cor1_dae)
+$cor2_cart := @poltocar3D_tab($cor2_dae)
+$trp_cart := @poltocar3D_tab($trp_dae)
+$trb_cart := @poltocar3D_tab($trb_dae)
+$vln_cart := @poltocar3D_tab($vln_dae)
+$alto_cart := @poltocar3D_tab($alto_dae)
+$vlc_cart := @poltocar3D_tab($vlc_dae)
+$cb_cart := @poltocar3D_tab($cb_dae)
+
+$fl_dae_e1 := [3.0, -72, 1.0]
+$htb_dae_e1 := [3.0, 108, 1.0]
+$cl_dae_e1 := [3.85, -162, 1.0]
+$bsn_dae_e1 := [3.85, 18, 1.0]
+$cor1_dae_e1 := [3.0, -108, 1.0]
+$cor2_dae_e1 := [3, 72, 1.0]
+$trp_dae_e1 := [3.85, -48, 1.0]
+$trb_dae_e1 := [3.85, 132, 1.0]
+$vln_dae_e1 := [3.85, 162, 1.0]
+$alto_dae_e1 := [3.85, -18, 1.0]
+$vlc_dae_e1 := [3.85, -132, 1.0]
+$cb_dae_e1 := [3.85, 48, 1.0]
+
+
+NOTE 60 1 SC_multiserver_INIT
+
+// representation des serveurs dans Antesocofo
+
+// $audio_card := "Digiface Dante (23938075)" // Casa
+// $audio_card2 := "ADI-2 Pro (52010165)"
+// $audio_card := "Digiface Dante (23964694)" // Vigie
+// $audio_card := "Digiface Dante (23970887)" // Studio1
+$audio_card := "Digiface Dante (23979314)" // Studio2
+// $audio_card := "Fireface 802 (23688654)" // Studio6
+
+// $audio_card := "Digiface Dante (23913224)" //Ircam Prod
+
+
+obj::sc_server("server1", 57110, device = $audio_card, inputs = 45, outputs = 24) // RT instr  
+obj::sc_server("server2", 57111, device = $audio_card, inputs = 45, outputs = 24) // RT plugins  
+obj::sc_server("server3", 57112, device = $audio_card, inputs = 45, outputs = 24) // Synth  
+// obj::sc_server("server4", 57113, device = $audio_card, inputs = 45, outputs = 24) // Synth  
+obj::sc_server("server5", 57114, device = $audio_card, inputs = 45, outputs = 24) // Ana  
+// obj::sc_server("server6", 57115, device = $audio_card, inputs = 45, outputs = 24) // Ana , block_size = 128) 
+
+
+NOTE 60 1 create_load_envs_buff
+
+::envs_nim_map2buffer("server1", $envs_map) // convert $envs_map to buffers
+// ::envs_nim_map2buffer("server2", $envs_map) // convert $envs_map to buffers
+::envs_nim_map2buffer("server3", $envs_map) // convert $envs_map to buffers
+// ::envs_nim_map2buffer("server4", $envs_map) // convert $envs_map to buffers
+// ::envs_nim_map2buffer("server5", $envs_map) // convert $envs_map to buffers
+// ::envs_nim_map2buffer("server6", $envs_map) // convert $envs_map to buffers
+
+
+
+NOTE 60 1 create_gran_buff
+
+::gran_alloc_buffer("server1", 50, 1) // server, number, dur_in_sec
+
+
+NOTE 60 1 create_fft_buff
+
+::gran_alloc_buffer_fft("server1", 30, 2048) // server, number, num_frames
+
+
+NOTE 60 1 obj_rec_buff
+
+$rec_buf0_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf1_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf2_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf3_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf4_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf5_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf6_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf7_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf8_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf9_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf10_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf11_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf12_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf13_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf14_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf15_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf16_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf17_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf18_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf19_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf20_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf21_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf22_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf23_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf24_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf25_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf26_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf27_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf28_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf29_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf30_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf31_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf32_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf33_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf34_05 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf35_05 := obj::rec_buf("server1", duree = 0.5)
+
+$rec_buf0_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf1_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf2_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf3_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf4_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf5_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf6_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf6_1_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf7_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf8_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf9_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf10_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf11_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf12_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf13_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf14_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf15_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf16_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf17_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf18_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf19_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf20_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf21_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf22_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf23_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf24_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf25_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf26_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf27_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf28_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf29_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf30_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf31_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf32_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf33_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf34_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf35_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf36_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf37_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf38_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf39_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf40_1 := obj::rec_buf("server1", duree = 1)
+
+$rec_buf1_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf2_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf3_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf4_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf5_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf6_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf7_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf8_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf9_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf10_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf11_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf12_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf13_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf14_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf15_2_1 := obj::rec_buf("server1", duree = 1)
+
+$rec_buf16_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf17_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf18_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf19_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf20_2 := obj::rec_buf("server1", duree = 2)
+
+
+$rec_buf1_3 := obj::rec_buf("server1", duree = 3)
+$rec_buf2_3 := obj::rec_buf("server1", duree = 3)
+$rec_buf3_3 := obj::rec_buf("server1", duree = 3)
+$rec_buf4_3 := obj::rec_buf("server1", duree = 3)
+$rec_buf5_3 := obj::rec_buf("server1", duree = 3)
+$rec_buf6_3 := obj::rec_buf("server1", duree = 3)
+$rec_buf7_3 := obj::rec_buf("server1", duree = 3)
+$rec_buf8_3 := obj::rec_buf("server1", duree = 3)
+$rec_buf9_3 := obj::rec_buf("server1", duree = 3)
+$rec_buf10_3 := obj::rec_buf("server1", duree = 3)
+
+$rec_buf_mes17_4 := obj::rec_buf("server1", duree = 2)
+$rec_buf_mes17 := obj::rec_buf("server1", duree = 2)
+$rec_buf_mes_21_3 := obj::rec_buf("server1", duree = 2)
+$rec_buf_mes_21_3_2 := obj::rec_buf("server1", duree = 2)
+$rec_buf_mes22 := obj::rec_buf("server1", duree = 2)
+$rec_buf_mes23 := obj::rec_buf("server1", duree = 2)
+$rec_buf_mes23_3 := obj::rec_buf("server1", duree = 2)
+$rec_buf_mes24 := obj::rec_buf("server1", duree = 2)
+
+$rec_buf_mes_24_2 := obj::rec_buf("server1", duree = 3)
+
+$rec_buf_mes_30_4 := obj::rec_buf("server1", duree = 0.7)
+$rec_buf_mes_34_2 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_34_3 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_34_4_2 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_38 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_38_2 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_38_3 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_38_4 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_38_4_2 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_42_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_42_2 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_42_2_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_42_2_2 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_42_3_1 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_42_3_2 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_42_4 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_42_4_2 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_43 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_43_0_2 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_43_0_3 := obj::rec_buf("server1", duree = 0.5)
+$rec_buf_mes_43_2 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_45_4 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_46 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_46_2 := obj::rec_buf("server1", duree = 1)
+$rec_buf_mes_46_2_1 := obj::rec_buf("server1", duree = 1)
+
+
+NOTE 60 1 obj_rec_pvoc
+
+0.01 $rec_buf_pvoc_0_05 := obj::rec_buf_pvoc("server1", 0.5)
+0.01 $rec_buf_pvoc_1_05 := obj::rec_buf_pvoc("server1", 0.5)
+0.01 $rec_buf_pvoc_2_05 := obj::rec_buf_pvoc("server1", 0.5)
+0.01 $rec_buf_pvoc_3_05 := obj::rec_buf_pvoc("server1", 0.5)
+0.01 $rec_buf_pvoc_4_05 := obj::rec_buf_pvoc("server1", 0.5)
+0.01 $rec_buf_pvoc_5_05 := obj::rec_buf_pvoc("server1", 0.5)
+0.01 $rec_buf_pvoc_6_05 := obj::rec_buf_pvoc("server1", 0.5)
+0.01 $rec_buf_pvoc_7_05 := obj::rec_buf_pvoc("server1", 0.5)
+0.01 $rec_buf_pvoc_8_05 := obj::rec_buf_pvoc("server1", 0.5)
+0.01 $rec_buf_pvoc_9_05 := obj::rec_buf_pvoc("server1", 0.5)
+0.01 $rec_buf_pvoc_10_05 := obj::rec_buf_pvoc("server1", 0.5)
+
+0.01 $rec_buf_pvoc7 := obj::rec_buf_pvoc("server1", 10) // pvoc buffer "server", duration (absolute, can be relatif)
+0.01 $rec_buf_pvoc9 := obj::rec_buf_pvoc("server1", 10) // pvoc buffer "server", duration (absolute, can be relatif)
+0.01 $rec_buf_pvoc_mes39 := obj::rec_buf_pvoc("server1", 3) // pvoc buffer "server", duration relatif
+
+0.01 $rec_buf_pvoc_vln_mes184 := obj::rec_buf_pvoc("server1", 2) // pvoc buffer "server", duration relatif
+0.01 $rec_buf_pvoc_alto_mes185 := obj::rec_buf_pvoc("server1", 2) // pvoc buffer "server", duration relatif
+
+0.01 $rec_buf_pvoc_mes_15_2 := obj::rec_buf_pvoc("server1", 1)
+
+$onset_cl := obj::onset_detect("server5", $cl, thresh = 0.1, antirebond = 0.3, id = $cl, amp = 0) // del in ms
+
+$onset_vln := obj::onset_detect("server5", $vln, thresh = 0.1, antirebond = 0.3, id = $vln, amp = 0) // del in ms
+$onset_alto := obj::onset_detect("server5", $alto, thresh = 0.1, antirebond = 0.3, id = $alto, amp = 0) // del in ms
+$onset_vlc := obj::onset_detect("server5", $vlc, thresh = 0.1, antirebond = 0.3, id = $vlc, amp = 0) // del in ms
+$onset_cb := obj::onset_detect("server5", $cb, thresh = 0.01, antirebond = 0.3, id = $cb, amp = 0) // del in ms
+// $onset_cb.thresh(0.01)
+
+// @obj_def ampgate_detect($server_name, $inst, $onset_algo = "Fluid_AmpGate", $params = [rampUp, 5, rampDown, 25, onThreshold, -12, offThreshold, -12, lookAhead, 480], $antirebond = 1, $id = 0, $amp = 0) // del in ms
+$ampgate_fl := obj::ampgate_detect("server5", $fl, params = [rampUp, 5, rampDown, 25, onThreshold, -30, offThreshold, -12, lookAhead, 480], antirebond = 0.3, id = $fl, amp = 0) // del in ms
+$ampgate_htb := obj::ampgate_detect("server5", $htb, params = [rampUp, 5, rampDown, 25, onThreshold, -30, offThreshold, -12, lookAhead, 480], antirebond = 0.3, id = $htb, amp = 0) // del in ms
+$ampgate_cl := obj::ampgate_detect("server5", $cl, params = [rampUp, 5, rampDown, 25, onThreshold, -30, offThreshold, -12, lookAhead, 480], antirebond = 0.3, id = $cl, amp = 0) // del in ms
+$ampgate_bsn := obj::ampgate_detect("server5", $bsn, params = [rampUp, 5, rampDown, 25, onThreshold, -30, offThreshold, -12, lookAhead, 480], antirebond = 0.3, id = $bsn, amp = 0) // del in ms
+
+$ampgate_cor1 := obj::ampgate_detect("server5", $cor1, params = [rampUp, 5, rampDown, 25, onThreshold, -30, offThreshold, -12, lookAhead, 480], antirebond = 0.3, id = $cor1, amp = 0) // del in ms
+$ampgate_cor2 := obj::ampgate_detect("server5", $cor2, params = [rampUp, 5, rampDown, 25, onThreshold, -30, offThreshold, -12, lookAhead, 480], antirebond = 0.3, id = $cor2, amp = 0) // del in ms
+$ampgate_trp := obj::ampgate_detect("server5", $trp, params = [rampUp, 5, rampDown, 25, onThreshold, -30, offThreshold, -12, lookAhead, 480], antirebond = 0.3, id = $trp, amp = 0) // del in ms
+$ampgate_trb := obj::ampgate_detect("server5", $trb, params = [rampUp, 5, rampDown, 25, onThreshold, -30, offThreshold, -12, lookAhead, 480], antirebond = 0.3, id = $trb, amp = 0) // del in ms
+
+$ampgate_vln := obj::ampgate_detect("server5", $vln, params = [rampUp, 5, rampDown, 25, onThreshold, -30, offThreshold, -12, lookAhead, 480], antirebond = 0.3, id = $vln, amp = 0) // del in ms
+$ampgate_alto := obj::ampgate_detect("server5", $alto, params = [rampUp, 5, rampDown, 25, onThreshold, -30, offThreshold, -12, lookAhead, 480], antirebond = 0.3, id = $alto, amp = 0) // del in ms
+$ampgate_vlc := obj::ampgate_detect("server5", $vlc, params = [rampUp, 5, rampDown, 25, onThreshold, -30, offThreshold, -12, lookAhead, 480], antirebond = 0.3, id = $vlc, amp = 0) // del in ms
+$ampgate_cb := obj::ampgate_detect("server5", $cb, params = [rampUp, 5, rampDown, 25, onThreshold, -30, offThreshold, -12, lookAhead, 480], antirebond = 0.3, id = $cb, amp = 0) // del in ms
+
+
+
+//// SpecDel buffers
+
+$size := 256
+$fftSize := $size * 2
+$maxdel := 1
+
+
+0.01 $del_buf := obj::alloc_buffer("server1", "del_buf", $size)
+0.01 $fb_buf := obj::alloc_buffer("server1", "fb_buf", $size)
+
+// bpm 52
+
+NOTE 60 1 waveshaping_buffs
+
+// create a waveshaping buffer
+$tab_sin := [ @sin(@scale($x, 0, 1025, (-1*$pi/2), ($pi/2), 1)) | $x in (1025) ] // create tab	
+$tab_sin_2 := []
+forall $x in $tab_sin
+{
+	@local $x_new
+	$x_new := (@cos(@scale($x, -1, 1, 0, $pi*50, 1)*0.08) / 4) + 0.3
+	$tab_sin_2.push_back($x*$x_new)
+}
+$tab_sin_2 := @normalize($tab_sin_2, -1, 1) // normalize signal between -1 and 1
+
+// print (""+$tab_sin_2)
+// send result to sc server buffer
+::asWavetableNoWrapTab("server1", "wt_shaper1", $tab_sin_2) // "wt_shaper1" name in dictionary to store the buffer ID
+
+NOTE 60 1 load_samples
+
+::load_samples("server2") // for tests
+::load_samples("server3")
+
+::refresh_samples("server2")
+::refresh_samples("server3")
+
+// print (""+$SF_path("firesflies-bueno3-mi3.aif"))
+
+// print (""+$SF_map("server2")("ballets_1-out002.aif").is_undef())
+
+
+NOTE 60 1 mix_groups_HOA
+
+	
+//// Studio1 IRCAM
+
+obj::mix_group_HOA("group_hoa1", "server1", "studio1", 7) // RT decoder adt library
+obj::mix_group_HOA("group_hoa2", "server2", "studio1", 7) // RT decoder adt library
+obj::mix_group_HOA("group_hoa3", "server3", "studio1", 7) // Synth decoder adt library
+// obj::mix_group_HOA("group_hoa4", "server4", "studio1", 7) // Synth decoder adt library
+// obj::mix_group_HOA("group_hoa5", "server5", "studio1", 7) // decoder adt library
+// obj::mix_group_HOA("group_hoa6", "server6", "studio1", 7) // decoder adt library
+
+//// Vigie
+
+// obj::mix_group_HOA("group_hoa1", "server1", "vigie", 7)
+// obj::mix_group_HOA("group_hoa2", "server2", "vigie", 7)
+// obj::mix_group_HOA("group_hoa3", "server3", "vigie", 7)
+
+
+//// VST decoders
+
+// obj::mix_group_HOA("group_hoa1", "server1", "iem_binaural", 7)
+// obj::mix_group_HOA("group_hoa2", "server2", "iem_binaural", 7)
+// obj::mix_group_HOA("group_hoa3", "server3", "iem_binaural", 7)
+// obj::mix_group_HOA("group_hoa4", "server4", "iem_binaural", 7)
+// obj::mix_group_HOA("group_hoa5", "server5", "iem_binaural", 7)
+// obj::mix_group_HOA("group_hoa6", "server6", "iem_binaural", 7)
+
+/// Hexa 6 channels
+// obj::mix_group_HOA("group_hoa1", "server1", "hexa", 7)
+// obj::mix_group_HOA("group_hoa2", "server2", "hexa", 7)
+// obj::mix_group_HOA("group_hoa3", "server3", "hexa", 7)
+// obj::mix_group_HOA("group_hoa4", "server4", "hexa", 7)
+
+
+// Studio 1
+
+// obj::mix_group_HOA("group_hoa1", "server1", "studio1", 7, "ambitools") // decoder ambitools library
+// obj::mix_group_HOA("group_hoa2", "server2", "studio1", 7, "ambitools") // decoder ambitools library
+// obj::mix_group_HOA("group_hoa3", "server3", "studio1", 7, "ambitools") // decoder ambitools library
+// obj::mix_group_HOA("group_hoa4", "server4", "studio1", 7, "ambitools") // decoder ambitools library
+
+// Studio 2 correction position x, y, z
+
+// obj::mix_group_HOA("group_hoa1", "server1", "studio2", 7) // decoder ambitools library
+// obj::mix_group_HOA("group_hoa2", "server2", "studio2", 7) // decoder ambitools library
+// obj::mix_group_HOA("group_hoa3", "server3", "studio2", 7) // decoder ambitools library
+// obj::mix_group_HOA("group_hoa4", "server4", "studio2", 7) // decoder ambitools library
+
+// a7monitor + Hedd
+// obj::mix_group_HOA("group_hoa1", "server1", "a7monitor", 7)
+// obj::mix_group_HOA("group_hoa2", "server2", "a7monitor", 7)
+// obj::mix_group_HOA("group_hoa3", "server3", "a7monitor", 7)
+//// obj::mix_group_HOA("group_hoa4", "server4", "a7monitor", 7)
+//// obj::mix_group_HOA("group_hoa5", "server5", "a7monitor", 7)
+//// obj::mix_group_HOA("group_hoa6", "server6", "a7monitor", 7)
+
+// $Servers("server1").dumpOSC(0)
+// // $groups("group_hoa1").vst_decoder_gui(1)
+// // $groups("group_hoa3").vst_decoder_gui(1)
+// $groups("group_hoa1").free()
+// $groups("group_hoa2").free()
+// $groups("group_hoa3").free()
+// $groups("group_hoa4").free()
+
+
+NOTE 60 1 Synth
+
+group synth_mes_31_3
+{
+	// $tracks("Warbulence_mes31").preset("Warbulence_mod_dev_mono", "nota_8")
+ 	obj::crea_track_HOA("synth_mes_31_3_1", "group_hoa3", fade_in = 5, amp = -12, doppler = 0, in_channels = 1, [[Bform_mono, freq, 227.80126953125, formfreq, 3251.9294433594, bwfreq, 579.55749511719, amp, -15], [TGranIn_mono, envbuf, $envs("server3")("perc_rond"), trigRate, 11.0, dur, 0.086]] )
+	// $tracks("synth_mes_31_3_1").bpf_param(TGranIn_mono, trigRate, [6.5999999, 5, "circ", 18])
+	$tracks("synth_mes_31_3_1").amp([-30, 7, -12])
+	group
+	{
+		$tracks("synth_mes_31_3_1").traj_circ_interp($vlc_dae, $alto_dae, 4)
+		4 $tracks("synth_mes_31_3_1").dae_rand_lfo([0.8, 2, 1, -180, 180, -45, 0, 90, 0])
+	}
+
+1.5 obj::crea_track_HOA("synth_mes_31_3_2", "group_hoa3", fade_in = 5, amp = -12, doppler = 0, in_channels = 1, [[Bform_mono, freq, 2108.4826660156, formfreq, 2438.134765625, bwfreq, 926.48266601562, amp, -15], [TGranIn_mono, envbuf, $envs("server3")("perc"), trigRate, 13, trigRateDev, 0.0, dur, 0.1630000025034]] )
+	// $tracks("synth_mes_31_3_2").bpf_param(TGranIn_mono, trigRate, [6.5999999, 5, "circ", 18])
+	$tracks("synth_mes_31_3_2").amp([-30, 7, -12])
+	group
+	{
+		$tracks("synth_mes_31_3_2").traj_circ_interp($vlc_dae, $alto_dae, 4)
+		4 $tracks("synth_mes_31_3_2").dae_rand_lfo([0.8, 2, 1, -180, 180, -90, 0, 90, 0])
+	}
+}
+
+NOTE 60 1 Synth_off
+
+$tracks("synth_mes_31_3_1").free(1)
+$tracks("synth_mes_31_3_2").free(1)
+
+NOTE 60 1 Gran_1
+
+$map_granulations := map{}
+obj::crea_track_HOA("gran_proc", "group_hoa3", amp = -6, encoder = false) // track for receive encoded HOA (granulation, etc)
+
+
+group @tempo 92
+{			
+	@local $val1 := 0.2, $val2 := 0.2
+	if($map_granulations("cor1_bisb_lab-4").is_undef())
+	{
+		$map_granulations.add_pair("cor1_bisb_lab-4", obj::HOAmbi_grain_xyz_rand_fix_track_buf_list([$SF_map("server3")("cor1_bisb_lab-4.aif")], "perc_rond", 0.99, 1.01, 0.1, 0.3, 0.07, 0.07, 0.2, 0.2, $cor1_cart[0],$cor1_cart[0], $cor1_cart[1],$cor1_cart[1], 0., 1, 0, "gran_proc", 1))
+		$map_granulations("cor1_bisb_lab-4").xyz_interpol([[$cor1_cart[0],$cor1_cart[0], $cor1_cart[1],$cor1_cart[1], 0., 0.5], 9, "linear", [0,0, 0,0, 0., 0.5]], 1)
+		$map_granulations("cor1_bisb_lab-4").rate_min(2)
+		$map_granulations("cor1_bisb_lab-4").rate_max(2)
+		curve
+      	@Grain := 5 ms //0.01s 
+      	@action :=  { 
+
+		$map_granulations("cor1_bisb_lab-4").env_dur_min($val1)
+		$map_granulations("cor1_bisb_lab-4").env_dur_max($val1)
+		// $map_granulations("cor1_bisb_lab-4").ryth_min(0.02)
+		// $map_granulations("cor1_bisb_lab-4").ryth_max(0.02)
+        }
+        { $val1 {
+                 	{0.04 	} @type := "circ_in"
+                 3 	{0.04 } 
+               	}
+        }
+		curve
+      	@Grain := 5 ms //0.01s 
+      	@action :=  { 
+		$map_granulations("cor1_bisb_lab-4").ryth_min($val2)
+		$map_granulations("cor1_bisb_lab-4").ryth_max($val2)
+        }
+        { $val2 {
+                 	{0.2 	} @type := "quad_in"
+                 5 	{0.02 } 
+               	}
+        }				        
+	9 $map_granulations("cor1_bisb_lab-4").free(0.01)
+	$map_granulations.remove("cor1_bisb_lab-4")
+	print off
+	}
+}
+
+NOTE 60 1 Gran_2
+
+group @tempo 92
+{			
+	@local $val1 := 0.2, $val2 := 0.2
+	if($map_granulations("cor2_bisb_do5").is_undef())
+	{
+		$map_granulations.add_pair("cor2_bisb_do5", obj::HOAmbi_grain_xyz_rand_fix_track_buf_list([$SF_map("server3")("cor2_bisb_do5.aif")], "perc_rond", 0.99, 1.01, 0.1, 0.3, 0.07, 0.07, 0.2, 0.2, $cor2_cart[0],$cor2_cart[0], $cor2_cart[1],$cor2_cart[1], 0., 1, 0, "gran_proc", 2))
+		$map_granulations("cor2_bisb_do5").xyz_interpol([[$cor2_cart[0],$cor2_cart[0], $cor2_cart[1],$cor2_cart[1], 0., 0.5], 9, "linear", [0,0, 0,0, 0., 0.5]], 1)
+		curve
+      	@Grain := 5 ms //0.01s 
+      	@action :=  { 
+		$map_granulations("cor2_bisb_do5").rate_min(2)
+		$map_granulations("cor2_bisb_do5").rate_max(2)
+		$map_granulations("cor2_bisb_do5").env_dur_min($val1)
+		$map_granulations("cor2_bisb_do5").env_dur_max($val1)
+		$map_granulations("cor2_bisb_do5").ryth_min(0.02)
+		$map_granulations("cor2_bisb_do5").ryth_max(0.02)
+        }
+        { $val1 {
+                 	{0.04 	} @type := "circ_in"
+                 3 	{0.04 } 
+               	}
+        }
+		curve
+      	@Grain := 5 ms //0.01s 
+      	@action :=  { 
+		$map_granulations("cor2_bisb_do5").ryth_min($val2)
+		$map_granulations("cor2_bisb_do5").ryth_max($val2)
+        }
+        { $val2 {
+                 	{0.2 	} @type := "quad_in"
+                 5 	{0.02 } 
+               	}
+        }					        
+	9 $map_granulations("cor2_bisb_do5").free(0.01)
+	$map_granulations.remove("cor2_bisb_do5")
+	}
+}
+
+NOTE 60 1 Gran_3
+
+group @tempo 92
+{			
+	@local $val1 := 0.2, $val2 := 0.2
+	if($map_granulations("trp_bisb_si4").is_undef())
+	{
+		$map_granulations.add_pair("trp_bisb_si4", obj::HOAmbi_grain_xyz_rand_fix_track_buf_list([$SF_map("server3")("trp_bisb_si4.aif")], "perc_rond", 0.99, 1.01, 0.1, 0.3, 0.07, 0.07, 0.2, 0.2, $trp_cart[0],$trp_cart[0], $trp_cart[1],$trp_cart[1], 0., 1, 0, "gran_proc", 3))
+		$map_granulations("trp_bisb_si4").xyz_interpol([[$trp_cart[0],$trp_cart[0], $trp_cart[1],$trp_cart[1], 0., 0.5], 9, "linear", [0,0, 0,0, 0., 0.5]], 1)
+		curve
+      	@Grain := 5 ms //0.01s 
+      	@action :=  { 
+		$map_granulations("trp_bisb_si4").rate_min(2)
+		$map_granulations("trp_bisb_si4").rate_max(2)
+		$map_granulations("trp_bisb_si4").env_dur_min($val1)
+		$map_granulations("trp_bisb_si4").env_dur_max($val1)
+		$map_granulations("trp_bisb_si4").ryth_min(0.02)
+		$map_granulations("trp_bisb_si4").ryth_max(0.02)							
+        }
+        { $val1 {
+                 	{0.04 	} @type := "circ_in"
+                 3 	{0.04 } 
+               	}
+        }
+		curve
+      	@Grain := 5 ms //0.01s 
+      	@action :=  { 
+		$map_granulations("trp_bisb_si4").ryth_min($val2)
+		$map_granulations("trp_bisb_si4").ryth_max($val2)
+        }
+        { $val2 {
+                 	{0.2 	} @type := "quad_in"
+                 5 	{0.02 } 
+               	}
+        }						        
+	9 $map_granulations("trp_bisb_si4").free(3)
+	$map_granulations.remove("trp_bisb_si4")
+	}
+}
+
+NOTE 60 1 Gran_les_3
+
+
+group @tempo 92
+{			
+	@local $val1 := 0.2, $val2 := 0.2
+	if($map_granulations("cor1_bisb_lab-4").is_undef())
+	{
+		$map_granulations.add_pair("cor1_bisb_lab-4", obj::HOAmbi_grain_xyz_rand_fix_track_buf_list([$SF_map("server3")("cor1_bisb_lab-4.aif")], "perc_rond", 0.99, 1.01, 0.1, 0.3, 0.07, 0.07, 0.2, 0.2, $cor1_cart[0],$cor1_cart[0], $cor1_cart[1],$cor1_cart[1], 0., 1, 0, "gran_proc", 1))
+		$map_granulations("cor1_bisb_lab-4").xyz_interpol([[$cor1_cart[0],$cor1_cart[0], $cor1_cart[1],$cor1_cart[1], 0., 0.5], 9, "linear", [0,0, 0,0, 0., 0.5]], 1)
+		$map_granulations("cor1_bisb_lab-4").rate_min(2)
+		$map_granulations("cor1_bisb_lab-4").rate_max(2)
+		curve
+      	@Grain := 5 ms //0.01s 
+      	@action :=  { 
+
+		$map_granulations("cor1_bisb_lab-4").env_dur_min($val1)
+		$map_granulations("cor1_bisb_lab-4").env_dur_max($val1)
+		// $map_granulations("cor1_bisb_lab-4").ryth_min(0.02)
+		// $map_granulations("cor1_bisb_lab-4").ryth_max(0.02)
+        }
+        { $val1 {
+                 	{0.04 	} @type := "circ_in"
+                 3 	{0.04 } 
+               	}
+        }
+		curve
+      	@Grain := 5 ms //0.01s 
+      	@action :=  { 
+		$map_granulations("cor1_bisb_lab-4").ryth_min($val2)
+		$map_granulations("cor1_bisb_lab-4").ryth_max($val2)
+        }
+        { $val2 {
+                 	{0.2 	} @type := "quad_in"
+                 5 	{0.02 } 
+               	}
+        }				        
+	9 $map_granulations("cor1_bisb_lab-4").free(0.01)
+	$map_granulations.remove("cor1_bisb_lab-4")
+	print off
+	}
+}
+group @tempo 92
+{			
+	@local $val1 := 0.2, $val2 := 0.2
+	if($map_granulations("cor2_bisb_do5").is_undef())
+	{
+		$map_granulations.add_pair("cor2_bisb_do5", obj::HOAmbi_grain_xyz_rand_fix_track_buf_list([$SF_map("server3")("cor2_bisb_do5.aif")], "perc_rond", 0.99, 1.01, 0.1, 0.3, 0.07, 0.07, 0.2, 0.2, $cor2_cart[0],$cor2_cart[0], $cor2_cart[1],$cor2_cart[1], 0., 1, 0, "gran_proc", 2))
+		$map_granulations("cor2_bisb_do5").xyz_interpol([[$cor2_cart[0],$cor2_cart[0], $cor2_cart[1],$cor2_cart[1], 0., 0.5], 9, "linear", [0,0, 0,0, 0., 0.5]], 1)
+		curve
+      	@Grain := 5 ms //0.01s 
+      	@action :=  { 
+		$map_granulations("cor2_bisb_do5").rate_min(2)
+		$map_granulations("cor2_bisb_do5").rate_max(2)
+		$map_granulations("cor2_bisb_do5").env_dur_min($val1)
+		$map_granulations("cor2_bisb_do5").env_dur_max($val1)
+		$map_granulations("cor2_bisb_do5").ryth_min(0.02)
+		$map_granulations("cor2_bisb_do5").ryth_max(0.02)
+        }
+        { $val1 {
+                 	{0.04 	} @type := "circ_in"
+                 3 	{0.04 } 
+               	}
+        }
+		curve
+      	@Grain := 5 ms //0.01s 
+      	@action :=  { 
+		$map_granulations("cor2_bisb_do5").ryth_min($val2)
+		$map_granulations("cor2_bisb_do5").ryth_max($val2)
+        }
+        { $val2 {
+                 	{0.2 	} @type := "quad_in"
+                 5 	{0.02 } 
+               	}
+        }					        
+	9 $map_granulations("cor2_bisb_do5").free(0.01)
+	$map_granulations.remove("cor2_bisb_do5")
+	}
+}
+group @tempo 92
+{			
+	@local $val1 := 0.2, $val2 := 0.2
+	if($map_granulations("trp_bisb_si4").is_undef())
+	{
+		$map_granulations.add_pair("trp_bisb_si4", obj::HOAmbi_grain_xyz_rand_fix_track_buf_list([$SF_map("server3")("trp_bisb_si4.aif")], "perc_rond", 0.99, 1.01, 0.1, 0.3, 0.07, 0.07, 0.2, 0.2, $trp_cart[0],$trp_cart[0], $trp_cart[1],$trp_cart[1], 0., 1, 0, "gran_proc", 3))
+		$map_granulations("trp_bisb_si4").xyz_interpol([[$trp_cart[0],$trp_cart[0], $trp_cart[1],$trp_cart[1], 0., 0.5], 9, "linear", [0,0, 0,0, 0., 0.5]], 1)
+		curve
+      	@Grain := 5 ms //0.01s 
+      	@action :=  { 
+		$map_granulations("trp_bisb_si4").rate_min(2)
+		$map_granulations("trp_bisb_si4").rate_max(2)
+		$map_granulations("trp_bisb_si4").env_dur_min($val1)
+		$map_granulations("trp_bisb_si4").env_dur_max($val1)
+		$map_granulations("trp_bisb_si4").ryth_min(0.02)
+		$map_granulations("trp_bisb_si4").ryth_max(0.02)							
+        }
+        { $val1 {
+                 	{0.04 	} @type := "circ_in"
+                 3 	{0.04 } 
+               	}
+        }
+		curve
+      	@Grain := 5 ms //0.01s 
+      	@action :=  { 
+		$map_granulations("trp_bisb_si4").ryth_min($val2)
+		$map_granulations("trp_bisb_si4").ryth_max($val2)
+        }
+        { $val2 {
+                 	{0.2 	} @type := "quad_in"
+                 5 	{0.02 } 
+               	}
+        }						        
+	9 $map_granulations("trp_bisb_si4").free(3)
+	$map_granulations.remove("trp_bisb_si4")
+	}
+}
