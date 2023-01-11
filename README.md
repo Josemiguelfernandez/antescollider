@@ -18,6 +18,7 @@ https://supercollider.github.io/downloads
 
 - vb Ugens
     - https://github.com/v7b1/vb_UGens/releases
+    - (For M1 you need to compile from sources)
 
 4.- Run the install.sh script, it will put the content of SuperCollider_add folder into SuperCollider folder /Users/username/Library/Application\ Support/SuperCollider/ :
 
