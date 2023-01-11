@@ -68,7 +68,12 @@ and add it in
 /Users/username/Library/Application\ Support/SuperCollider/Extensions
 
 ##### IEM Plugin Suite
-install package from https://plugins.iem.at
+
+- install vst plugins from package from https://plugins.iem.at
+- 
+#### how to update vst list
+- scan vst plugin with 
+- ::list_vst() 
 
 ### Sublime Text
 
@@ -83,4 +88,55 @@ wslib, PopUpTreeMenu, TabbedView2_QT, json
 And add this line into startup.scd file (/Users/username/Library/Application\ Support/SuperCollider/startup.scd
 
 {0.1.wait;{T.new;}.defer}.fork;
- 
+
+### startup.scd
+```
+GUI.qt;
+s.recSampleFormat = "int24";
+
+
+Server.default.options.numAudioBusChannels = 20000;
+
+Server.default.options.maxSynthDefs = 4096; //81920*100;
+
+// Server.default.options.maxSynthDefs;
+
+~servers_in = 43;
+~servers_out = 43; //Kubus
+
+Server.local.options.numInputBusChannels = ~servers_in; // 28;
+Server.local.options.numOutputBusChannels = ~servers_out; // 32; 43 Kubus
+
+// Server.local.options.protocol = \tcp;
+
+~servers_sr = 48000; //192000; //96000; //48000; //48000; //44100; //; //
+
+Server.default.options.sampleRate = ~servers_sr;
+
+Server.default.options.maxNodes = 16384;
+Server.default.options.numBuffers = 16384;
+//Server.internal.options.numOutputBusChannels = 8;
+//Server.internal.options.numInputBusChannels = 8;
+Server.local.options.memSize = 8192 * 128;  //so lots of memory for delay lines in Comb UGens etc
+Server.internal.options.memSize = 8192 * 32;
+Server.default.options.protocol = \udp;
+// Server.internal.options.sampleRate = 44100; //48000; //44100; //
+
+Server.local.options.numWireBufs = 256;
+
+Server.default.options.blockSize = 64;
+Server.default.options.maxLogins = 8;
+Server.default.options.hardwareBufferSize = 256;
+/*Server.local.options.protocol*/
+Server.local.latency=0.045; //low latency is helpful for optimal performance for some machine listening processes
+Server.internal.latency= 0.025;
+
+
+// multiserver init
+~scservers = IdentityDictionary.new;
+~scservers_groups = Dictionary.new;
+
+
+
+{0.1.wait;{T.new;}.defer}.fork;
+```
