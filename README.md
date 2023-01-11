@@ -1,12 +1,17 @@
 # antescollider
 Antescofo programming to control SC server
+
 ## step by step installation
+
+### Supercollider
 
 1.- Download SuperCollider
 
 https://supercollider.github.io/downloads
 
 2.- Put SuperCollider application (SuperCollider.app) into Applications folder (MacOs). Open SuperCollider and quit, this will create the folder SuperCollider in /Users/username/Library/Application\ Support/
+
+### Dependencies
 
 3.- Download SC3plugins and Flucoma library for your OS and architecture (intel/arm) and put into Extensions: /Users/username/Library/Application\ Support/SuperCollider/Extensions
 
@@ -27,6 +32,8 @@ https://supercollider.github.io/downloads
 * The content of 'SC_Ambitools' : inside /Users/username/Library/Application\ Support/SuperCollider/Extensions
 * The content of 'Extensions': inside /Users/username/Library/Application\ Support/SuperCollider/Extensions
 * Create a folder named 'Sounds' inside /Users/username/Library/Application\ Support/SuperCollider/
+
+### Antescofo/Max patch
 
 5.- Open 'Demo-Antecollider+traj-lib.asco.txt' score in Sublime Text (or Atom) and edit:
 
