@@ -100,6 +100,10 @@ oscrecv from_bach2 6556 * $from_bach3 // @persistent
 
 ///////
 
+/// Vezer
+
+oscrecv from_vezer 8000 * $electro // @persistent
+
 @global $home @persistent
 @global $path @persistent
 @global $SF_dir @persistent
@@ -108,22 +112,26 @@ oscrecv from_bach2 6556 * $from_bach3 // @persistent
 @global $hrir_dir @persistent
 @global $vst_file @persistent
 @global $path_automation @persistent
+@global $vezer_path @persistent
+@global $vezer_nims @persistent
+@global $path_arrays @persistent
 
 /// home directory
 $home := @user_directory() // this is the user dirctory $home + ""
 
+
+
+$current_dir := @current_load_directory()
 /// patch soundFiles
 // $path := $home + "/Library/Application\ Support/SuperCollider/sounds/"
 
-$path := $home + "/Projets/Co/Fernandez/Manifeste23/sounds/"
+$path := $home + "/sounds/"
 // $path := $home + "/sound_test/"
 
 // $path := $home + "/Users/josephfernandez/Documents/Lara-ali/bandes-d-ali"
 
 $SF_dir := @directory_read($path, 2, ["aif", "aiff", "WAVE"])
-
 // print (""+$SF_dir)
-
 
 // recording
 
@@ -154,6 +162,12 @@ $vst_presets := $home + "/Library/Audio/Presets/"
 // Spat automation
 
 $path_automation := $home + "/Library/Application\ Support/SuperCollider/automation/"
+
+// Vezer curves
+
+$vezer_path := $current_dir + "vezer_xml/"
+$vezer_nims := @directory_read($vezer_path, 2, ["xml"])
+// print (""+$vezer_nims)
 
 // tablaux (delays, buffers, positions)
 
@@ -1505,8 +1519,7 @@ whenever($reset_buffers==$reset_buffers)
 // oscsend plot "localhost" :7002 "/plot" // plot NIMS in SC
 // oscsend plotnim "localhost" :7002 "/plotnim" // plot NIMS in SC
 
-$vezer_curves := map{}
-$interpol_types := map {("linear", "linear"), ("quadratic-in", "quad_in"), ("quadratic-out", "quad_out"), ("quadratic-in-out", "quad_in_out"), ("cubic-in", "cubic_in"), ("cubic-out", "cubic_out"), ("cubic-in-out", "cubic_in_out"), ("quartic-in", "quart_in"), ("quartic-out", "quart_out"), ("quartic-in-out", "quart_in_out"), ("quintic-in", "quint_in"), ("quintic-out", "quint_out"), ("quintic-in-out", "quint_in_out"), ("sine-in", "sine_in"), ("sine-out", "sine_out"), ("sine-in-out", "sine_in_out"), ("circular-in", "circ_in"), ("circular-out", "circ_out"), ("circular-in-out", "circ_in_out"), ("exponential-in", "exp_in"), ("exponential-out", "exp_out"), ("exponential-in-out", "exp_in_out"), ("elastic-in", "elastic_in"), ("elastic-out", "elastic_out"), ("elastic-in-out", "elastic_in_out"), ("back-in", "back_in"), ("back-out", "back_out"), ("back-in-out", "back_in_out"), ("bounce-in", "bounce_in"), ("bounce-out", "bounce_out"), ("bounce-in-out", "bounce_in_out")}
+
 
 // Function @extract is used to extract the first tag with a given "name"
 
@@ -1629,6 +1642,16 @@ $interpol_types := map {("linear", "linear"), ("quadratic-in", "quad_in"), ("qua
   @set_osc_handling_tab(1)
 }
 
+
+// $vezer_curves := map{}
+// $interpol_types := map {("linear", "linear"), ("quadratic-in", "quad_in"), ("quadratic-out", "quad_out"), ("quadratic-in-out", "quad_in_out"), ("cubic-in", "cubic_in"), ("cubic-out", "cubic_out"), ("cubic-in-out", "cubic_in_out"), ("quartic-in", "quart_in"), ("quartic-out", "quart_out"), ("quartic-in-out", "quart_in_out"), ("quintic-in", "quint_in"), ("quintic-out", "quint_out"), ("quintic-in-out", "quint_in_out"), ("sine-in", "sine_in"), ("sine-out", "sine_out"), ("sine-in-out", "sine_in_out"), ("circular-in", "circ_in"), ("circular-out", "circ_out"), ("circular-in-out", "circ_in_out"), ("exponential-in", "exp_in"), ("exponential-out", "exp_out"), ("exponential-in-out", "exp_in_out"), ("elastic-in", "elastic_in"), ("elastic-out", "elastic_out"), ("elastic-in-out", "elastic_in_out"), ("back-in", "back_in"), ("back-out", "back_out"), ("back-in-out", "back_in_out"), ("bounce-in", "bounce_in"), ("bounce-out", "bounce_out"), ("bounce-in-out", "bounce_in_out")}
+
+@global $vezer_curves @persistent
+@global $interpol_types @persistent
+if (@is_undef($vezer_curves)) { $vezer_curves := map{} }
+if (@is_undef($interpol_types)) { $interpol_types := map {("linear", "linear"), ("quadratic-in", "quad_in"), ("quadratic-out", "quad_out"), ("quadratic-in-out", "quad_in_out"), ("cubic-in", "cubic_in"), ("cubic-out", "cubic_out"), ("cubic-in-out", "cubic_in_out"), ("quartic-in", "quart_in"), ("quartic-out", "quart_out"), ("quartic-in-out", "quart_in_out"), ("quintic-in", "quint_in"), ("quintic-out", "quint_out"), ("quintic-in-out", "quint_in_out"), ("sine-in", "sine_in"), ("sine-out", "sine_out"), ("sine-in-out", "sine_in_out"), ("circular-in", "circ_in"), ("circular-out", "circ_out"), ("circular-in-out", "circ_in_out"), ("exponential-in", "exp_in"), ("exponential-out", "exp_out"), ("exponential-in-out", "exp_in_out"), ("elastic-in", "elastic_in"), ("elastic-out", "elastic_out"), ("elastic-in-out", "elastic_in_out"), ("back-in", "back_in"), ("back-out", "back_out"), ("back-in-out", "back_in_out"), ("bounce-in", "bounce_in"), ("bounce-out", "bounce_out"), ("bounce-in-out", "bounce_in_out")} }
+
+
 // ::plotnim($envs_map("perc"))
 
 @proc_def ::vezerxml2nim($xml, $nom)
@@ -1703,6 +1726,103 @@ $interpol_types := map {("linear", "linear"), ("quadratic-in", "quad_in"), ("qua
 	}
 }
 
+@proc_def ::vezerxml2nim_param($xml, $nom)
+{
+	@local $tracks, $fps, $on_occur := 0, $params, $inc_nim := 0, $prec_time := 0, $time, $value, $typ, $result, $state  //, $result := [] //bug??
+
+	$result := []
+	$state := []
+	$tracks := @extract($xml, "tracks")[2]
+	$fps := @extract($xml, "fps")[2]
+	$params := []
+	// $nom := $nom
+	
+	forall $res in $tracks
+	{
+		if($res.extract("state")[2, 0] == "on") // si le track est on
+		{
+			$state.push_back($res.extract("state")[2, 0])
+			$result.push_back($res.extract("keyframes"))
+			$params.push_back($res.extract("name")[2, 0])	
+		}
+	}
+
+	if($tracks.size() > 1) // si multichannel
+	{
+		$vezer_curves.add_pair($nom, [ <undef> | $array in $state.size() ])
+	}
+
+	forall $keyframes in $result
+	{
+			if($tracks.size() > 1) // si multichannel
+			{
+				forall $item in $keyframes[2]
+				{
+					$time := $item[2,0,2,0]/$fps
+					$value := $item[2,1,2,0]
+					$typ := $item[2,2,2,0]
+
+					
+					if ($vezer_curves($nom)[$inc_nim].is_undef())
+					{ 			 		
+						let $vezer_curves($nom)[$inc_nim] := NIM{ $time $value, 0 $value "linear"}
+						// print ("====== "+$vezer_curves)
+					}
+
+					_ := $vezer_curves($nom)[$inc_nim].push_back($time - $prec_time, $value, $interpol_types($typ))
+					$prec_time := $time
+					// print ($vezer_curves($nom))
+						
+				}
+			}
+			else
+			{
+				$vezer_curves.remove($nom)
+			
+				forall $item in $keyframes[2]
+				{
+					$time := $item[2,0,2,0]/$fps
+					$value := $item[2,1,2,0]
+					$typ := $item[2,2,2,0]
+					
+					if ($vezer_curves($nom).is_undef())
+					{ 
+						// $nim := NIM{ $time $value, 0 $value "linear"} 
+						$vezer_curves.add_pair($nom, NIM{ $time $value, 0 $value "linear"} )
+						// print ("====== "+$vezer_curves)
+					}
+					$vezer_curves($nom).push_back($time - $prec_time, $value, $interpol_types($typ))
+					$prec_time := $time
+					// print ($vezer_curves($nom))
+				}
+					
+			}
+			let $vezer_curves($nom)[$inc_nim] := [$params[$inc_nim], $vezer_curves($nom)[$inc_nim]]
+			// print vezer_curves (""+$vezer_curves($nom)[$inc_nim])
+
+			$inc_nim := $inc_nim + 1
+			$prec_time := 0 // reset time pour chaque nim
+	}
+}
+
+@proc_def ::load_vezer2nim_param() // read hrir audio files into buffers
+{
+	forall $k, $v in $vezer_nims
+	{
+		::vezerxml2nim_param(@xml_read($vezer_path+$v), $k.drop(-4))
+		print load verzer xml $v
+	}
+}
+
+@proc_def ::refresh_vezer2nim() // read hrir audio files into buffers
+{
+	$vezer_nims := @directory_read($vezer_path, 2, ["xml"])
+	0.1 forall $k, $v in $vezer_nims
+	{
+		::vezerxml2nim_param(@xml_read($vezer_path+$v), $k.drop(-4))
+		print load verzer xml $v
+	}
+}
 
 // agragate NIM
 
@@ -1724,7 +1844,8 @@ $interpol_types := map {("linear", "linear"), ("quadratic-in", "quad_in"), ("qua
 			@grain := 0.01, 
 			@action  { //$val_array[$curve_index] := $val 
 				// print $val //($nim_play($val) )
-				@command($cmd) $val
+				// @command($cmd) $val
+				print $val 
 				} 
 
 			{ $val : $nim_play }
@@ -3635,7 +3756,7 @@ $localhost_meter := 0
 $FluidBufOnsetSlice := 0
 
 
-@obj_def sc_server($server_name, $port, $audio_bus = 81920, $inputs = 24, $outputs = 24, $sr = 48000, $device = "Built-in Microph", $block_size = 64, $hardware_buffer_size = 256, $num_buffers = 16384, $max_num_synth_defs = 8192, $max_nodes = 16384, $memSize = 1048576, $numWireBufs = 256, $max_logins = 64) // obj::sc_server("server1", 57111) $memSize = 65536 ---- 262144 4194304 2097152 --- 1048576 16777216 $max_num_synth_defs = 131072
+@obj_def sc_server($server_name, $port, $inputs = 24, $outputs = 24, $sc_server = "scsynth", $audio_bus = 81920, $sr = 48000, $device = "Built-in Microph", $block_size = 64, $hardware_buffer_size = 256, $num_buffers = 16384, $max_num_synth_defs = 8192, $max_nodes = 16384, $memSize = 1048576, $numWireBufs = 256, $max_logins = 64) // obj::sc_server("server1", 57111) $memSize = 65536 ---- 262144 4194304 2097152 --- 1048576 16777216 $max_num_synth_defs = 131072
 {
 	@local $server_boot, $server, $cpu, $rec_map := map{}, $device_in, $device_out
 
@@ -3702,9 +3823,17 @@ $FluidBufOnsetSlice := 0
 
 			// lance un SC server depuis antescofo avec la commande system
 			// @system("osascript -e 'tell app \"Terminal\" to do script \"/Applications/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 0 -l "+$max_logins+" -H \\\""+$device_in+"\\\" \\\""+$device_out+"\\\" \"' -e 'tell app \"Terminal\" to set custom title of front window to "+$port+"'") //"+($server_name+"_"+$port)+" \"$server_name\"
-			   @system("osascript -e 'tell app \"Terminal\" to do script \"/Applications/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -Z "+$hardware_buffer_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 0 -l "+$max_logins+" -H \\\""+$device_in+"\\\" \\\""+$device_out+"\\\" \"' -e 'tell app \"Terminal\" to set custom title of front window to "+$port+"'") //"+($server_name+"_"+$port)+" \"$server_name\"
-			// @system("osascript -e 'tell app \"Terminal\" to do script \"/Applications/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 0 -l "+$max_logins+" ' -e 'tell app \"Terminal\" to set custom title of front window to "+$port+"'") //"+($server_name+"_"+$port)+" \"$server_name\"
-			  // @system("/Applications/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 0 -l "+$max_logins+" -H \""+$device_in+"\" &") // -H "+$device_in+"  //\\\""+$device_in+"\\\" \\\""+$device_out+"\\\" ")
+			switch($sc_server)
+			{
+				case "scsynth": 
+			  	@system("osascript -e 'tell app \"Terminal\" to do script \"/Applications/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -Z "+$hardware_buffer_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 0 -l "+$max_logins+" -H \\\""+$device_in+"\\\" \\\""+$device_out+"\\\" \"' -e 'tell app \"Terminal\" to set custom title of front window to "+$port+"'") //"+($server_name+"_"+$port)+" \"$server_name\"
+				// @system("osascript -e 'tell app \"Terminal\" to do script \"/Applications/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 0 -l "+$max_logins+" ' -e 'tell app \"Terminal\" to set custom title of front window to "+$port+"'") //"+($server_name+"_"+$port)+" \"$server_name\"
+			  	// @system("/Applications/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 0 -l "+$max_logins+" -H \""+$device_in+"\" &") // -H "+$device_in+"  //\\\""+$device_in+"\\\" \\\""+$device_out+"\\\" ")
+			  	case "supernova": 
+			  	@system("osascript -e 'tell app \"Terminal\" to do script \"/Applications/SuperCollider.app/Contents/Resources/supernova -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -Z "+$hardware_buffer_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 0 -l "+$max_logins+" -H \\\""+$device_in+"\\\" \\\""+$device_out+"\\\" \"' -e 'tell app \"Terminal\" to set custom title of front window to "+$port+"'") //"+($server_name+"_"+$port)+" \"$server_name\"
+				case @true: // ninguno de los anteriores
+				print you must use scsynth or supernova audio server 
+			}
 
 				$Servers.insert($server_name, $THISOBJ) // objet dans une map pour l'appeler depuis d'autres objets 
 
@@ -3909,8 +4038,6 @@ $FluidBufOnsetSlice := 0
 	}
 	}
 
-
-
     @proc_def init_server($etat)
     {
     	if($etat) // si le serveur est déjà instancié
@@ -3921,7 +4048,7 @@ $FluidBufOnsetSlice := 0
 			$Servers.insert($server_name, $THISOBJ) // objet dans une map pour l'appeler depuis d'autres objets 
 			if($SC_Servers($server_name).is_undef())
 			{
-				$SC_Servers.insert($server_name, map{("node_id", 100),("bus_index", 100), ("buffer_id", 0)}) //
+				$SC_Servers.insert($server_name, map{("node_id", 100),("bus_index", 300), ("buffer_id", 0)}) //
 				$sc_struct.add_pair($server_name, map{(1, map{ ("default_group", [] )}) }) // root tree 0 -> default group 1
 
 			}
@@ -3936,7 +4063,7 @@ $FluidBufOnsetSlice := 0
 		}
 		else
 		{
-			$SC_Servers.insert($server_name, map{("node_id", 100),("bus_index", 100), ("buffer_id", 0)}) // dico des serveurs avec valeurs init des nodes et bus
+			$SC_Servers.insert($server_name, map{("node_id", 100),("bus_index", 300), ("buffer_id", 0)}) // dico des serveurs avec valeurs init des nodes et bus
 			$synths_map.insert($server_name, map{})
 			$track_proc.insert($server_name, map{})
 			$vst_plugins.insert($server_name, map{})
@@ -5794,7 +5921,7 @@ $FluidBufOnsetSlice := 0
 	}
 }
 
-@obj_def mix_group_HOA($group_name, $server_name, $decoder, $order, $hoa_decoder = "sc-hoa", $ext_id = false, $lev_name = "hrir_christophe_lebedev50")
+@obj_def mix_group_HOA($group_name, $server_name, $decoder, $order, $hoa_decoder = "sc-hoa", $ext_id = false, $offset = 0, $lev_name = "hrir_christophe_lebedev50")
 {			
 	@local $group_id, $bus, $hoa_rev_bus, $hoa_bus, $node_id_out, $addmod_index := 0, $HOABeamDirac2Hoa_id, $HOABeamHCard2Hoa_id, $hoa_num_ch, $num_ch := 2, $rec_map := map{}, $decoder_name, $struct_group_id, $struct_main_group_id
 	@init 
@@ -5860,9 +5987,21 @@ $FluidBufOnsetSlice := 0
 			{
 				case "no_decoder":					
 					// scServer "s_new" ("HOA_Hexa_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus
-					$decoder_name := "audioOut36"
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0])
-					$num_ch := 36
+					switch($order)
+					{
+						case 5:
+						$decoder_name := "audioOut36"
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0])
+						$num_ch := 36
+						case 6:
+						$decoder_name := "audioOut49"
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0])
+						$num_ch := 49							
+						case 7:
+						$decoder_name := "audioOut64"
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0])
+						$num_ch := 64
+					}
 
 					case "binaural":
 					// scServer "s_new" ("HOA_Global_Lev_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus
@@ -5930,6 +6069,14 @@ $FluidBufOnsetSlice := 0
 						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])
 						$num_ch := 26
 					}	
+					case "Espro":
+					if($hoa_decoder == "sc-hoa")
+					{
+						// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
+						$decoder_name := "HOA_Dec_ESPRO"+$order
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])
+						$num_ch := 75
+					}						
 					case "Pierre":
 					if($hoa_decoder == "sc-hoa")
 					{
@@ -6014,7 +6161,7 @@ $FluidBufOnsetSlice := 0
 
 					case "iem_binaural":
 					$decoder_name := "Binaural_VST_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", 0, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
 					$Servers($server_name).u_cmd([$node_id_out, 4, "/open", "BinauralDecoder", 1, 0, 0]) // 4 = UGen id inside Synthdef
 				
 					$num_ch := 2
@@ -7374,7 +7521,6 @@ $FluidBufOnsetSlice := 0
 		} 
 		{ $lpar : $nim }
     }
-
     @proc_def bpf_param_single($module, $num, $param, $bpf) // seulement quand une un track a plusieurs instances du même module
     {
 		@local $nim, $lpar
@@ -7392,6 +7538,62 @@ $FluidBufOnsetSlice := 0
 		{ $lpar : $nim }
     }
 
+    @proc_def nim_param($module, $param, $nim) 
+    {
+		@local $lpar
+		// $nim := @build_nim_from_bpf($bpf)
+		// .CheckParam($module, $param, $MYSELF)
+		// print $nim
+		// $lpar := $bpf[0]
+		curve @grain := 0.01, 
+		@tempo := $RT_TEMPO,
+		@action 
+		{
+			forall $node in ($synths_map($server_name)($group_name)($module))
+			{
+				// scServer "n_set" $node $param $lpar 
+			$Servers($server_name).n_set($node, [$param, $lpar])
+
+			}
+		} 
+		{ $lpar : $nim }
+    }
+  
+	@proc_def nim_multi_param($module, $v_nim) 
+    {
+		@local $lpar, $nim_play, $vzer_nim, $vzer_crv_size, $nims_agre := [], $nodes
+
+		$vzer_nim := $vezer_curves($v_nim)
+		$vzer_crv_size := $vezer_curves($v_nim).size()
+		// print vzer_nim (""+$vzer_nim)
+
+		forall $n in $vzer_crv_size
+		{
+			$nims_agre.push_back($vzer_nim($n)[1])
+		}
+		// print nims_agre (""+$nims_agre)
+		$nim_play := @aggregate($nims_agre) // aggregate nims for multidim
+		// print nim_play (""+$nim_play)
+
+		$nodes := $synths_map($server_name)($group_name)($module)
+
+		curve 
+		@tempo := $RT_TEMPO,
+		@grain := 0.01, 
+		@action 
+		{
+			forall $crv in $vzer_crv_size
+			{
+				forall $node in $nodes
+				{
+					// print  (""+[$vzer_nim($crv)[0], $lpar[$crv]])
+					$Servers($server_name).n_set($node, [$vzer_nim($crv)[0], $lpar[$crv]])
+				}
+			}
+		} 
+		{ $lpar : $nim_play }
+		
+    }     
 ///// lfp
 
 	@fun_def sin_lfo($module, $param, $r_low, $r_hi, $t) 
@@ -9978,7 +10180,7 @@ $free_track := 0 // send info to program when track is free
 							$out_name := "HOA_Encode2_"+$in_channels+"ch"+$order+"_out"
 							$hoa_inter_bus := $bus+$in_channels
 							$Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", 0, "dopon", $doppler, "dopamnt", 1, "glev", 1, "llev", 1, "plane_spherical", $plane_spherical, "spk_radius", $spk_radius])				   				    	
-							$SC_Servers($server_name).insert("bus_index", $bus+$hoa_num_ch+$in_channels) // +2 = stereo input incrementa bus de server A ver en funcion del decoder!!!!!!!
+							$SC_Servers($server_name).insert("bus_index", $hoa_inter_bus+$hoa_num_ch) // +2 = stereo input incrementa bus de server A ver en funcion del decoder!!!!!!!
 						}
 						else
 						{
@@ -9990,7 +10192,7 @@ $free_track := 0 // send info to program when track is free
 						$out_name := "HOA_Out_"+$order
 						$hoa_inter_bus := $bus+$hoa_num_ch //add hoa input order channel number	
 						$Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", 0])
-						$SC_Servers($server_name).insert("bus_index", $bus+$hoa_num_ch+1) // +1 = mono input incrementa bus de server A ver en funcion del decoder!!!!!!!
+						$SC_Servers($server_name).insert("bus_index", $hoa_inter_bus+$hoa_num_ch) // add hoa stream for next bu
 
 						case (! $encoder && $in_channels == "stereo"):
 						print "HOA_Group is ambisonic input signal, no stereo input, use encoder = true..."
@@ -13671,7 +13873,9 @@ $free_track := 0 // send info to program when track is free
 		// print bpf (""+$bpf)
 		
 		$lpar := $bpf[0]
-		$last_bpf_param_curve := { curve @grain := 0.01, 
+		$last_bpf_param_curve := { curve 
+			@tempo := $RT_TEMPO
+			@grain := 0.01, 
 			@action 
 			{
 
@@ -13822,6 +14026,75 @@ $free_track := 0 // send info to program when track is free
     {
     	abort $track_proc($server_name)($mix_group)($track_name)("interp_tab_multi"+$module)
     }
+
+    @proc_def nim_param($module, $param, $nim) 
+    {
+		@local $lpar
+		// $nim := @build_nim_from_bpf($bpf)
+		// .CheckParam($module, $param, $MYSELF)
+		// print $nim
+		// $lpar := $bpf[0]
+		curve 
+		@tempo := $RT_TEMPO,
+		@grain := 0.01, 
+		@action 
+		{
+			forall $node in ($synths_map($server_name)($group_name)($module))
+			{
+				// scServer "n_set" $node $param $lpar 
+				$Servers($server_name).n_set($node, [$param, $lpar])
+
+			}
+		} 
+		{ $lpar : $nim }
+    }
+
+    @proc_def nim_multi_param($module, $v_nim, $free = false) 
+    {
+		@local $lpar, $nim_play, $vzer_nim, $vzer_crv_size, $nims_agre := [], $nodes
+
+		if($vezer_curves($v_nim).is_undef())
+		{
+			print this vezer xml file does not exist
+		}
+		else
+		{
+			$vzer_nim := $vezer_curves($v_nim)
+			$vzer_crv_size := $vezer_curves($v_nim).size()
+			// print vzer_nim (""+$vzer_nim)
+
+			forall $n in $vzer_crv_size
+			{
+				$nims_agre.push_back($vzer_nim($n)[1])
+			}
+			// print nims_agre (""+$nims_agre)
+			$nim_play := @aggregate($nims_agre) // aggregate nims for multidim
+			// print nim_play (""+$nim_play)
+
+			$nodes := $synths_map($server_name)($mix_group)($track_name)($module)
+
+			curve 
+			@tempo := $RT_TEMPO,
+			@grain := 0.01, 
+			@action 
+			{
+				forall $crv in $vzer_crv_size
+				{
+					forall $node in $nodes
+					{
+						// print  (""+[$vzer_nim($crv)[0], $lpar[$crv]])
+						$Servers($server_name).n_set($node, [$vzer_nim($crv)[0], $lpar[$crv]])
+					}
+				}
+			} 
+			{ $lpar : $nim_play }
+			==> {   if($free.is_numeric()) // if free number then free track in number time
+			      	{
+			         	$THISOBJ.free($free)
+			      	}
+			  	}
+		}
+    }  
 
 	@fun_def sin_lfo($module, $param, $r_low, $r_hi, $t) 
     {
@@ -19772,7 +20045,7 @@ $rt_analyse := []
 
 @global $jlg_count_rand := 0
 
-@proc_def rand_lfo_basic_s($server_name, $group, $module, $param, $min, $max, $init_val, $type, $tpo, $min_interval, $gui = false) 
+@proc_def rand_lfo_basic_s($server_name, $group, $module, $param, $min, $max, $init_val, $type, $tpo, $min_interval = 0, $gui = false) 
 @abort
 {
 	// TODO
@@ -25276,6 +25549,33 @@ whenever ($from_sc_server2==$from_sc_server2)
 		$SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
 }
 
+@proc_def HOA_DelGrain_xyz($in, $envbuf0, $envbuf1, $dur, $del, $env_interp, $x, $y, $z, $amp, $track_HOA_NE) 
+{
+	@local $node_id_mod, $server_name, $main_group_name, $main_group_id, $order, $xyz_offset, $hoa_bus
+
+		$server_name := $tracks($track_HOA_NE).$server_name
+		$main_group_name := $tracks($track_HOA_NE).$group_name
+		// $main_group_id := $tracks($track_HOA_NE).$node_id_out
+		$main_group_id := $tracks($track_HOA_NE).$node_id_out
+		$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+		$hoa_bus := $tracks($track_HOA_NE).$bus
+		$order :=  $tracks($track_HOA_NE).$order
+
+		//$space_group($server_name)($main_group_name)("val").add_pair($main_group_id, $xyz)
+		// print $main_group_id
+		// print $main_group_name
+		// print (""+$space_group($server_name)($main_group_name))
+
+		$xyz_offset := $space_group($server_name)($main_group_name)("xyz_offset")
+
+		// scServer "s_new" ("HOA_Grain_xyz"+$order) $node_id_mod 0 $main_group_id globTBus $hoa_bus buf $buf envbuf $envbuf pos $pos env_dur $dur t_trig 1 x $x y $y z $z amp $amp rate $rate 
+		$Servers($server_name).s_new(["HOA_DelGrain_xyz"+$order, $node_id_mod, 2, $main_group_id, "in", $in, "globTBus", $hoa_bus, "envbuf0", $envs($server_name)($envbuf0), "envbuf1", $envs($server_name)($envbuf1), "env_dur", $dur, "del", $del, "env_interp", $env_interp, "t_trig", 1, "x", $x+$HOA_global_x, "y", $y+$HOA_global_y, "z", $z+$HOA_global_z, "xoffset", $xyz_offset[0], "yoffset", $xyz_offset[1], "zoffset", $xyz_offset[2], "amp", $amp]) //, "rate", $rate, "spk_radius", $spk_radius
+		// print server_test (""+["HOA_Grain_xyz"+$order, $node_id_mod, 0, $main_group_id, "globTBus", $hoa_bus, "buf", $SF_map($server_name)($buf), "envbuf", $envs($server_name)($envbuf), "pos", $pos, "env_dur", $dur, "t_trig", 1, "x", $x+$HOA_global_x, "y", $y+$HOA_global_y, "z", $z+$HOA_global_z, "xoffset", $xyz_offset[0], "yoffset", $xyz_offset[1], "zoffset", $xyz_offset[2], "amp", $amp, "rate", $rate, "spk_radius", $spk_radius])
+		// print ("s_new"+$server_name) ("HOA_Grain_xyz"+$order) $node_id_mod 0 $main_group_id globTBus $hoa_bus buf ($SF_map($server_name)($buf)) envbuf ($envs($server_name)($envbuf)) pos $pos env_dur $dur t_trig 1 "x" ($x+$HOA_global_x) "y" ($y+$HOA_global_y) "z" ($z+$HOA_global_z) "xoffset" ($xyz_offset[0]) "yoffset" ($xyz_offset[1]) "zoffset" ($xyz_offset[2]) "amp" $amp "rate" $rate "spk_radius" $spk_radius
+
+		$SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+}
+
 @proc_def HOA_sample_xyz($buf, $rate, $dur, $pos, $x, $y, $z, $amp, $mix_group_decoder, $spk_radius = 1.07) 
 {
 	@local $node_id_mod, $server_name, $main_group_id, $order
@@ -26400,6 +26700,254 @@ whenever ($from_sc_server2==$from_sc_server2)
 	}
 }
 
+@obj_def HOA_grainIN_del_xyz($in, $envbuf0, $envbuf1, $env_interp, $rate_min, $rate_max, $del_min, $del_max, $env_dur_min, $env_dur_max, $x_min, $x_max, $y_min, $y_max, $z_min, $z_max, $amp, $track_HOA_NE) 
+{
+	@local $poltocar, $rand_x, $rand_y, $rand_z, $env_dur, $rate, $pos, $del, $server_name, $main_group_name, $curve_xyz := 0, $inner_tempo := 60, $loop_tempo := 60, $proc_dico := map {}, $proc_index := 0
+	@init 
+    {
+    	// $tab_dico := []
+    	$rate := @rand_range($rate_min, $rate_max)
+
+		group @tempo $RT_TEMPO //$inner_tempo 
+		{
+			loop $rate
+			{
+				// print env_dur $env_dur
+				// print (@poltocar(12, $angle_inc_rand))
+				$rand_x := @rand_range($x_min, $x_max)
+				$rand_y := @rand_range($y_min, $y_max)
+				$rand_z := @rand_range($z_min, $z_max)
+				$env_dur := @rand_range($env_dur_min, $env_dur_max)
+				$del := @rand_range($del_min, $del_max)
+				
+				// $poltocar := @poltocar(0.5, $angle_inc_rand)
+				// $pos := $angle_inc_rand.scale(0, 360, 0., 1., 1)
+				// @proc_def HOA_grainIn_xyz_track($in, $envbuf0, $envbuf1, $dur, $del, $env_interp, $x, $y, $z, $amp, $track_HOA_NE) 
+				// print HOA_grainIn_xyz_track (""+[$in, $envbuf0, $envbuf1, $env_dur, $del, $env_interp, $rand_x+$HOA_global_x, $rand_y+$HOA_global_y, $rand_z+$HOA_global_z, $amp, $track_HOA_NE])
+				::HOA_DelGrain_xyz($in, $envbuf0, $envbuf1, $env_dur, $del, $env_interp, $rand_x, $rand_y, $rand_z, $amp, $track_HOA_NE)
+				// @command("of_grains"+$grain_group) @dur2mlsec($env_dur) $rand_x $rand_y $rand_z // oFx
+				$rate := @rand_range($rate_min, $rate_max)	
+			}
+		}    	
+	}
+/*	@fun_def add() 
+	{ 
+		$tab_dico.push_back(::HOA_grainIn_xyz_proc($in, $envbuf0, $envbuf1, $env_interp, $del_min, $del_max, $env_dur_min, $env_dur_max, $x_min, $x_max, $y_min, $y_max, $z_min, $z_max, $amp, $track_HOA_NE, $proc_index))
+		$proc_index += 1
+	}
+	@fun_def remove() 
+	{
+		if($tab_dico.size()> 0)
+		{
+			abort $tab_dico[0]
+			$tab_dico.remove(0)
+		
+			// forall $i in 3 // x, y, z
+			// {
+			// 	$out_pos_final.remove(0)
+			// }
+		}
+		else 
+		{
+			print no more processes
+		}
+	}*/
+	@fun_def del($del_mi, $del_ma) 
+	{ 
+/*		forall $proc in $tab_dico
+		{
+			$proc.$del_min := $del_mi
+			$proc.$del_max := $del_ma
+		}*/
+		$del_min := $del_mi
+		$del_max := $del_ma
+	}	
+	@fun_def env_interp($env_itp) 
+	{ 
+/*		forall $proc in $tab_dico
+		{
+			$proc.$env_interp := $env_itp
+		}*/
+	$env_interp := $env_itp		
+	}	
+	@fun_def rand_x_min($r_min) 
+	{ 
+		$x_min := $r_min
+	}
+	@fun_def rand_x_max($r_max) 
+	{ 
+		$x_max := $r_max
+	}
+	@proc_def x_interpol($i_x_min, $i_x_max, $t, $type = "linear") 
+	{ 
+	    @local $l_min, $l_max, $x_min_init, $x_max_end
+	   $x_min_init := $x_min //init position x_min
+	   $x_max_end := $x_max //init position x_max
+	   Curve
+	   @grain := 0.01,
+	   @action {
+			
+				$THISOBJ.rand_x_min($l_min)
+				$THISOBJ.rand_x_max($l_max)
+	} 
+	   { $l_min, $l_max {            
+				    {$x_min, $x_max} @type := $type
+			 $t   {$i_x_min, $i_x_max}} 
+	   }
+	}	
+	@proc_def y_interpol($i_y_min, $i_y_max, $t, $type = "linear") 
+	{ 
+	    @local $l_min, $l_max, $y_min_init, $y_max_end
+	   $y_min_init := $y_min //init position x_min
+	   $y_max_end := $y_max //init position x_max
+	   Curve
+	   @grain := 0.01,
+	   @action {
+			
+				$THISOBJ.rand_y_min($l_min)
+				$THISOBJ.rand_y_max($l_max)
+	} 
+	   { $l_min, $l_max {            
+				    {$y_min, $y_max} @type := $type
+			 $t   {$i_y_min, $i_y_max}} 
+	   }
+	}	
+	@proc_def z_interpol($i_z_min, $i_z_max, $t, $type = "linear") 
+	{ 
+	    @local $l_min, $l_max, $z_min_init, $z_max_end
+	   $z_min_init := $z_min //init position x_min
+	   $z_max_end := $z_max //init position x_max
+	   Curve
+	   @grain := 0.01,
+	   @action {
+			
+				$THISOBJ.rand_z_min($l_min)
+				$THISOBJ.rand_z_max($l_max)
+	} 
+	   { $l_min, $l_max {            
+				    {$z_min, $z_max} @type := $type
+			 $t   {$i_z_min, $i_z_max}} 
+	   }
+	}		
+    @proc_def xyz_interpol($bpf, $loop = 0) 
+    {
+		@local $nim, $xyz_pos, $inc := 0, $nim_dur, $periode
+		$nim := @build_nim_from_bpf($bpf)
+		$nim_dur := @max_key($nim)
+
+		$xyz_pos := $bpf[0]
+		$periode := (60/$loop_tempo)*$nim_dur
+		abort $curve_xyz
+		$curve_xyz := { loop $periode
+		{
+			curve @grain := 0.01, 
+			@tempo := $loop_tempo,
+			@action 
+			{
+					$THISOBJ.rand_x_min($xyz_pos[0])
+					$THISOBJ.rand_x_max($xyz_pos[1])
+					$THISOBJ.rand_y_min($xyz_pos[2])
+					$THISOBJ.rand_y_max($xyz_pos[3])
+					$THISOBJ.rand_z_min($xyz_pos[4])
+					$THISOBJ.rand_z_max($xyz_pos[5])	
+					$periode := (60/$loop_tempo)*$nim_dur // actualise la valeur de la periode							
+			} 
+			{ $xyz_pos : $nim }
+			$inc += 1			    
+		} until ($inc >= $loop)
+		}
+    }		
+	@fun_def xyz_interpol_stop() 
+	{ 
+		abort $curve_xyz
+	}
+	@fun_def rand_y_min($r_min) 
+	{ 
+		$y_min := $r_min
+	}
+	@fun_def rand_y_max($r_max) 
+	{ 
+		$y_max := $r_max
+	}
+	@fun_def rand_z_min($r_min) 
+	{ 
+		$z_min := $r_min
+	}
+	@fun_def rand_z_max($r_max) 
+	{ 
+		$z_max := $r_max
+	}			
+	@fun_def ryth_min($r_min) 
+	{ 
+		$ryth_min := $r_min
+	}
+	@fun_def ryth_max($r_max) 
+	{ 
+		$ryth_max := $r_max
+	}	
+	@fun_def rate_min($r_min) 
+	{ 
+		$rate_min := $r_min
+	}
+	@fun_def rate_max($r_max) 
+	{ 
+		$rate_max := $r_max
+	}	
+	@fun_def env_dur_min($env_d_min) 
+	{ 
+		/*forall $proc in $tab_dico
+		{
+			$proc.$env_dur_min := $env_d_min
+		}*/
+		$env_dur_min := $env_d_min
+	}
+	@fun_def env_dur_max($env_d_max) 
+	{ 
+		/*forall $proc in $tab_dico
+		{
+			$proc.$env_dur_max := $env_d_max
+		}		*/
+		$env_dur_max := $env_d_max
+	}	
+	@fun_def envbuf($eb) 
+	{ 
+		$envbuf := $eb
+	}	
+	@fun_def amp($a) 
+	{ 
+		$amp := $a
+	}	
+	@fun_def tempo_grain($tpo)
+	{ 
+		$inner_tempo := $tpo
+	}	
+	@fun_def tempo_loop($tpo)
+	{ 
+		$loop_tempo := $tpo
+	}				
+	@proc_def free($t = 1)
+	{
+	   @local $lamp, $amp_init, $amp_end := -90, $type := "linear"
+	   $amp_init := $amp
+	   Curve
+	   @grain := 0.01,
+	   @action {
+			
+				$THISOBJ.amp($lamp)
+				// print amp $amp
+	} 
+	   { $lamp {            
+				    {$amp_init} @type := $type
+			 $t   {$amp_end}} 
+	   }
+    $t abort $THISOBJ	
+    }	
+    @abort
+	{
+		$THISOBJ.free()
+	}
+}
+
 @proc_def ::HOA_grainIn_xyz_proc($in, $envbuf0, $envbuf1, $env_interp, $del_min, $del_max, $env_dur_min, $env_dur_max, $x_min, $x_max, $y_min, $y_max, $z_min, $z_max, $amp, $track_HOA_NE, $grain_group)
 {
 	@local $dur, $inner_tempo  := 60, $rand_x, $rand_y, $rand_z, $env_dur := 0, $del
@@ -26423,7 +26971,7 @@ whenever ($from_sc_server2==$from_sc_server2)
 			// @proc_def HOA_grainIn_xyz_track($in, $envbuf0, $envbuf1, $dur, $del, $env_interp, $x, $y, $z, $amp, $track_HOA_NE) 
 			// print HOA_grainIn_xyz_track (""+[$in, $envbuf0, $envbuf1, $env_dur, $del, $env_interp, $rand_x+$HOA_global_x, $rand_y+$HOA_global_y, $rand_z+$HOA_global_z, $amp, $track_HOA_NE])
 			::HOA_grainIn_xyz_track($in, $envbuf0, $envbuf1, $env_dur, $del, $env_interp, $rand_x+$HOA_global_x, $rand_y+$HOA_global_y, $rand_z+$HOA_global_z, $amp, $track_HOA_NE)
-			@command("of_grains"+$grain_group) @dur2mlsec($env_dur) $rand_x $rand_y $rand_z
+			// @command("of_grains"+$grain_group) @dur2mlsec($env_dur) $rand_x $rand_y $rand_z // oFx
 			$env_dur := @rand_range($env_dur_min, $env_dur_max)
 
 
