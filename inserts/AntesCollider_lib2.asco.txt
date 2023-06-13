@@ -130,7 +130,7 @@ $path := $home + "/sounds/"
 
 // $path := $home + "/Users/josephfernandez/Documents/Lara-ali/bandes-d-ali"
 
-$SF_dir := @directory_read($path, 2, ["aif", "aiff", "WAVE"])
+$SF_dir := @directory_read($path, 3, ["aif", "aiff", "WAVE", "wav"]) // level 4 files in directories of sub-directories 
 // print (""+$SF_dir)
 
 // recording
@@ -181,6 +181,31 @@ whenever ($store_tab==$store_tab)
 	$tab_file_name := $store_tab.car()
 	$tab_data := $store_tab.cdr()
 	@savevalue($path_arrays + $tab_file_name, $tab_data)
+}
+
+// Lemur/TouchOSC... controllers from Max
+
+@global $controllers @persistent
+if (@is_undef($controllers)) { $controllers := map{} }
+
+@proc_def ::controller($control_name)
+{
+	$controllers.add_pair($control_name, map {("level", 0)}) // add to map ("level", 0)
+
+	whenever ($control_fromMax[0] == $control_name)
+	{
+		// print (""+$controllers($control_name))
+		forall $trk, $obj in $controllers($control_name)
+		{
+			if($trk != "level")
+			{
+				// print obj (""+$obj)
+				$obj.amp2($control_fromMax[1])
+			}
+			
+		}
+		$controllers($control_name).add_pair("level", $control_fromMax[1]) // registre le niveau du slider dans la map pour crea_track
+	}
 }
 
 // print (""+$vst_param_map)
@@ -1348,7 +1373,7 @@ whenever ($free_select_track)
 	print free (""+$free_select_track)
 	// $Servers($cu_servers).n_set($free_select_track[0], ["out_ramp", 0.01, "gatee", 0])
 	// $synths_map($cu_servers)($cu_tracks).remove($free_select_track[1])
-	$tracks($free_select_track[1]).free(0.1)
+	$tracks($free_select_track[1]).free(2)
 	// $tracks.remove($free_select_track[1])
 
 }
@@ -1649,7 +1674,7 @@ whenever($reset_buffers==$reset_buffers)
 @global $vezer_curves @persistent
 @global $interpol_types @persistent
 if (@is_undef($vezer_curves)) { $vezer_curves := map{} }
-if (@is_undef($interpol_types)) { $interpol_types := map {("linear", "linear"), ("quadratic-in", "quad_in"), ("quadratic-out", "quad_out"), ("quadratic-in-out", "quad_in_out"), ("cubic-in", "cubic_in"), ("cubic-out", "cubic_out"), ("cubic-in-out", "cubic_in_out"), ("quartic-in", "quart_in"), ("quartic-out", "quart_out"), ("quartic-in-out", "quart_in_out"), ("quintic-in", "quint_in"), ("quintic-out", "quint_out"), ("quintic-in-out", "quint_in_out"), ("sine-in", "sine_in"), ("sine-out", "sine_out"), ("sine-in-out", "sine_in_out"), ("circular-in", "circ_in"), ("circular-out", "circ_out"), ("circular-in-out", "circ_in_out"), ("exponential-in", "exp_in"), ("exponential-out", "exp_out"), ("exponential-in-out", "exp_in_out"), ("elastic-in", "elastic_in"), ("elastic-out", "elastic_out"), ("elastic-in-out", "elastic_in_out"), ("back-in", "back_in"), ("back-out", "back_out"), ("back-in-out", "back_in_out"), ("bounce-in", "bounce_in"), ("bounce-out", "bounce_out"), ("bounce-in-out", "bounce_in_out")} }
+if (@is_undef($interpol_types)) { $interpol_types := map {("none", "linear"), ("linear", "linear"), ("quadratic-in", "quad_in"), ("quadratic-out", "quad_out"), ("quadratic-in-out", "quad_in_out"), ("cubic-in", "cubic_in"), ("cubic-out", "cubic_out"), ("cubic-in-out", "cubic_in_out"), ("quartic-in", "quart_in"), ("quartic-out", "quart_out"), ("quartic-in-out", "quart_in_out"), ("quintic-in", "quint_in"), ("quintic-out", "quint_out"), ("quintic-in-out", "quint_in_out"), ("sine-in", "sine_in"), ("sine-out", "sine_out"), ("sine-in-out", "sine_in_out"), ("circular-in", "circ_in"), ("circular-out", "circ_out"), ("circular-in-out", "circ_in_out"), ("exponential-in", "exp_in"), ("exponential-out", "exp_out"), ("exponential-in-out", "exp_in_out"), ("elastic-in", "elastic_in"), ("elastic-out", "elastic_out"), ("elastic-in-out", "elastic_in_out"), ("back-in", "back_in"), ("back-out", "back_out"), ("back-in-out", "back_in_out"), ("bounce-in", "bounce_in"), ("bounce-out", "bounce_out"), ("bounce-in-out", "bounce_in_out")} }
 
 
 // ::plotnim($envs_map("perc"))
@@ -2893,6 +2918,7 @@ $envs_map := map{
 	("baleine_inv", NIM{ 0 0, 0.8 1 "cubic_out", 0.2 0 "cubic"}), 
 	("perc", NIM{ 0 0, 0.1 1 "exp", 0.9 0 "exp_out"}),
 	("perc_acc", NIM{ 0 0, 0.02 1 "exp", 0.9 0 "circ_out"}),
+	("perc_acc2", NIM{ 0 0, 0.01 1 "exp", 0.99 0 "exp_out"}),
 	("perc_sust", NIM{ 0 0, 0.01 1 "exp", 0.9 0 "sine_in"}),
 	("perc_rel", NIM{ 0 0, 0.01 1 "exp", 0.1 0.7, 0.6 0.7, 0.29 0 "sine_out"}),
 	("perc_s", NIM{ 0 0, 0.01 1 "exp", 0.9 0 "quart_in_out"}),
@@ -2904,7 +2930,8 @@ $envs_map := map{
 	("m_carre", NIM{ 0 0, 0.005 1 "cubic", 0.295 1, 0.2 0, 0.2 1, 0.295 1, 0.005 0 "cubic_out"}),	
 	("u", NIM{ 0 0, 0.02 1 "cubic", 0.48 0.3 "circ_out", 0.48 1 "exp", 0.02 0 "cubic_out"}),
 	("carre", NIM{ 0 0, 0.005 1 "cubic", 0.99 1, 0.005 0 "cubic_out"}),
-	("carre2", NIM{ 0 0, 0.005 1 "cubic", 0.99 1, 0.1 0 "cubic"}),
+	("carre2", NIM{ 0 0, 0.005 1 "cubic", 0.99 1, 0.015 0 "cubic"}),
+	("carre2b", NIM{ 0 0, 0.005 1 "cubic", 0.88 1, 0.08 0 "cubic" , 0.035 0}),	
 	("carre3", NIM{ 0 0, 0.05 1, 0.99 1, 0.05 0}),
 	("bounce", NIM{ 0 0, 0.5 1 "bounce", 0.5 0 "bounce_out"}),
 	("bounce2", NIM{ 0 0, 0.5 1 "bounce_out", 0.5 0 "bounce_out"}),
@@ -2912,7 +2939,7 @@ $envs_map := map{
 	("elastic", NIM{ 0 0, 0.5 1 "elastic_out", 0.5 0 "elastic_in"})
 }
 
-::plotnim($envs_map("elastic"))
+// ::plotnim($envs_map("carre3"))
 
 @global $gran_buf @persistent
 @global $gran_buf_inc @persistent
@@ -3497,39 +3524,68 @@ if (@is_undef($SF_path)) { $SF_path := map{} }
 // 	$SF_tab := $SF_path.domain()
 // }
 
-@proc_def ::load_samples($server_name)
+@proc_def ::load_samples($server_name, $folder = "")
 {
-	@local $buff_id, $path_local
+	@local $buff_id, $path_local, $folders_read
 
 	$buff_id := $SC_Servers($server_name)("buffer_id")
 	$SF_map.add_pair($server_name, map{}) // create a new map for store each sf in a server
 	// $SF_path.add_pair($server_name, map{}) // create a new map for store each sf in a server
 
-	forall $k, $v in $SF_dir
+	if($folder == "")
 	{
+		$folders_read := $SF_dir
+	}
+	else
+	{
+		$folders_read := $SF_dir($folder)
+	}
 
+	forall $k, $v in $folders_read
+	{
 		if($v != ".DS_Store") // enleve ".DS_Store"
 		{
-			// print (""+$v)
-			// print key (""+$k)
-			// print val (""+$v)
 			if($v.is_map()) // folder of folders of SF
 			{
+			// print (""+$v)
+			print $server_name load_folder1 (""+$k)
+			// print val (""+$v)
 				forall $ke, $sf in $v
 				{	
 					if($sf != ".DS_Store") // enleve ".DS_Store"
 					{
-						$path_local := ($path+$k+"/"+$sf)
-						// print folder $k soundFile ($path+$k+"/"+$sf)
-						// print $server_name $buff_id ($path+$k+"/"+$sf)
-						// scServer "/b_allocRead" $SC_Buffers_index ($path+$k+"/"+$sf)
-						$Servers($server_name).b_allocRead($buff_id, $path_local) // load buffer in sc_server
-						// b_allocReadserver2 $buff_id ($path+$k+"/"+$sf) // pour server2
-						$SF_map($server_name).add_pair($sf, $buff_id)	// sf, sc_server_buffer_index
-						$SF_path.add_pair($sf, $path_local) // sf, path
-						// $SC_Buffers_index := $SC_Buffers_index + 1
-						$buff_id += 1
-						$SC_Servers($server_name).add_pair("buffer_id", $buff_id) // incremente le buff_id dans le dico des serveurs
+							if($sf.is_map()) // folder of folders of SF
+							{
+								print $server_name load_sub_folder2 (""+$ke)
+								forall $kee, $sff in $sf
+								{	
+									if($sff != ".DS_Store") // enleve ".DS_Store"
+									{
+										$path_local := ($path+$folder+$k+"/"+$ke+"/"+$sff)
+										print folder $path_local
+										$Servers($server_name).b_allocRead($buff_id, $path_local) // load buffer in sc_server
+										$SF_map($server_name).add_pair($sff, $buff_id)	// sf, sc_server_buffer_index
+										$SF_path.add_pair($sff, $path_local) // sf, path
+										$buff_id += 1
+										$SC_Servers($server_name).add_pair("buffer_id", $buff_id) // incremente le buff_id dans le dico des serveurs										
+									}
+								}
+							}
+							else
+							{
+								$path_local := ($path+$folder+"/"+$k+"/"+$sf)
+								// print folder $k soundFile ($path+$k+"/"+$sf)
+								// print $server_name $buff_id ($path+$k+"/"+$sf)
+								// scServer "/b_allocRead" $SC_Buffers_index ($path+$k+"/"+$sf)
+								$Servers($server_name).b_allocRead($buff_id, $path_local) // load buffer in sc_server
+								// b_allocReadserver2 $buff_id ($path+$k+"/"+$sf) // pour server2
+								$SF_map($server_name).add_pair($sf, $buff_id)	// sf, sc_server_buffer_index
+								$SF_path.add_pair($sf, $path_local) // sf, path
+								// $SC_Buffers_index := $SC_Buffers_index + 1
+								$buff_id += 1
+								$SC_Servers($server_name).add_pair("buffer_id", $buff_id) // incremente le buff_id dans le dico des serveurs
+							}
+
 					}
 				}
 			}
@@ -5921,9 +5977,9 @@ $FluidBufOnsetSlice := 0
 	}
 }
 
-@obj_def mix_group_HOA($group_name, $server_name, $decoder, $order, $hoa_decoder = "sc-hoa", $ext_id = false, $offset = 0, $lev_name = "hrir_christophe_lebedev50")
+@obj_def mix_group_HOA($group_name, $server_name, $decoder, $order, $hoa_decoder = "sc-hoa", $ext_id = false, $offset = 0, $amp = 0, $lev_name = "hrir_christophe_lebedev50")
 {			
-	@local $group_id, $bus, $hoa_rev_bus, $hoa_bus, $node_id_out, $addmod_index := 0, $HOABeamDirac2Hoa_id, $HOABeamHCard2Hoa_id, $hoa_num_ch, $num_ch := 2, $rec_map := map{}, $decoder_name, $struct_group_id, $struct_main_group_id
+	@local $group_id, $bus, $hoa_rev_bus, $hoa_bus, $node_id_out, $addmod_index := 0, $HOABeamDirac2Hoa_id, $HOABeamHCard2Hoa_id, $hoa_num_ch, $num_ch := 2, $rec_map := map{}, $decoder_name, $struct_group_id, $struct_main_group_id, $node_id_rec
 	@init 
     {
 
@@ -5979,6 +6035,9 @@ $FluidBufOnsetSlice := 0
 			$SC_Servers($server_name).add_pair("node_id", $group_id + 1) // incremente le node_id dans le dico des serveurs
 
 			$node_id_out := $SC_Servers($server_name)("node_id") // id for decoder synth
+			
+			$SC_Servers($server_name).add_pair("node_id", $node_id_out + 1) // incremente le node_id dans le dico des serveurs
+
 
 			// scServer "s_new" audioOut8 $node_id_out 1 $group_id in $bus out 0 index $bus in_ramp 0.001 amp 0
 				
@@ -5991,28 +6050,28 @@ $FluidBufOnsetSlice := 0
 					{
 						case 5:
 						$decoder_name := "audioOut36"
-						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0])
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp])
 						$num_ch := 36
 						case 6:
 						$decoder_name := "audioOut49"
-						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0])
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp])
 						$num_ch := 49							
 						case 7:
 						$decoder_name := "audioOut64"
-						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0])
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp])
 						$num_ch := 64
 					}
 
 					case "binaural":
 					// scServer "s_new" ("HOA_Global_Lev_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus
 					$decoder_name := "HOA_Global_Lev_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0])
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp])
 					print mix_group binaural ("s_new"+$server_name) $decoder_name $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 // in_rev $hoa_rev_bus
 					$num_ch := 2
 
 					case "Lebedev26":
 					$decoder_name := "HOA_Global_Lev26_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "buf_num", $hrir_start_buffer])
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "buf_num", $hrir_start_buffer])
 					$num_ch := 2
 
 					case "Lebedev50":
@@ -6027,7 +6086,7 @@ $FluidBufOnsetSlice := 0
 					else
 					{
 						$decoder_name := "HOA_Global_Lev50_Dec"+$order
-						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "hoa_buf_init", $hrir_init_buf_map($server_name)($lev_name)])
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "hoa_buf_init", $hrir_init_buf_map($server_name)($lev_name)])
 						// print ("HOA_Global_Lev50_Dec"+$order) $node_id_out 1 $group_id "in" $hoa_bus "out" 0 "in_ramp" 0.001 "amp" 0 "hoa_buf_init" (""+$hrir_init_buf_map($server_name)($lev_name))
 						$num_ch := 2
 
@@ -6036,13 +6095,13 @@ $FluidBufOnsetSlice := 0
 					case "hexa":					
 					// scServer "s_new" ("HOA_Hexa_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus
 					$decoder_name := "HOA_Hexa_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0])
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp])
 					$num_ch := 6
-
+					print hexa_decoder $decoder_name
 					case "octo":
 					// scServer "s_new" ("HOA_Octo_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 // in_rev $hoa_rev_bus
 					$decoder_name := "HOA_Octo_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0])
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp])
 					$num_ch := 8
 
 					case "studio1":
@@ -6050,7 +6109,7 @@ $FluidBufOnsetSlice := 0
 					{
 						// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
 						$decoder_name := "HOA_Studio1_Dec"+$order
-						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
 						$num_ch := 24	
 					}
 					case "dode":
@@ -6058,7 +6117,7 @@ $FluidBufOnsetSlice := 0
 					{
 						// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
 						$decoder_name := "HOA_Dode_Dec"+$order
-						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
 						$num_ch := 12	
 					}	
 					case "vigie":
@@ -6066,7 +6125,7 @@ $FluidBufOnsetSlice := 0
 					{
 						// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
 						$decoder_name := "HOA_Vigie_Dec"+$order
-						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
 						$num_ch := 26
 					}	
 					case "Espro":
@@ -6074,15 +6133,48 @@ $FluidBufOnsetSlice := 0
 					{
 						// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
 						$decoder_name := "HOA_Dec_ESPRO"+$order
-						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])
-						$num_ch := 75
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
+						$num_ch := 89
+					}	
+					case "Espro_subs": // order 7
+					if($hoa_decoder == "sc-hoa")
+					{
+						$decoder_name := "HOA_Dec_ESPRO7_SUB"
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
+						$num_ch := 101
+					}		
+					case "Espro_subs_rec": // order 7
+					if($hoa_decoder == "sc-hoa")
+					{
+						$decoder_name := "HOA_Dec_ESPRO7_SUB"
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
+						$num_ch := 125
+						$node_id_rec := $SC_Servers($server_name)("node_id") // id for decoder synth
+						$Servers($server_name).s_new(["HOA_Dec_ESPRO3_Rec", $node_id_rec, 1, $group_id, "in", $hoa_bus, "hoa_3_out", 109, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
+						$SC_Servers($server_name).add_pair("node_id", $node_id_rec + 1)
 					}						
+					case "DB_12": // order 3
+					if($hoa_decoder == "sc-hoa")
+					{
+						$decoder_name := "HOA_Dec_DB12_"+$order
+						print decoder_name $decoder_name
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
+						$num_ch := 12
+					}	
+					case "DB12_SUB": // order 3
+					if($hoa_decoder == "sc-hoa")
+					{
+						$decoder_name := "HOA_Dec_DB12_SUB_"+$order
+						print decoder_name $decoder_name
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
+						$num_ch := 20
+					}										
 					case "Pierre":
 					if($hoa_decoder == "sc-hoa")
 					{
 						// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
 						$decoder_name := "HOA_Dec_Pierre"+$order
-						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
 						$num_ch := 22
 					}
 					case "SamplingDecoder":
@@ -6090,7 +6182,7 @@ $FluidBufOnsetSlice := 0
 					{
 						// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
 						$decoder_name := "HOA_Dec_AmbiDec"+$order
-						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
 						$num_ch := 24
 					}
 					else
@@ -6099,7 +6191,7 @@ $FluidBufOnsetSlice := 0
 						{
 							// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
 							$decoder_name := "HOAmbitools_Studio1_Dec"+$order
-							$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])
+							$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
 							$num_ch := 24	
 						}
 						else
@@ -6107,7 +6199,7 @@ $FluidBufOnsetSlice := 0
 							if($hoa_decoder == "ambitools_noNFC")
 							{
 								$decoder_name := "HOAmbitools_Studio1_Dec"+$order+"_noNFC"
-								$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])
+								$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
 								$num_ch := 24	
 							}
 							else
@@ -6115,7 +6207,7 @@ $FluidBufOnsetSlice := 0
 								if($hoa_decoder == "iem")
 								{
 									$decoder_name := "IEM_Dec"+$order
-									$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
+									$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
 									$Servers($server_name).u_cmd([$node_id_out, 4, "/open", "AllRADecoder", 1]) // 4 = UGen id inside Synthdef
 									$num_ch := 24	
 								}
@@ -6128,7 +6220,7 @@ $FluidBufOnsetSlice := 0
 					{
 						// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
 						$decoder_name := "HOA_Studio2_Dec"+$order
-						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
 						$num_ch := 24	
 					}
 					else
@@ -6138,79 +6230,79 @@ $FluidBufOnsetSlice := 0
 					case "CGP":
 					// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
 					$decoder_name := "HOA_CGP_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
 					$num_ch := 27
 
 					case "sat":
 					// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
 					$decoder_name := "HOA_SAT_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
 					$num_ch := 31
 
 					case "iem":
 					$decoder_name := "IEM_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
 					$Servers($server_name).u_cmd([$node_id_out, 4, "/open", "SimpleDecoder", 1]) // 4 = UGen id inside Synthdef
 					$num_ch := 24
 
 					case "iem_AllRA":
 					$decoder_name := "IEM_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
 					$Servers($server_name).u_cmd([$node_id_out, 4, "/open", "AllRADecoder", 1]) // 4 = UGen id inside Synthdef
 					$num_ch := 24
 
 					case "iem_binaural":
 					$decoder_name := "Binaural_VST_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", 0, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
 					$Servers($server_name).u_cmd([$node_id_out, 4, "/open", "BinauralDecoder", 1, 0, 0]) // 4 = UGen id inside Synthdef
 				
 					$num_ch := 2
 
 					case "iem_adaptivebinaural":
 					$decoder_name := "Binaural_VST_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
 					$Servers($server_name).u_cmd([$node_id_out, 4, "/open", "AdaptiveBinauralDecoder", 1]) // 4 = UGen id inside Synthdef
 					$num_ch := 2	
 
 					case "harpex":
 					$decoder_name := "Binaural_VST_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
 					$Servers($server_name).u_cmd([$node_id_out, 4, "/open", "Harpex-X", 1]) // 4 = UGen id inside Synthdef
 					$num_ch := 2
 
 					case "sparta_ambibin":
 					$decoder_name := "Binaural_VST_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
 					$Servers($server_name).u_cmd([$node_id_out, 4, "/open", "sparta_ambiBIN", 1]) // 4 = UGen id inside Synthdef
 					$num_ch := 2
 
 					case "compass_binaural":
 					$decoder_name := "Binaural_VST_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
 					$Servers($server_name).u_cmd([$node_id_out, 4, "/open", "compass_binaural", 1]) // 4 = UGen id inside Synthdef
 					$num_ch := 2
 					
 					case "sparta_ambidec":
 					$decoder_name := "IEM_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
 					$Servers($server_name).u_cmd([$node_id_out, 4, "/open", "sparta_ambiDEC", 1]) // 4 = UGen id inside Synthdef
 					$num_ch := 24					
 
 					case "a7monitor":
 					$decoder_name := "Binaural_VST_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
 					$Servers($server_name).u_cmd([$node_id_out, 4, "/open", "a7Monitor.vst3", 1]) // 4 = UGen id inside Synthdef
 					$num_ch := 2
 
 					case "Ambi Head HD":
 					$decoder_name := "Binaural_VST_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
 					$Servers($server_name).u_cmd([$node_id_out, 4, "/open", "Ambi Head HD", 1]) // 4 = UGen id inside Synthdef
 					$num_ch := 2
 
 					case "no_decoder":
 					$decoder_name := "IEM_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", 0, "in_ramp", 0.001, "amp", 0, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
 					$Servers($server_name).u_cmd([$node_id_out, 4, "/open", "sparta_ambiDEC", 1]) // 4 = UGen id inside Synthdef
 					
 				    $Servers($server_name).s_new(["HOA_Out_"+$order, $node_id_out, 1, $group_id, "in", $hoa_bus, "globTBus", 0, "in_ramp", $fade_in, "amp", $amp])	// "globTBus" = 0 send HOA stream directly to audio card			   				    	
@@ -6237,7 +6329,7 @@ $FluidBufOnsetSlice := 0
 			// print ATKGlobalFOA_Trans_Rev $node_id_out 1 $group_id in $hoa_bus in_rev $hoa_rev_bus out 0 in_ramp 0.001 amp 0
 
 			// $node_id := $node_id + 1 // incremente le node_id
-			$SC_Servers($server_name).add_pair("node_id", $node_id_out + 1)
+			// $SC_Servers($server_name).add_pair("node_id", $node_id_out + 1)
 			$SC_Servers($server_name).insert("bus_index", $hoa_bus + ($order+1).pow(2)) // inc bus de server + hoa_bus (4) + $hoa_rev_bus (4) 
 
 			// $SC_Servers($server_name).insert("bus_index", $bus+8+$hoa_bus) // inc bus de server + hoa_bus (4) + $hoa_rev_bus (4) 
@@ -6271,7 +6363,7 @@ $FluidBufOnsetSlice := 0
 				$struct_main_group_id.push_back($group_id) // default group 1 -> [group_id]
 				$sc_struct($server_name).add_pair($group_id, [[$node_id_out], $group_name]) // crea nueva key group + decoder
 				$struct_group_id := $sc_struct($server_name)($group_id)[0]
-				$sc_struct($server_name).add_pair($node_id_out, map{("decoder", $decoder), ("order", $order), ("in", $hoa_bus), ("out", 0), ("index", $group_id), ("in_ramp", 0.001), ("amp", 0)}) // , ("in_rev", $hoa_rev_bus) crea MAP para nombre_synth + parametros
+				$sc_struct($server_name).add_pair($node_id_out, map{("decoder", $decoder), ("order", $order), ("in", $hoa_bus), ("out", 0), ("index", $group_id), ("in_ramp", 0.001), ("amp", $amp)}) // , ("in_rev", $hoa_rev_bus) crea MAP para nombre_synth + parametros
 			}
 			print new "group" $group_name created in server $server_name
 
@@ -6615,7 +6707,7 @@ $FluidBufOnsetSlice := 0
 		$THISOBJ.mod_add($module_new, fade_in = $cross_fade)
    }
 
-	@proc_def connect_aux($track_out, $aux_in, $amp = 0, $fade_in = 1)
+	@proc_def connect_aux($track_out, $aux_in, $amp_aux = 0, $fade_in = 1)
 	{
 		@local $id, $target_id, $track_bus_out, $bus_aux_in
 		$id := $SC_Servers($server_name)("node_id")
@@ -6623,7 +6715,7 @@ $FluidBufOnsetSlice := 0
 		$track_bus_out := $SC_Groups($group_name)("sub_group")($track_out).$bus
 		$bus_aux_in := $SC_Groups($group_name)("sub_group")($aux_in).$bus
 
-		$Servers($server_name).s_new(["AudioAuxIn", $id, 2, $target_id, "in", $track_bus_out, "out", $bus_aux_in, "in_ramp", $fade_in, "amp", $amp])
+		$Servers($server_name).s_new(["AudioAuxIn", $id, 2, $target_id, "in", $track_bus_out, "out", $bus_aux_in, "in_ramp", $fade_in, "amp", $amp_aux])
 		$SC_Servers($server_name).add_pair("node_id", $id + 1)
 	}
 
@@ -10029,11 +10121,11 @@ $FluidBufOnsetSlice := 0
 
 $track_amp_action := 0 // action à faire quand seuil amp
 $free_track := 0 // send info to program when track is free
-@obj_def crea_track_HOA($track_name, $mix_group, $synth_collection = [], $fade_in = 1, $amp = 0, $plane_spherical = 1, $spk_radius = 1.07, $max_radius = 5, $doppler = 1, $encoder = true, $in_channels = "mono", $xyz_init_pos = [0, 0, 0], $ext_id = false) // recuperar el nombre de la variable
+@obj_def crea_track_HOA($track_name, $mix_group, $synth_collection = [], $fade_in = 1, $amp = 0, $plane_spherical = 1, $spk_radius = 1.07, $max_radius = 5, $doppler = 1, $encoder = true, $in_channels = "mono", $xyz_init_pos = [0, 0, 0], $ext_id = false, $send_bus_num = false, $control_name = false) // recuperar el nombre de la variable
 {	
     @init 
     {
-	    @local $group_id, $bus, $gbus, $hoa_bus, $hoa_inter_bus, $rev_bus, $ambi_bus, $node_id_out, $node_id_out2, $gui, $server_name, $group_name, $main_group_id, $rand_spat_pos := false, $t_trig := 0, $order, $hoa_num_ch, $rec_map := map{}, $decriptors_map := map{}, $sflist_map := map{}, $amp_bpf_x_min, $amp_bpf_x_max, $out_name, $amp2_out := 0, $dae_list, $xyz_list := [0, 0, 0],  $int_loop := 0, $struct_main_group_id, $struct_group_id, $HOA_global_track_xyz := [0, 0, 0], $HOA_xyz_factor := 1, $d_factor := 1, $proc_index, $sync_track := @rand_int(1000)+2000, $get_when := 0
+	    @local $group_id, $bus, $gbus, $hoa_bus, $hoa_inter_bus, $rev_bus, $ambi_bus, $node_id_out, $node_id_out2, $gui, $server_name, $group_name, $main_group_id, $rand_spat_pos := false, $t_trig := 0, $order, $hoa_num_ch, $rec_map := map{}, $decriptors_map := map{}, $sflist_map := map{}, $amp_bpf_x_min, $amp_bpf_x_max, $out_name, $amp2_out := 0, $dae_list, $xyz_list := [0, 0, 0],  $int_loop := 0, $struct_main_group_id, $struct_group_id, $HOA_global_track_xyz := [0, 0, 0], $HOA_xyz_factor := 1, $d_factor := 1, $proc_index, $sync_track := @rand_int(1000)+2000, $get_when := 0, $OutBus_node_id
 
 		// if($mix_group.is_tab()) 
 		// {
@@ -10104,7 +10196,23 @@ $free_track := 0 // send info to program when track is free
 				    print server_name $server_name
 				    print main_group_id $main_group_id
 				    */
+					if($control_name != false) 
+					{
+						// agragar un dico con controles
+						if($controllers.is_defined($control_name))
+						{
+							print track to control_name true $control_name
+							$controllers($control_name).add_pair($track_name, $THISOBJ)
+							$amp2_out := $controllers($control_name)("level")
+							print $control_name amp2_out $amp2_out
+						}
+						else
+						{
+							print control $control_name is not defined
+						}
 
+					}
+			
 				    $gui := false
 
 				    // $track_name := ("group_"+$group_id)
@@ -10155,21 +10263,21 @@ $free_track := 0 // send info to program when track is free
 						print encoder1 $encoder
 						$out_name := "HOA_Encode"+$order+"_out"
 						$hoa_inter_bus := $bus+1 //
-						$Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", 0, "dopon", $doppler , "dopamnt", 1, "glev", 1, "llev", 1, "plane_spherical", $plane_spherical, "spk_radius", $spk_radius, "max_radius", $max_radius, "x", $xyz_init_pos[0], "y", $xyz_init_pos[1], "z", $xyz_init_pos[2]])				   				    	
+						$Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", $amp2_out, "dopon", $doppler , "dopamnt", 1, "glev", 1, "llev", 1, "plane_spherical", $plane_spherical, "spk_radius", $spk_radius, "max_radius", $max_radius, "x", $xyz_init_pos[0], "y", $xyz_init_pos[1], "z", $xyz_init_pos[2]])				   				    	
 						$SC_Servers($server_name).insert("bus_index", $bus+$hoa_num_ch+1) // +1 = mono input bus incrementa bus de server A ver en funcion del decoder!!!!!!!
 
 						case ($encoder && $in_channels == "stereo"): // Stereo hoa Ambitool panning 
 						print encoder2 $encoder
 						$out_name := "HOA_Encode_Ste"+$order+"_out"
 						$hoa_inter_bus := $bus+2 //
-						$Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", 0, "dopon", $doppler, "dopamnt", 1, "glev", 1, "llev", 1, "plane_spherical", $plane_spherical, "spk_radius", $spk_radius, "max_radius", $max_radius])				   				    	
+						$Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", $amp2_out, "dopon", $doppler, "dopamnt", 1, "glev", 1, "llev", 1, "plane_spherical", $plane_spherical, "spk_radius", $spk_radius, "max_radius", $max_radius])				   				    	
 						$SC_Servers($server_name).insert("bus_index", $bus+$hoa_num_ch+2) // +2 = stereo input incrementa bus de server A ver en funcion del decoder!!!!!!!
 							
 						// case ($encoder && $in_channels == "24ch"):
 						// print encoder2 $encoder
 						// $out_name := "HOA_Encode_24ch"+$order+"_out"
 						// $hoa_inter_bus := $bus+24 //
-						// $Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", 0, "dopon", $doppler, "dopamnt", 1, "glev", 1, "llev", 1, "plane_spherical", $plane_spherical, "spk_radius", $spk_radius])				   				    	
+						// $Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", $amp2_out, "dopon", $doppler, "dopamnt", 1, "glev", 1, "llev", 1, "plane_spherical", $plane_spherical, "spk_radius", $spk_radius])				   				    	
 						// $SC_Servers($server_name).insert("bus_index", $bus+$hoa_num_ch+24) // +2 = stereo input incrementa bus de server A ver en funcion del decoder!!!!!!!
 
 						case ($encoder && $in_channels.is_int()):
@@ -10179,7 +10287,7 @@ $free_track := 0 // send info to program when track is free
 							// Version 2 Ambitools HOA_Encode2_1ch7_out
 							$out_name := "HOA_Encode2_"+$in_channels+"ch"+$order+"_out"
 							$hoa_inter_bus := $bus+$in_channels
-							$Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", 0, "dopon", $doppler, "dopamnt", 1, "glev", 1, "llev", 1, "plane_spherical", $plane_spherical, "spk_radius", $spk_radius])				   				    	
+							$Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", $amp2_out, "dopon", $doppler])				   				    	
 							$SC_Servers($server_name).insert("bus_index", $hoa_inter_bus+$hoa_num_ch) // +2 = stereo input incrementa bus de server A ver en funcion del decoder!!!!!!!
 						}
 						else
@@ -10191,7 +10299,7 @@ $free_track := 0 // send info to program when track is free
 						print encoder3 no encoder $encoder 
 						$out_name := "HOA_Out_"+$order
 						$hoa_inter_bus := $bus+$hoa_num_ch //add hoa input order channel number	
-						$Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", 0])
+						$Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", $amp2_out])
 						$SC_Servers($server_name).insert("bus_index", $hoa_inter_bus+$hoa_num_ch) // add hoa stream for next bu
 
 						case (! $encoder && $in_channels == "stereo"):
@@ -10209,6 +10317,15 @@ $free_track := 0 // send info to program when track is free
 					$node_id_out2 := $SC_Servers($server_name)("node_id")
 					$Servers($server_name).s_new(["HOA_Out_"+$order, $node_id_out2, 3, $node_id_out, "in", $hoa_inter_bus, "globTBus", $hoa_bus, "in_ramp", $fade_in, "amp", $amp])	 // "amp", $amp])			   				    	
 					$SC_Servers($server_name).insert("node_id", $node_id_out2 + 1)
+
+					if($send_bus_num.is_numeric()) // send output mono bus todo: multichannel
+					{
+						print send_bus_num
+						$OutBus_node_id := $SC_Servers($server_name)("node_id")
+						$Servers($server_name).s_new(["OutBus", $OutBus_node_id, 3, $node_id_out, "in", $bus, "outbus", $send_bus_num])	 // "amp", $amp])			   				    	
+						$SC_Servers($server_name).insert("node_id", $OutBus_node_id + 1)
+					}
+
 					// }
 					// else
 					// {
@@ -12726,9 +12843,9 @@ $free_track := 0 // send info to program when track is free
 	{
 		@local $nim, $lamp, $last_bpf_amp_curve
 
-		if($track_proc($server_name)($mix_group)($track_name).is_defined("amp"))
+		if($track_proc($server_name)($mix_group)($track_name).is_defined("amp2"))
 		{
-			abort $track_proc($server_name)($mix_group)($track_name)("amp") // stop process to avoid interferences
+			abort $track_proc($server_name)($mix_group)($track_name)("amp2") // stop process to avoid interferences
 		}		
 		// abort $last_bpf_amp_curve // to avoid interferences
 
@@ -12748,7 +12865,7 @@ $free_track := 0 // send info to program when track is free
 				} 
 				{ $lamp : $nim }
 			}
-		$track_proc($server_name)($mix_group)($track_name).add_pair("amp", $last_bpf_amp_curve) // store curve in map to avoid interference between different groups
+		$track_proc($server_name)($mix_group)($track_name).add_pair("amp2", $last_bpf_amp_curve) // store curve in map to avoid interference between different groups
 		}
 		else
 		{
@@ -13854,7 +13971,7 @@ $free_track := 0 // send info to program when track is free
 		// { $lpar : $nim }
   //   }
 
-    @proc_def bpf_param($module, $param, $bpf) 
+    @proc_def bpf_param($module, $param, $bpf, $free = false) 
     {
 		@local $nim, $lpar, $last_bpf_param_curve, $nodes
 
@@ -13888,6 +14005,10 @@ $free_track := 0 // send info to program when track is free
 			} 
 			{ $lpar : $nim }
 			==> {
+					if($free.is_numeric()) // if free number then free track in number time
+					{
+						$THISOBJ.free($free)
+					}
 					forall $node in $nodes // rajoute changement parametre module dans $struct
 					{
 						$sc_struct($server_name)($node).add_pair($param, $lpar) 
@@ -14927,8 +15048,13 @@ $free_track := 0 // send info to program when track is free
 
 	@fun_def play_sampleHOA($sample, $ampli = 0, $coord = [1, 0, 0], $loop = 0) // only track no_encoder
 	{
-		$THISOBJ.mod_add_top(["TPlaybuf2_HOA"+$order, "buf", $SF_map($server_name)($sample), "amp", $ampli, "coords", $coord, "globTBus", $bus, "loop", $loop])
-		print sample (""+$SF_map($server_name)($sample))
+		// $THISOBJ.mod_add_top(["TPlaybuf2_HOA"+$order, "buf", $SF_map($server_name)($sample), "amp", $ampli, "coords", $coord, "globTBus", $bus, "loop", $loop])
+		$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+		$sflist_map.add_pair($sample, $node_id_mod)
+		$Servers($server_name).s_new(["TPlaybuf2_HOA"+$order, $node_id_mod, 2, $node_id_out, "globTBus", $bus, "buf", $SF_map($server_name)($sample), "coords", $coords, "amp", $ampli, "loop", $loop])
+		// print (""+["TPlaybuf2_HOA_ste"+$order, $node_id_mod, 2, $node_id_out, "globTBus", $bus, "buf", $SF_map($server_name)($sample), "coords", $coords, "amp", $ampli, "loop", $loop])
+		$SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+		print sample (""+$SF_map($server_name)($sample))		
 	}	
 	@fun_def play_sample2($sample, $ampli = 0, $loop = 0)
 	{
@@ -14945,7 +15071,7 @@ $free_track := 0 // send info to program when track is free
 		// print (""+["TPlaybuf2_HOA_ste"+$order, $node_id_mod, 2, $node_id_out, "globTBus", $bus, "buf", $SF_map($server_name)($sample), "coords", $coords, "amp", $ampli, "loop", $loop])
 		$SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
 
-		print sample (""+$SF_map($server_name)($sample))
+		// print sample (""+$SF_map($server_name)($sample))
 	}
 
 	@fun_def play_sampleHOA_stop($sample, $fade_out = 0.1) 
@@ -15103,10 +15229,15 @@ $free_track := 0 // send info to program when track is free
 
 	@proc_def free($time = 1) // @proc_def parce qu'il y a un delay pour arrter les proc
 	{
+		@local $abs_time := @dur2sec($time)
 		// print track_proc_integral (""+$track_proc)
 		// scServer "n_set" $node_id_out out_ramp @dur2sec($time) gatee 0 // free group in $time
-		$Servers($server_name).n_set($node_id_out2, ["out_ramp", @dur2sec($time), "gatee", 0])
+		// $Servers($server_name).n_set($node_id_out2, ["out_ramp", @dur2sec($time), "gatee", 0])
+		$Servers($server_name).n_set($node_id_out2, ["out_ramp", $abs_time, "gatee", 0])
 
+		// print time (""+$time)
+		// print abs_time @dur2sec($time)
+		
 		// print free $track_name in @dur2sec($time) seconds
 
 		// ("abort track "+ $THISOBJ).post()
@@ -15132,7 +15263,8 @@ $free_track := 0 // send info to program when track is free
 			// }
 			group
 			{
-			($time-0.01) forall $k, $v in $track_proc($server_name)($mix_group)($track_name) // parcours liste de nodes
+			// ($time-0.01) forall $k, $v in $track_proc($server_name)($mix_group)($track_name) // parcours liste de nodes
+			($abs_time-0.015)s forall $k, $v in $track_proc($server_name)($mix_group)($track_name) // parcours liste de nodes
 					{
 					
 
@@ -15174,7 +15306,8 @@ $free_track := 0 // send info to program when track is free
 
 		// }
 
-			($time+0.01) forall $id in $sc_struct($server_name)($group_id)[0]
+			// ($time+0.01) forall $id in $sc_struct($server_name)($group_id)[0]
+			($abs_time+0.015)s forall $id in $sc_struct($server_name)($group_id)[0]
 			{
 				// print remove_node_node_id $id in $track_name
 				// print remove_node_node_id_map (""+$sc_struct($server_name)($id))
@@ -15192,6 +15325,11 @@ $free_track := 0 // send info to program when track is free
 			$synths_map($server_name)($mix_group).remove($track_name) // delete synths_map from map
 			$tracks.remove($track_name)
 			$trajs.remove($proc_index)
+
+			if($control_name != false) // if control_lev assign
+			{
+				$controllers($control_name).remove($track_name)
+			}
 			
 			0.5 abort $THISOBJ // abort objet after 1 time
 			}
@@ -15201,7 +15339,7 @@ $free_track := 0 // send info to program when track is free
 
 	@abort
 	{
-		print remove $track_name object
+		print "remove" $track_name object
 		// print "abort" toto $track_name object
 	    // $THISOBJ.free() // 
 	 //    forall $k, $v in $track_proc($server_name)($track_name) // abort processus
@@ -17861,6 +17999,20 @@ whenever ($track_amp_action==$track_amp_action)
             }
         }
 	}	
+	@fun_def pause()
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).pause()
+		}
+	}
+	@fun_def resume()
+	{
+		forall $t in $tracks_tab
+		{
+			$tracks($t).resume()
+		}
+	}
 	@proc_def free($time = 1)
 	{
 		forall $t in $tracks_tab
@@ -17868,7 +18020,6 @@ whenever ($track_amp_action==$track_amp_action)
 			$tracks($t).free($time)
 		}
 		0.1 abort $THISOBJ
-
 	}	
 	@react ($free_track == $free_track) // receive free track 
 	{
@@ -18767,6 +18918,9 @@ if (@is_undef($buf_alloc)) { $buf_alloc := map{} }
    	}
 }
 
+@global $pvoc_buf_alloc @persistent
+if (@is_undef($pvoc_buf_alloc)) { $pvoc_buf_alloc := map{} }
+
 // create fft_buffer from sound file for VBPVoc UGEN
 @obj_def VBPVoc_load_anal($server_name, $sound_file, $fft_size)
 {
@@ -18777,6 +18931,10 @@ if (@is_undef($buf_alloc)) { $buf_alloc := map{} }
 	    $buff_id := $SC_Servers($server_name)("buffer_id")	    
 	    $sync1  := (@rand_int(1000)+1)
 
+		if ($pvoc_buf_alloc($server_name).is_undef())
+		{
+			$pvoc_buf_alloc.add_pair($server_name, map{})
+		}
 	    
 	    print sync1 $sync1
 	    // print sync2 $sync2
@@ -18784,51 +18942,57 @@ if (@is_undef($buf_alloc)) { $buf_alloc := map{} }
 
 	    $sound_path := $SF_path($sound_file)
 
-		$Servers($server_name).b_allocRead($buff_id, $sound_path) // load buffer in sc_server
-		$SC_Servers($server_name).add_pair("buffer_id", $buff_id + 1) // incremente le node_id dans le dico des serveurs
-		$Servers($server_name).sync($sync1)
-		// $sync1 := -1
-
-		whenever (($server_sync[0] == $server_name) && ($server_sync[1] == $sync1)) // wait for server syc
+		if($pvoc_buf_alloc($server_name)($sound_file).is_undef())
 		{
-			
-			$sync2 := (@rand_int(1000)+1)
-			print sync1 $sync1
-			print sync2 $sync2
-			$sync1 := -1
-			$Servers($server_name).b_query($buff_id)
-			$Servers($server_name).sync($sync2)		  	 	 
-		}
 
-		whenever (($server_sync[0] == $server_name) && ($server_sync[1] == $sync2)) // wait for server syc
-		{
-			$sync3 := (@rand_int(1000)+1)
-			
-			print sync2 $sync2
-			print sync3 $sync3
-			$sync2 := -1
-			print buf_info $buf_info
-			print buf_frames ($buf_info[3])
-			print buf_num_chnls ($buf_info[4])
-			$sf_dur := $buf_info[3]/$sampling_rate
-			$buff_fft := $SC_Servers($server_name)("buffer_id")
-			$fftframes := (($buf_info[3] - $fft_size) / $hopsize + 2).ceil()
-			$outframes := ($fft_size/2) * $fftframes
-			print ("fftframes: "+$fftframes)
-			$Servers($server_name).b_alloc($buff_fft, $outframes, $buf_info[4]*2) //$buf_info[4] = numChannels
-			$Servers($server_name).sync($sync3)
-			// $sync3 := -1
-			$SC_Servers($server_name).add_pair("buffer_id", $buff_fft + 1) // incremente le node_id dans le dico des serveurs
+			$Servers($server_name).b_allocRead($buff_id, $sound_path) // load buffer in sc_server
+			$SC_Servers($server_name).add_pair("buffer_id", $buff_id + 1) // incremente le node_id dans le dico des serveurs
+			$Servers($server_name).sync($sync1)
+			// $sync1 := -1
 
-		}
-		whenever (($server_sync[0] == $server_name) && ($server_sync[1] == $sync3)) // wait for server syc
-		{
-			
-			print s3 sync2 $sync2
-			print s3 sync3 $sync3
-			$sync3 := -1
-			$THISOBJ.pvocAnal()
+			whenever (($server_sync[0] == $server_name) && ($server_sync[1] == $sync1)) // wait for server syc
+			{
+				
+				$sync2 := (@rand_int(1000)+1)
+				print sync1 $sync1
+				print sync2 $sync2
+				$sync1 := -1
+				$Servers($server_name).b_query($buff_id)
+				$Servers($server_name).sync($sync2)		  	 	 
+			}
 
+			whenever (($server_sync[0] == $server_name) && ($server_sync[1] == $sync2)) // wait for server syc
+			{
+				$sync3 := (@rand_int(1000)+1)
+				
+				print sync2 $sync2
+				print sync3 $sync3
+				$sync2 := -1
+				print buf_info $buf_info
+				print buf_frames ($buf_info[3])
+				print buf_num_chnls ($buf_info[4])
+				$sf_dur := $buf_info[3]/$sampling_rate
+				$buff_fft := $SC_Servers($server_name)("buffer_id")
+				$fftframes := (($buf_info[3] - $fft_size) / $hopsize + 2).ceil()
+				$outframes := ($fft_size/2) * $fftframes
+				print ("fftframes: "+$fftframes)
+				$Servers($server_name).b_alloc($buff_fft, $outframes, $buf_info[4]*2) //$buf_info[4] = numChannels
+				$Servers($server_name).sync($sync3)
+				// $sync3 := -1
+				$SC_Servers($server_name).add_pair("buffer_id", $buff_fft + 1) // incremente le node_id dans le dico des serveurs
+
+			}
+			whenever (($server_sync[0] == $server_name) && ($server_sync[1] == $sync3)) // wait for server syc
+			{
+				
+				print s3 sync2 $sync2
+				print s3 sync3 $sync3
+				$sync3 := -1
+				$THISOBJ.pvocAnal()
+				$pvoc_buf_alloc($server_name).add_pair($sound_file, $buff_fft) // associe l'index/env_key
+
+
+			}
 		}
 	}
 
@@ -18843,8 +19007,16 @@ if (@is_undef($buf_alloc)) { $buf_alloc := map{} }
 	}	
 	@fun_def VBPVoc_buf()
 	{
-		return $buff_fft
+		// return $buff_fft
+		return $pvoc_buf_alloc($server_name)($sound_file)
 	}
+   	@fun_def free()
+   	{
+   		print free
+   		// $Servers($server_name).n_free($group_id)
+		$pvoc_buf_alloc($server_name).remove($sound_file)			
+
+   	}	
 
 }
 // $rec_buf_pvoc10 := obj::rec_buf_pvoc($server, $hop_size, $FftSize, $dur) //create objet/buffer with parameters
@@ -26292,7 +26464,7 @@ whenever ($from_sc_server2==$from_sc_server2)
 				// $pos := $angle_inc_rand.scale(0, 360, 0., 1., 1)
 
 				::HOAmbi_grain_xyz_track_buf(@choose($buf_list), $envbuf, $rate, $env_dur, $pos, $cartopol, $amp, $track_HOA_NE)
-				@command("of_grains"+$grain_group) @dur2mlsec($env_dur) $rand_x $rand_y $rand_z
+				// @command("of_grains"+$grain_group) @dur2mlsec($env_dur) $rand_x $rand_y $rand_z // comment for audio performance
 
 			}
 		}

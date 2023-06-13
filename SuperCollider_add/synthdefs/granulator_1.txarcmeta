@@ -1,0 +1,57 @@
+var o, p;
+o = [
+	Event.prNew,  Array.prNew(4),  Event.prNew,  Array.prNew(36),  
+	Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5)
+];
+p = [
+	// Event
+	0, [ array: o[1],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	1, [ 'specs',  o[2],  nil,  nil ],  
+	// Event
+	2, [ array: o[3],  size: 9,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	3, [ 'posDev',  o[4],  'pos',  o[5],  
+		'delayRange',  o[6],  'limitAmp',  o[7],  
+		'pulseFreq',  o[8],  nil,  nil,  
+		'numChannels',  o[9],  nil,  nil,  
+		'grainDur',  o[10],  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		'channelOffset',  o[11],  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		'preAmp',  o[12],  nil,  nil ],  
+	// Array
+	4, [ 0,  0.2,  'lin',  0,  
+		0.25 ],  
+	// Array
+	5, [ -1,  1,  'lin',  0,  
+		0 ],  
+	// Array
+	6, [ 0,  10,  2,  0,  
+		1 ],  
+	// Array
+	7, [ 0,  0.5,  2,  0,  
+		0.1 ],  
+	// Array
+	8, [ 1,  500,  3,  0,  
+		10 ],  
+	// Array
+	9, [ 1,  30,  'lin',  1,  
+		30 ],  
+	// Array
+	10, [ 0.001,  0.2,  3,  0,  
+		0.015 ],  
+	// Array
+	11, [ 0,  29,  'lin',  1,  
+		0 ],  
+	// Array
+	12, [ 0,  3,  'lin',  0,  
+		0.5 ]
+];
+prUnarchive(o,p);
