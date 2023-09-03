@@ -5977,7 +5977,7 @@ $FluidBufOnsetSlice := 0
 	}
 }
 
-@obj_def mix_group_HOA($group_name, $server_name, $decoder, $order, $hoa_decoder = "sc-hoa", $ext_id = false, $offset = 0, $amp = 0, $lev_name = "hrir_christophe_lebedev50")
+@obj_def mix_group_HOA($group_name, $server_name, $decoder, $order, $hoa_decoder = "sc-hoa", $ext_id = false, $offset = 0, $amp = 0, $amp_rec = 0, $hoa_3_out = 109, $lev_name = "hrir_christophe_lebedev50")
 {			
 	@local $group_id, $bus, $hoa_rev_bus, $hoa_bus, $node_id_out, $addmod_index := 0, $HOABeamDirac2Hoa_id, $HOABeamHCard2Hoa_id, $hoa_num_ch, $num_ch := 2, $rec_map := map{}, $decoder_name, $struct_group_id, $struct_main_group_id, $node_id_rec
 	@init 
@@ -6150,7 +6150,7 @@ $FluidBufOnsetSlice := 0
 						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
 						$num_ch := 125
 						$node_id_rec := $SC_Servers($server_name)("node_id") // id for decoder synth
-						$Servers($server_name).s_new(["HOA_Dec_ESPRO3_Rec", $node_id_rec, 1, $group_id, "in", $hoa_bus, "hoa_3_out", 109, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
+						$Servers($server_name).s_new(["HOA_Dec_ESPRO3_Rec", $node_id_rec, 1, $group_id, "in", $hoa_bus, "hoa_3_out", $hoa_3_out, "in_ramp", 0.001, "amp", $amp_rec, "index", $group_id])
 						$SC_Servers($server_name).add_pair("node_id", $node_id_rec + 1)
 					}						
 					case "DB_12": // order 3
@@ -8146,7 +8146,7 @@ $FluidBufOnsetSlice := 0
 
 @obj_def crea_track($track_name, $mix_group, $synth_collection = [], $fade_in = 0.01, $amp = 0, $num_inputs = 1) // recuperar el nombre de la variable
 {
-	@local $group_id, $bus, $gbus, $node_id_out, $gui, $server_name, $group_name, $main_group_id, $rand_spat_pos := false, $t_trig := 0, $trig_ryth, $last_bpf_amp_curve, $num_channels, $amp_bpf_x_min, $amp_bpf_x_max
+	@local $group_id, $bus, $gbus, $node_id_out, $gui, $server_name, $group_name, $main_group_id, $rand_spat_pos := false, $t_trig := 0, $trig_ryth, $last_bpf_amp_curve, $num_channels, $amp_bpf_x_min, $amp_bpf_x_max, $curve_weight := 0
     @init 
     {
 
@@ -9380,6 +9380,38 @@ $FluidBufOnsetSlice := 0
 
 	}
 
+	// $curve_weight := 0
+    @proc_def weight_interpol($module, $param, $bpf, $num_elements = 24, $loop = 1) 
+    {
+		@local $nim, $weight, $inc := 0, $nim_dur, $periode, $loop_tempo := 60, $id
+		$id := ($synths_map($server_name)($mix_group)($track_name)($module))
+		$nim := @build_nim_from_bpf($bpf)
+		$nim_dur := @max_key($nim)
+		// print nim1 (""+$nim)
+		$weight := @weight_from_tab($bpf[0], $num_elements)
+		$periode := (60/$loop_tempo)*$nim_dur
+		abort $curve_weight
+		$curve_weight := { loop $periode
+		{
+			curve @grain := 0.01, 
+			@tempo := $loop_tempo,
+			@action 
+			{
+				// print @norma_weight($weight)
+				$Servers($server_name).n_set($id, [$param, $weight])
+
+				$periode := (60/$loop_tempo)*$nim_dur // actualise la valeur de la periode							
+			} 
+			{ $weight : $nim }
+			$inc += 1			    
+		} until ($inc >= $loop)
+		}
+    }		
+
+	@fun_def weight_interpol_stop() // no sé si funciona
+	{ 
+		abort $curve_weight
+	}
 
 	// @fun_def amp($group_amp)
 	// {
@@ -10201,10 +10233,10 @@ $free_track := 0 // send info to program when track is free
 						// agragar un dico con controles
 						if($controllers.is_defined($control_name))
 						{
-							print track to control_name true $control_name
+							// print track to control_name true $control_name
 							$controllers($control_name).add_pair($track_name, $THISOBJ)
 							$amp2_out := $controllers($control_name)("level")
-							print $control_name amp2_out $amp2_out
+							// print $control_name amp2_out $amp2_out
 						}
 						else
 						{
@@ -20215,7 +20247,7 @@ $rt_analyse := []
 }
 
 
-@global $jlg_count_rand := 0
+// @global $jlg_count_rand := 0
 
 @proc_def rand_lfo_basic_s($server_name, $group, $module, $param, $min, $max, $init_val, $type, $tpo, $min_interval = 0, $gui = false) 
 @abort
@@ -20224,15 +20256,15 @@ $rt_analyse := []
 	// $sc_struct($group)($module).add_pair($param, $val) // enregistre la dernière valeur dans la main Map
 	$sc_struct($server_name)($module).add_pair($param, $val) 
 
-	$jlg_count_rand -= 1
-	print "--> reste " $jlg_count_rand
+	// $jlg_count_rand -= 1
+	// print "--> reste " $jlg_count_rand
 	abort $curve_int_proc
 }
 {
 	@local $v1, $v2, $duree, $current, $curve_proc, $val, $curve_int_proc, $speedlim_actif := true, $speedlim_time := 0.1, $delay
 
-	$jlg_count_rand += 1
-	print "--> active rand " $jlg_count_rand
+	// $jlg_count_rand += 1
+	// print "--> active rand " $jlg_count_rand
 
 
 	$v1 := $init_val
