@@ -4,8 +4,8 @@
 // ./scsynth -u 57110 -i 43 -o 43 -b 1026 -d 2048 -n 16384 -m 1048576 -w 256  -S 48000 &
 
 // indique qu'il faut gerer les arrays OSC pour piloter SuperCollider
- @set_osc_handling_tab(1) ///SuperCollider a diferencia de antescofo/sclang
-
+@set_osc_handling_tab(1) ///SuperCollider a diferencia de antescofo/sclang
+@set_max_message_sent_instantaneously(2000) // max number of Antescofo sent messages
 antescofo::bypass_temporeset on
 
 
@@ -35,6 +35,11 @@ oscsend of_list3D "localhost" :12345 "/of_list3D" //@persistent
 oscsend of_list "localhost" :12345 "/of_list" //@persistent
 oscsend of_traj "localhost" :12345 "/of_traj" //@persistent
 oscsend of_molecules "localhost" :12345 "/of_molecules" //@persistent
+oscsend HOA_energy "localhost" :12345 "/HOA_energy" //@persistent
+oscsend of_molecules2 "192.168.1.201" :12345 "/of_molecules2" //@persistent
+
+
+
 oscsend of_concat_list_num "localhost" :12345 "/of_concat_list_num" //@persistent
 oscsend of_concat3D "localhost" :12345 "/of_concat3D" //@persistent
 
@@ -47,7 +52,16 @@ oscsend of_grains4 "localhost" :12345 "/of_grains4" //@persistent
 oscsend of_grains5 "localhost" :12345 "/of_grains5" //@persistent
 oscsend of_grains6 "localhost" :12345 "/of_grains6" //@persistent
 
+// oscsend of_grains1 "192.168.1.201" :12345 "/of_grains1" //@persistent
+// oscsend of_grains2 "192.168.1.201" :12345 "/of_grains2" //@persistent
+// oscsend of_grains3 "192.168.1.201" :12345 "/of_grains3" //@persistent
+// oscsend of_grains4 "192.168.1.201" :12345 "/of_grains4" //@persistent
+// oscsend of_grains5 "192.168.1.201" :12345 "/of_grains5" //@persistent
+// oscsend of_grains6 "192.168.1.201" :12345 "/of_grains6" //@persistent
+
+
 oscsend knn_search_list "localhost" :12345 "/knn_search_list" //@persistent
+oscsend knn_search_list2 "localhost" :12345 "/knn_search_list2" //@persistent
 
 // send to oF GUI
 
@@ -99,6 +113,8 @@ oscrecv from_bach2 6555 * $from_bach2 // @persistent
 oscrecv from_bach2 6556 * $from_bach3 // @persistent
 
 ///////
+
+oscrecv from_vscode 7667 * $from_vscode // @persistent
 
 /// Vezer
 
@@ -194,7 +210,7 @@ if (@is_undef($controllers)) { $controllers := map{} }
 
 	whenever ($control_fromMax[0] == $control_name)
 	{
-		// print (""+$controllers($control_name))
+		// print (""+$controllers)
 		forall $trk, $obj in $controllers($control_name)
 		{
 			if($trk != "level")
@@ -207,7 +223,7 @@ if (@is_undef($controllers)) { $controllers := map{} }
 		$controllers($control_name).add_pair("level", $control_fromMax[1]) // registre le niveau du slider dans la map pour crea_track
 	}
 }
-
+// print (""+$controllers("resynth"))
 // print (""+$vst_param_map)
 @global $vst_param_map @persistent
 if (@is_undef($vst_param_map)) { $vst_param_map := map{} }
@@ -1365,6 +1381,21 @@ whenever ($free_tracks)
 	}
 }
 
+
+whenever ($from_vscode == "panic")
+{
+	forall $k, $v in $tracks
+	{
+		$v.free($free_tracks)
+	}
+	// ($free_tracks+0.005) $tracks := map{} // clean dico
+	forall $k, $v in $SC_Servers
+	{
+		// print (""+$k)
+		$SC_Servers($k).insert("bus_index", 500) // reset all bus to index 500
+	}
+}
+
 whenever ($free_select_track)
 {
 	// synth_groups_all clear
@@ -1647,7 +1678,7 @@ whenever($reset_buffers==$reset_buffers)
   {
 	forall $nim_ind in $nim_in
 	{
-		$tab_nim.push_back([ $nim_ind($x) | $x in 0 .. @max_key($nim_ind) : @max_key($nim_ind)/(1000/$nim_ind.size()) ]) //40 elements !!narrive pas à 1 /@max_key($nim_in)
+		$tab_nim.push_back([ $nim_ind($x) | $x in 0 .. @max_key($nim_ind) : @max_key($nim_ind)/(1000/$nim_ind.size())]) //40 elements !!narrive pas à 1 /@max_key($nim_in)
 		$max_nim_key := @max_key($nim_ind)
 		if($max_nim_key > $max_nim_key_ant)
 		{
@@ -1666,6 +1697,39 @@ whenever($reset_buffers==$reset_buffers)
   }
   @set_osc_handling_tab(1)
 }
+
+@proc_def ::plotnim2($nim_in)
+{
+  @local $t_nim, $tab_nim, $max_nim_key_ant := 0, $max_nim_key := 0
+  @set_osc_handling_tab(0)/// send OSC Arrays to SuperCollider Language
+  // print (""+$nim_in)
+  $tab_nim := []
+  if($nim_in.is_tab())
+  {
+	forall $nim_ind in $nim_in
+	{
+		$tab_nim.push_back([ $nim_ind($x) | $x in 0 .. @max_key($nim_ind) : @max_key($nim_ind)/(1024/$nim_ind.size())]) //40 elements !!narrive pas à 1 /@max_key($nim_in)
+		$max_nim_key := @max_key($nim_ind)
+		if($max_nim_key > $max_nim_key_ant)
+		{
+			$max_nim_key_ant := $max_nim_key
+		}else{
+			$max_nim_key := $max_nim_key_ant
+		}
+		$max_nim_key_ant := @max_key($nim_ind)
+	}
+	// plotnim $max_nim_key $tab_nim
+	print (""+[$max_nim_key, $tab_nim])
+  }
+  else
+  {
+	  $t_nim := [ $nim_in($x) | $x in 0 .. @max_key($nim_in) : @max_key($nim_in)/1024 ] //40 elements !!narrive pas à 1 /@max_key($nim_in)
+	  // plotnim @max_key($nim_in) $t_nim 
+	  print (""+[@max_key($nim_in), $t_nim])
+  }
+  @set_osc_handling_tab(1)
+}
+
 
 
 // $vezer_curves := map{}
@@ -1830,10 +1894,10 @@ if (@is_undef($interpol_types)) { $interpol_types := map {("none", "linear"), ("
 	}
 }
 
-@proc_def ::load_vezer2nim_param() // read hrir audio files into buffers
+@proc_def ::load_vezer2nim_param() // read vezer
 {
 	forall $k, $v in $vezer_nims
-	{
+	{	
 		::vezerxml2nim_param(@xml_read($vezer_path+$v), $k.drop(-4))
 		print load verzer xml $v
 	}
@@ -2924,6 +2988,16 @@ $envs_map := map{
 	("perc_s", NIM{ 0 0, 0.01 1 "exp", 0.9 0 "quart_in_out"}),
 	("perc_rond", NIM{ 0 0, 0.1 1 "exp_out", 0.5 0.9, 1 0 "quint_out"}),
 	("perc_elastic", NIM{ 0 0, 0.5 1 "elastic_out", 0.5 0 "sine_in"}),
+	("pulse0", NIM{ 0 0, 0.0 1 "exp", 0.5 0 "exp_out", 0.5 0}),
+	("pulse1", NIM{ 0 0, 0.01 1 "exp", 0.49 0 "exp_out", 0.5 0}),
+	("pulse2", NIM{ 0 0, 0.01 1 "exp", 0.01 1, 0.48 0 "exp_out", 0.5 0}),
+	("pulse3", NIM{ 0 0, 0.01 1 "exp", 0.69 0 "exp_out", 0.3 0}),
+	("pulse4", NIM{ 0 0, 0.01 1 "linear", 0.49 0 "linear", 0.5 0}),
+	("pulse5", NIM{ 0 0, 0.01 1 "linear", 0.69 0 "linear", 0.3 0}),
+	("pulse6", NIM{ 0 0, 0.001 1 "linear", 0.299 0 "linear", 0.7 0}),
+	("pulse7", NIM{ 0 0, 0.001 1 "linear", 0.199 0 "linear", 0.8 0}),
+	("pulse8", NIM{ 0 0, 0.001 1 "linear", 0.099 0 "linear", 0.9 0}),
+	("pulse9", NIM{ 0 0, 0.001 1 "linear", 0.049 0 "linear", 0.95 0}),
 	("inv", NIM{ 0 0, 0.9 1 "exp", 0.1 0 "sine"}),
 	("m", NIM{ 0 0, 0.5 1 "circ", 0.2 0.5 "circ", 0.2 0.9 "sine", 0.5 0 "cubic_out"}),
 	("m2", NIM{ 0 0, 0.5 0.7 "cubic", 0.2 0.3 "circ_out", 0.2 1 "sine", 0.2 0 "cubic_out"}),
@@ -3532,6 +3606,7 @@ if (@is_undef($SF_path)) { $SF_path := map{} }
 	$SF_map.add_pair($server_name, map{}) // create a new map for store each sf in a server
 	// $SF_path.add_pair($server_name, map{}) // create a new map for store each sf in a server
 
+	print $server_name load samples
 	if($folder == "")
 	{
 		$folders_read := $SF_dir
@@ -3540,11 +3615,15 @@ if (@is_undef($SF_path)) { $SF_path := map{} }
 	{
 		$folders_read := $SF_dir($folder)
 	}
+	
+	// print (""+$folders_read) folders_read 
 
 	forall $k, $v in $folders_read
 	{
 		if($v != ".DS_Store") // enleve ".DS_Store"
 		{
+			// print (""+$v) folders_2
+
 			if($v.is_map()) // folder of folders of SF
 			{
 			// print (""+$v)
@@ -3591,7 +3670,9 @@ if (@is_undef($SF_path)) { $SF_path := map{} }
 			}
 			else // all sf in the same folder
 			{
-				$path_local := ($path+$v)
+				$path_local := ($path+$folder+"/"+$v)
+				print $path_local
+				// print (""+$v) folders_3
 				// print folder $k soundFile ($path+$k+"/"+$sf)
 				// print $server_name $buff_id ($path+$k+"/"+$sf)
 				// scServer "/b_allocRead" $SC_Buffers_index ($path+$k+"/"+$sf)
@@ -3812,7 +3893,7 @@ $localhost_meter := 0
 $FluidBufOnsetSlice := 0
 
 
-@obj_def sc_server($server_name, $port, $inputs = 24, $outputs = 24, $sc_server = "scsynth", $audio_bus = 81920, $sr = 48000, $device = "Built-in Microph", $block_size = 64, $hardware_buffer_size = 256, $num_buffers = 16384, $max_num_synth_defs = 8192, $max_nodes = 16384, $memSize = 1048576, $numWireBufs = 256, $max_logins = 64) // obj::sc_server("server1", 57111) $memSize = 65536 ---- 262144 4194304 2097152 --- 1048576 16777216 $max_num_synth_defs = 131072
+@obj_def sc_server($server_name, $port, $inputs = 24, $outputs = 24, $sc_server = "scsynth", $audio_bus = 81920, $sr = 48000, $device = "Built-in Microph", $block_size = 64, $hardware_buffer_size = 64, $num_buffers = 16384, $max_num_synth_defs = 8192, $max_nodes = 16384, $memSize = 1048576, $numWireBufs = 256, $max_logins = 64) // obj::sc_server("server1", 57111) $memSize = 65536 ---- 262144 4194304 2097152 --- 1048576 16777216 $max_num_synth_defs = 131072
 {
 	@local $server_boot, $server, $cpu, $rec_map := map{}, $device_in, $device_out
 
@@ -3882,11 +3963,11 @@ $FluidBufOnsetSlice := 0
 			switch($sc_server)
 			{
 				case "scsynth": 
-			  	@system("osascript -e 'tell app \"Terminal\" to do script \"/Applications/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -Z "+$hardware_buffer_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 0 -l "+$max_logins+" -H \\\""+$device_in+"\\\" \\\""+$device_out+"\\\" \"' -e 'tell app \"Terminal\" to set custom title of front window to "+$port+"'") //"+($server_name+"_"+$port)+" \"$server_name\"
+			  	@system("osascript -e 'tell app \"Terminal\" to do script \"/Applications/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -Z "+$hardware_buffer_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 1 -l "+$max_logins+" -H \\\""+$device_in+"\\\" \\\""+$device_out+"\\\" \"' -e 'tell app \"Terminal\" to set custom title of front window to "+$port+"'") //"+($server_name+"_"+$port)+" \"$server_name\"
 				// @system("osascript -e 'tell app \"Terminal\" to do script \"/Applications/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 0 -l "+$max_logins+" ' -e 'tell app \"Terminal\" to set custom title of front window to "+$port+"'") //"+($server_name+"_"+$port)+" \"$server_name\"
 			  	// @system("/Applications/SuperCollider.app/Contents/Resources/scsynth -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 0 -l "+$max_logins+" -H \""+$device_in+"\" &") // -H "+$device_in+"  //\\\""+$device_in+"\\\" \\\""+$device_out+"\\\" ")
 			  	case "supernova": 
-			  	@system("osascript -e 'tell app \"Terminal\" to do script \"/Applications/SuperCollider.app/Contents/Resources/supernova -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -Z "+$hardware_buffer_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 0 -l "+$max_logins+" -H \\\""+$device_in+"\\\" \\\""+$device_out+"\\\" \"' -e 'tell app \"Terminal\" to set custom title of front window to "+$port+"'") //"+($server_name+"_"+$port)+" \"$server_name\"
+			  	@system("osascript -e 'tell app \"Terminal\" to do script \"/Applications/SuperCollider.app/Contents/Resources/supernova -u "+$port+" -B 127.0.0.1 -a "+$audio_bus+" -i "+$inputs+" -o "+$outputs+" -b "+$num_buffers+" -z "+$block_size+" -Z "+$hardware_buffer_size+" -d "+$max_num_synth_defs+" -n "+$max_nodes+" -m "+$memSize+" -w "+$numWireBufs+" -S "+$sr+" -R 1 -l "+$max_logins+" -H \\\""+$device_in+"\\\" \\\""+$device_out+"\\\" \"' -e 'tell app \"Terminal\" to set custom title of front window to "+$port+"'") //"+($server_name+"_"+$port)+" \"$server_name\"
 				case @true: // ninguno de los anteriores
 				print you must use scsynth or supernova audio server 
 			}
@@ -3938,7 +4019,7 @@ $FluidBufOnsetSlice := 0
 			// print server_sync ($server[1])
 			
 		case "/meter":
-			sc_meter $server_name $server
+			// sc_meter $server_name $server
 			// meter localhost /meter 101 100 0.296139 0.139845
 			$localhost_meter := ($server[3])
 			// print ($server[3])
@@ -4010,6 +4091,10 @@ $FluidBufOnsetSlice := 0
 			// print  "FluidBufPitch/processNew" done
 			$FluidBufPitchDone := $server.push_front($server_name)
 			// print FluidBufPitchDone $FluidBufPitchDone
+			case "FluidSineFeature/processNew":
+			// print  "FluidBufPitch/processNew" done
+			$FluidSineFeature := $server.push_front($server_name)
+			// print FluidSineFeature $FluidSineFeature			
 			case @true: // ninguno de los anteriores
 			print $server 
 
@@ -4026,10 +4111,33 @@ $FluidBufOnsetSlice := 0
 		case "/b_setn": 
 		$buf_setn := $server
 		print buf_setn_replay $server
-		case "/n_go":
-		// do somthing when destroy a synth
+		case "/n_go":		
+		// do somthing when create a synth 
+		case "/n_move":
+		// do somthing when create a synth 
 		case "/n_end":
-		// do somthing when create a synth   
+		// print end_synth $server_name $server
+		// if($server[2] != -1)
+		// {
+		// 	if($sc_struct($server_name)($server[2])[2].is_defined("track_name"))
+		// 	{
+		// 		@local $father_node_map := $sc_struct($server_name)($server[2])[2]
+		// 		print father node id ($server[2])
+		// 		print remove id ($server[1]) from ($father_node_map("track_name"))
+		// 		$tracks($father_node_map("track_name")).mod_remove_id($server[1])	
+		// 	}
+		// 	else
+		// 	{
+		// 		if($sc_struct($server_name)($server[2])[0].member($server[1]))
+		// 		{
+		// 			@local $root_array := $sc_struct($server_name)($server[2])[0]
+		// 			print root node id ($server[2])
+		// 			print remove id ($server[1]) from ($root_array[1]) track_name (($sc_struct($server_name)($server[1])[2])("track_name"))
+		// 			$tracks(($sc_struct($server_name)($server[1])[2])("track_name")).free(0.1)
+		// 		}
+		// 	}
+		// }
+		// do somthing when destroy a synth
 		case "/meterAuxIn":
 			// meter aux leve
 
@@ -4081,7 +4189,7 @@ $FluidBufOnsetSlice := 0
 			$descriptors_receives := [$server_name, $server]
 			case "/fluid_chroma":
 			$descriptors_receives := [$server_name, $server]
-			case "/fluid_melbands":
+			case "/fluid_sine":
 			$descriptors_receives := [$server_name, $server]			
 															
 			// print fluid_chroma $server
@@ -4089,8 +4197,16 @@ $FluidBufOnsetSlice := 0
 			// receive vst params from VSTPlugIns UGEN
 			case "/seg_end": 
 			$seg_end := [$server_name, $server]
+
+			// FAUST HOA GRANULATOR
+			case "/gran_aed": 
+			$gran_aed := [$server_name, $server]
+			// FAUST HOA Visualisator
+			case "/HOA_energy": 
+			$hoa_energy := [$server_name, $server]			
+
 		case @true: // si no es ninguno de los anteriores
-		print reponse $server_name $server
+		// print reponse $server_name $server // lo saco por ahora sino muchos mensajes
 	}
 	}
 
@@ -4098,7 +4214,7 @@ $FluidBufOnsetSlice := 0
     {
     	if($etat) // si le serveur est déjà instancié
 		{
-			print server $server_name already instantiated
+			print $server_name already instantiated
 			server_osc "/version" 1
 			$THISOBJ.g_new(1, 0, 0) // Create default group into the server
 			$Servers.insert($server_name, $THISOBJ) // objet dans une map pour l'appeler depuis d'autres objets 
@@ -4115,6 +4231,7 @@ $FluidBufOnsetSlice := 0
 			$space_group.insert($server_name, map{})
 			$group_proc.insert($server_name, map{})
 			$wavetable.insert($server_name, map{})
+			$THISOBJ.notify(1) // Notify when already instantiated to receive data from server
 
 		}
 		else
@@ -4454,7 +4571,7 @@ $FluidBufOnsetSlice := 0
 }
 
 	
-@obj_def mix_group($group_name, $server_name, $num_channels = 8, $out_offset = 0, $pan = false, $destination = <undef>, $pan_init = -1, $out = true)
+@obj_def mix_group($group_name, $server_name, $num_channels = 8, $offset = 0, $pan = false, $destination = <undef>, $pan_init = -1, $out = true)
 {
 	@local $group_id, $bus, $node_id_out, $addmod_index := 0, $group_pan0, $rec_map := map{}
 	@init 
@@ -4488,7 +4605,7 @@ $FluidBufOnsetSlice := 0
 
 			if(! $pan) // pannig between groups ex HOA -> Stereo
 			{
-				$Servers($server_name).s_new(["audioOut"+$num_channels, $node_id_out, 1, $group_id, "in", $bus, "out", $out_offset, "index", $bus, "in_ramp", 0.001, "amp", 0])
+				$Servers($server_name).s_new(["audioOut"+$num_channels, $node_id_out, 1, $group_id, "in", $bus, "out", $offset, "index", $bus, "in_ramp", 0.001, "amp", 0])
 			}
 			else
 			{
@@ -4504,7 +4621,7 @@ $FluidBufOnsetSlice := 0
 				{
 					print group_pan0 $group_pan0
 					// print group_pan1 $group_pan1
-					$Servers($server_name).s_new(["Pan_to_"+$num_channels, $node_id_out, 1, $group_id, "in", $bus, "out", $out_offset, "out2", $group_pan0, "index", $bus, "in_ramp", 0.001, "amp", 0, "pan2_pos", $pan_init])
+					$Servers($server_name).s_new(["Pan_to_"+$num_channels, $node_id_out, 1, $group_id, "in", $bus, "out", $offset, "out2", $group_pan0, "index", $bus, "in_ramp", 0.001, "amp", 0, "pan2_pos", $pan_init])
 				}
 			}
 
@@ -5977,7 +6094,7 @@ $FluidBufOnsetSlice := 0
 	}
 }
 
-@obj_def mix_group_HOA($group_name, $server_name, $decoder, $order, $hoa_decoder = "sc-hoa", $ext_id = false, $offset = 0, $amp = 0, $amp_rec = 0, $hoa_3_out = 109, $lev_name = "hrir_christophe_lebedev50")
+@obj_def mix_group_HOA($group_name, $server_name, $decoder, $order, $hoa_decoder = "sc-hoa", $ext_id = false, $offset = 0, $amp = 0, $amp_rec = 0, $hoa_3_out = 109, $meter_index = 1, $lev_name = "hrir_christophe_lebedev50")
 {			
 	@local $group_id, $bus, $hoa_rev_bus, $hoa_bus, $node_id_out, $addmod_index := 0, $HOABeamDirac2Hoa_id, $HOABeamHCard2Hoa_id, $hoa_num_ch, $num_ch := 2, $rec_map := map{}, $decoder_name, $struct_group_id, $struct_main_group_id, $node_id_rec
 	@init 
@@ -6015,7 +6132,8 @@ $FluidBufOnsetSlice := 0
 			$SC_Servers($server_name).insert("bus_index", $bus+1) // inc bus de server + hoa_bus (4) + $hoa_rev_bus (4) 
 
 			// $hoa_rev_bus := $bus+8
-			
+			$meter_index := @to_num($server_name.last()) // takes the las string for exemple 1 for "server1" for viewMeter index
+			// print meter_index $meter_index
 			$hoa_num_ch := ($order+1).pow(2) // HOA number of channels
 
 			// print hoa_bus $hoa_bus
@@ -6042,12 +6160,77 @@ $FluidBufOnsetSlice := 0
 			// scServer "s_new" audioOut8 $node_id_out 1 $group_id in $bus out 0 index $bus in_ramp 0.001 amp 0
 				
 				// $sc_hoa_group1 := obj::mix_group_HOA("group_hoa1", "localhost", "HOA_Global_Lev_Dec", 3)
-			switch ($decoder)
+
+			$THISOBJ.select_decoder($decoder) // select decoder 
+
+			   print group_id $group_id
+
+			// print ATKGlobalFOA_Trans_Rev $node_id_out 1 $group_id in $hoa_bus in_rev $hoa_rev_bus out 0 in_ramp 0.001 amp 0
+
+			// $node_id := $node_id + 1 // incremente le node_id
+			// $SC_Servers($server_name).add_pair("node_id", $node_id_out + 1)
+			$SC_Servers($server_name).insert("bus_index", $hoa_bus + ($order+1).pow(2)) // inc bus de server + hoa_bus (4) + $hoa_rev_bus (4) 
+
+			// $SC_Servers($server_name).insert("bus_index", $bus+8+$hoa_bus) // inc bus de server + hoa_bus (4) + $hoa_rev_bus (4) 
+
+			// update dictionaires
+			$groups.add_pair($group_name, $THISOBJ) // put this group object in dico $group
+			$SC_Groups($group_name).insert("name", $group_name)
+			$SC_Groups($group_name).insert("main_group_id", $group_id)
+			$SC_Groups($group_name).insert("main_bus", $bus)
+			$SC_Groups($group_name).insert("hoa_bus", $hoa_bus)
+			// $SC_Groups($group_name).insert("hoa_rev_bus", $hoa_rev_bus)
+			$SC_Groups($group_name).insert("order", $order)
+			$SC_Groups($group_name).insert("decoder_id", $node_id_out)
+			$SC_Groups($group_name).insert("sub_group", map{}) // for store the sub group object 
+			$SC_Groups($group_name).insert("aux_sub_group", map{}) // for store the sub aux group object 
+
+			// creation des dictionaires de synth et proc dans un mix group
+			$synths_map($server_name).insert($group_name, map{})
+			$track_proc($server_name).insert($group_name, map{})
+			$vst_plugins($server_name).insert($group_name, map{})
+			$space_group($server_name).add_pair($group_name, map{})
+			$space_group($server_name)($group_name).add_pair("val", map{})
+			$space_group($server_name)($group_name).add_pair("xyz_offset", [0, 0, 0]) //oF visualisation
+			$group_proc($server_name).add_pair($group_name, map{})
+
+
+			// creation des dictionaires structure generale des nodes
+			$struct_main_group_id := $sc_struct($server_name)(1)("default_group")
+			if ($sc_struct($server_name)($group_id).is_undef()) // if group_id exist on the program
+			{
+				$struct_main_group_id.push_back($group_id) // default group 1 -> [group_id]
+				$sc_struct($server_name).add_pair($group_id, [[$node_id_out], $group_name]) // crea nueva key group + decoder
+				$struct_group_id := $sc_struct($server_name)($group_id)[0]
+				$sc_struct($server_name).add_pair($node_id_out, map{("decoder", $decoder), ("order", $order), ("in", $hoa_bus), ("out", 0), ("index", $group_id), ("in_ramp", 0.001), ("amp", $amp)}) // , ("in_rev", $hoa_rev_bus) crea MAP para nombre_synth + parametros
+			}
+			print new "group" $group_name created in server $server_name
+
+			groups_max $group_id $group_name $server_name
+		}
+		else // add group to specific server g_new
+		{
+				print "group" $group_name already exists
+		}
+	}
+    }
+	
+    @fun_def select_decoder($dec)
+    {
+			switch ($dec)
 			{
 				case "no_decoder":					
 					// scServer "s_new" ("HOA_Hexa_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus
 					switch($order)
 					{
+						case 2:
+						$decoder_name := "audioOut9"
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp])
+						$num_ch := 9						
+						case 3:
+						$decoder_name := "audioOut16"
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp])
+						$num_ch := 16						
 						case 5:
 						$decoder_name := "audioOut36"
 						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp])
@@ -6104,6 +6287,12 @@ $FluidBufOnsetSlice := 0
 					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp])
 					$num_ch := 8
 
+					case "nove":
+					// scServer "s_new" ("HOA_Octo_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 // in_rev $hoa_rev_bus
+					$decoder_name := "HOA_Nove_Dec"+$order
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp])
+					$num_ch := 9
+
 					case "studio1":
 					if($hoa_decoder == "sc-hoa")
 					{
@@ -6112,6 +6301,14 @@ $FluidBufOnsetSlice := 0
 						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
 						$num_ch := 24	
 					}
+					case "studio5":
+					if($hoa_decoder == "sc-hoa")
+					{
+						// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
+						$decoder_name := "HOADecSTUDIO5_"+$order
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
+						$num_ch := 54	
+					}					
 					case "dode":
 					if($hoa_decoder == "sc-hoa")
 					{
@@ -6136,6 +6333,16 @@ $FluidBufOnsetSlice := 0
 						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
 						$num_ch := 89
 					}	
+
+					case "Espro75_rec":
+					if($hoa_decoder == "sc-hoa")
+					{
+						// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
+						$decoder_name := "HOA_Dec_ESPRO75_Rec" // order 7
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
+						$num_ch := 112
+					}	
+
 					case "Espro_subs": // order 7
 					if($hoa_decoder == "sc-hoa")
 					{
@@ -6185,6 +6392,79 @@ $FluidBufOnsetSlice := 0
 						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
 						$num_ch := 24
 					}
+					case "HOA_MSH":
+					if($hoa_decoder == "sc-hoa")
+					{
+						// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
+						$decoder_name := "HOA_Dec_MSH"+$order
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $meter_index])
+						$num_ch := 24
+					}						
+					case "HOA_GRAME":
+					if($hoa_decoder == "sc-hoa")
+					{
+						// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
+						$decoder_name := "HOA_Dec_GRAME"+$order
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
+						$num_ch := 24
+					}	
+					case "HOA_GRAME_ADT":
+					if($hoa_decoder == "sc-hoa")
+					{
+						// scServer "s_new" ("HOA_Studio1_Dec"+$order) $node_id_out 1 $group_id in $hoa_bus out 0 in_ramp 0.001 amp 0 //in_rev $hoa_rev_bus	
+						$decoder_name := "HOA_Dec_GRAMEADT"+$order
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
+						$num_ch := 24
+					}		
+					case "HOA_GRAME_ADTN3D":
+					if($hoa_decoder == "sc-hoa")
+					{
+						$decoder_name := "HOA_Dec_GRAMEADTN3D"+$order
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])
+						$num_ch := 24
+					}	
+					case "HOA_HEM":
+					if($hoa_decoder == "sc-hoa")
+					{
+						$decoder_name := "HOA_Dec_HEM"+$order
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $meter_index])
+						$num_ch := 26 // blackbox
+					}	
+					case "HOA_ESMUC":
+					if($hoa_decoder == "sc-hoa")
+					{
+						$decoder_name := "HOA_Dec_ESMUC"+$order
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $meter_index])
+						$num_ch := 12 // salle orquestre
+					}	
+					case "HOA_BOSTON":
+					if($hoa_decoder == "sc-hoa")
+					{
+						$decoder_name := "HOA_Dec_BOSTON"+$order
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $meter_index])
+						$num_ch := 15 // salle orquestre
+					}
+					case "HOA_ASTREE":
+					if($hoa_decoder == "sc-hoa")
+					{
+						$decoder_name := "HOA_Dec_ASTREE"+$order
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $meter_index])
+						$num_ch := 33 // salle orquestre
+					}
+					case "HOA_ASTREEALLRAD":
+					if($hoa_decoder == "sc-hoa")
+					{
+						$decoder_name := "HOA_Dec_ASTREEALLRAD"+$order
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $meter_index])
+						$num_ch := 33 // salle orquestre
+					}					
+					case "HOA_AOO":
+					if($hoa_decoder == "sc-hoa")
+					{
+						$decoder_name := "HOA_Dec_AOO"+$order
+						$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $meter_index])
+						$num_ch := 18 // bureau v1
+					}																							
 					else
 					{
 						if($hoa_decoder == "ambitools")
@@ -6253,7 +6533,7 @@ $FluidBufOnsetSlice := 0
 
 					case "iem_binaural":
 					$decoder_name := "Binaural_VST_Dec"+$order
-					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
+					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $meter_index])  //target 2 justo despues del nodo 180 audioOut
 					$Servers($server_name).u_cmd([$node_id_out, 4, "/open", "BinauralDecoder", 1, 0, 0]) // 4 = UGen id inside Synthdef
 				
 					$num_ch := 2
@@ -6283,7 +6563,7 @@ $FluidBufOnsetSlice := 0
 					$num_ch := 2
 					
 					case "sparta_ambidec":
-					$decoder_name := "IEM_Dec"+$order
+					$decoder_name := "Binaural_VST_Dec"+$order
 					$Servers($server_name).s_new([$decoder_name, $node_id_out, 1, $group_id, "in", $hoa_bus, "out", $offset, "in_ramp", 0.001, "amp", $amp, "index", $group_id])  //target 2 justo despues del nodo 180 audioOut
 					$Servers($server_name).u_cmd([$node_id_out, 4, "/open", "sparta_ambiDEC", 1]) // 4 = UGen id inside Synthdef
 					$num_ch := 24					
@@ -6323,59 +6603,16 @@ $FluidBufOnsetSlice := 0
 					// $num_ch := 2											
 
 			   }
-
-			   print group_id $group_id
-
-			// print ATKGlobalFOA_Trans_Rev $node_id_out 1 $group_id in $hoa_bus in_rev $hoa_rev_bus out 0 in_ramp 0.001 amp 0
-
-			// $node_id := $node_id + 1 // incremente le node_id
-			// $SC_Servers($server_name).add_pair("node_id", $node_id_out + 1)
-			$SC_Servers($server_name).insert("bus_index", $hoa_bus + ($order+1).pow(2)) // inc bus de server + hoa_bus (4) + $hoa_rev_bus (4) 
-
-			// $SC_Servers($server_name).insert("bus_index", $bus+8+$hoa_bus) // inc bus de server + hoa_bus (4) + $hoa_rev_bus (4) 
-
-			// update dictionaires
-			$groups.add_pair($group_name, $THISOBJ) // put this group object in dico $group
-			$SC_Groups($group_name).insert("name", $group_name)
-			$SC_Groups($group_name).insert("main_group_id", $group_id)
-			$SC_Groups($group_name).insert("main_bus", $bus)
-			$SC_Groups($group_name).insert("hoa_bus", $hoa_bus)
-			// $SC_Groups($group_name).insert("hoa_rev_bus", $hoa_rev_bus)
-			$SC_Groups($group_name).insert("order", $order)
-			$SC_Groups($group_name).insert("decoder_id", $node_id_out)
-			$SC_Groups($group_name).insert("sub_group", map{}) // for store the sub group object 
-			$SC_Groups($group_name).insert("aux_sub_group", map{}) // for store the sub aux group object 
-
-			// creation des dictionaires de synth et proc dans un mix group
-			$synths_map($server_name).insert($group_name, map{})
-			$track_proc($server_name).insert($group_name, map{})
-			$vst_plugins($server_name).insert($group_name, map{})
-			$space_group($server_name).add_pair($group_name, map{})
-			$space_group($server_name)($group_name).add_pair("val", map{})
-			$space_group($server_name)($group_name).add_pair("xyz_offset", [0, 0, 0]) //oF visualisation
-			$group_proc($server_name).add_pair($group_name, map{})
-
-
-			// creation des dictionaires structure generale des nodes
-			$struct_main_group_id := $sc_struct($server_name)(1)("default_group")
-			if ($sc_struct($server_name)($group_id).is_undef()) // if group_id exist on the program
-			{
-				$struct_main_group_id.push_back($group_id) // default group 1 -> [group_id]
-				$sc_struct($server_name).add_pair($group_id, [[$node_id_out], $group_name]) // crea nueva key group + decoder
-				$struct_group_id := $sc_struct($server_name)($group_id)[0]
-				$sc_struct($server_name).add_pair($node_id_out, map{("decoder", $decoder), ("order", $order), ("in", $hoa_bus), ("out", 0), ("index", $group_id), ("in_ramp", 0.001), ("amp", $amp)}) // , ("in_rev", $hoa_rev_bus) crea MAP para nombre_synth + parametros
-			}
-			print new "group" $group_name created in server $server_name
-
-			groups_max $group_id $group_name $server_name
-		}
-		else // add group to specific server g_new
-		{
-				print "group" $group_name already exists
-		}
-	}
     }
-	 
+
+    @fun_def replace_decoder($new_dec)
+    {
+    	print replace_decoder
+    	// $Servers($server_name).n_set($node_id_out, ["free", 0.001])  
+    	$Servers($server_name).n_free($node_id_out)  
+    	$THISOBJ.select_decoder($new_dec) // select decoder 
+    }
+
    @fun_def mod_add($module, $action = "before_out", $target_mod = <undef>, $fade_in = 0.01)
    {
 	@local $addmod_index := 0, $params, $node_id_mod, $target_id, $mod_name, $json_file, $json_map, $vst_module
@@ -6393,6 +6630,7 @@ $FluidBufOnsetSlice := 0
     }
 
     $target_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $target_id
+    print synthmap (""+$synths_map($server_name))
     print target_id target_id target_id $target_id
 
     // print (""+$synths_map("localhost")("group_hoa1"))						
@@ -6665,6 +6903,8 @@ $FluidBufOnsetSlice := 0
 			}	
 			else
 			{
+				$mod_name := $module
+				print debug (""+[$mod_name, $node_id_mod, 2, $target_mod, "in", $hoa_bus, "out", $hoa_bus, "matrix_ramp", $fade_in])
 				switch ($action)
 				{
 					case "before_out":
@@ -8104,7 +8344,7 @@ $FluidBufOnsetSlice := 0
 		}
 
 		// $Servers($server_name).n_set($group_id, ["out_ramp", 0.01, "gatee", 0])
-		// print struct_group_id $group_id $group_name (""+$struct_group_id)
+		// print struct_group_id1 $group_id $group_name (""+$struct_group_id)
 		forall $re in $struct_group_id
 		{
 			$sc_struct($server_name).remove($re)
@@ -8144,9 +8384,9 @@ $FluidBufOnsetSlice := 0
 
 ////////////// Tracks
 
-@obj_def crea_track($track_name, $mix_group, $synth_collection = [], $fade_in = 0.01, $amp = 0, $num_inputs = 1) // recuperar el nombre de la variable
+@obj_def crea_track($track_name, $mix_group, $synth_collection = [], $fade_in = 0.01, $amp = 0, $num_inputs = 1, $control_name = false) // recuperar el nombre de la variable
 {
-	@local $group_id, $bus, $gbus, $node_id_out, $gui, $server_name, $group_name, $main_group_id, $rand_spat_pos := false, $t_trig := 0, $trig_ryth, $last_bpf_amp_curve, $num_channels, $amp_bpf_x_min, $amp_bpf_x_max, $curve_weight := 0
+	@local $group_id, $bus, $inter_bus, $gbus, $node_id_out, $node_id_out2, $gui, $server_name, $group_name, $main_group_id, $rand_spat_pos := false, $t_trig := 0, $trig_ryth, $last_bpf_amp_curve, $num_channels, $amp_bpf_x_min, $amp_bpf_x_max, $curve_weight := 0, $sflist_map := map{}, $amp2_out := 0
     @init 
     {
 
@@ -8190,6 +8430,22 @@ $FluidBufOnsetSlice := 0
 				    // print server_name $server_name
 				    // print main_group_id $main_group_id
 
+					if($control_name != false) 
+					{
+						// agragar un dico con controles
+						if($controllers.is_defined($control_name))
+						{
+							// print track to control_name true $control_name
+							$controllers($control_name).add_pair($track_name, $THISOBJ)
+							$amp2_out := $controllers($control_name)("level")
+							// print $control_name amp2_out $amp2_out
+						}
+						else
+						{
+							print control $control_name is not defined
+						}
+
+					}
 				    $gui := false
 
 				    // $track_name := ("group_"+$group_id)
@@ -8214,15 +8470,23 @@ $FluidBufOnsetSlice := 0
 				    // $node_id := $node_id + 1
 				    // print $node_id
 				    $node_id_out := $SC_Servers($server_name)("node_id")
+				    $SC_Servers($server_name).insert("node_id", $node_id_out + 1)
 				    // $node_id_out := $node_id
 				    // @command("s_new"+$server_name) audioOut8 $node_id_out 1 $group_id in $bus out ($gbus+$chnl) index $bus in_ramp $fade_in amp $amp
 
 				    // scServer "s_new" audioOut8 $node_id_out 1 $group_id in $bus out ($gbus+$chnl) index $bus in_ramp $fade_in amp $amp
+				    $inter_bus := $bus+$num_channels+$num_inputs
 
-					$Servers($server_name).s_new(["audioOut"+$num_channels, $node_id_out, 1, $group_id, "in", $bus, "out", $gbus, "index", $bus, "in_ramp", $fade_in, "amp", $amp]) //$gbus+$chnl_offset
+					$Servers($server_name).s_new(["audioOut"+$num_channels, $node_id_out, 1, $group_id, "in", $bus, "out", $inter_bus, "index", $bus, "in_ramp", $fade_in, "amp", $amp2_out]) //$gbus+$chnl_offset
+					$SC_Servers($server_name).insert("bus_index", $inter_bus+$num_channels+$num_inputs) // incrementa bus de server
 
 				    $synths_map($server_name)($mix_group)($track_name).insert("group", $group_id)
 					$synths_map($server_name)($mix_group)($track_name).insert("audioOut"+$num_channels, $node_id_out)
+
+					$node_id_out2 := $SC_Servers($server_name)("node_id") // New audioOut for controllers 
+					$Servers($server_name).s_new(["audioOut"+$num_channels, $node_id_out2, 3, $node_id_out, "in", $inter_bus, "out", $gbus, "index", $bus, "in_ramp", $fade_in, "amp", $amp]) //$gbus+$chnl_offset
+					$SC_Servers($server_name).insert("node_id", $node_id_out2 + 1)
+
 
 					////// 
 					$tracks.add_pair($track_name, $THISOBJ) // put this group object in dico $group
@@ -8231,10 +8495,10 @@ $FluidBufOnsetSlice := 0
 				    $sc_struct($server_name).add_pair($group_id, map{($track_name, [$node_id_out])}) // crea nueva key group + audioOut
 					$sc_struct($server_name).add_pair($node_id_out, map{("_synth", "audioOut8"), ("in", $bus), ("out", $gbus), ("index", $bus), ("in_ramp", $fade_in), ("amp", $amp)}) // crea MAP para nombre_synth + parametros
 					
-					$SC_Servers($server_name).insert("bus_index", $bus+$num_channels+$num_inputs) // incrementa bus de server
+					// $SC_Servers($server_name).insert("bus_index", $bus+$num_channels+$num_inputs) // incrementa bus de server
 
 				    // $node_id := $node_id + 1 // incremente de 1 la variable $node_id pour le prochain node
-					$SC_Servers($server_name).insert("node_id", $node_id_out + 1)
+					// $SC_Servers($server_name).insert("node_id", $node_id_out + 1)
 				    
 				    $SC_Groups($mix_group)("sub_group").add_pair($track_name, $THISOBJ) // store thisobject in TAB of SC_Groups(mix_group)
 
@@ -9419,7 +9683,7 @@ $FluidBufOnsetSlice := 0
 	// 	// scServer "n_set" $node_id_out amp $group_amp
 	// 	$Servers($server_name).n_set($node_id_out, ["amp", $group_amp])
 	// }
-	@proc_def amp($amp, $add = 0)
+/*	@proc_def amp($amp, $add = 0)
 	{
 		@local $nim, $lamp, $last_bpf_amp_curve
 
@@ -9450,12 +9714,97 @@ $FluidBufOnsetSlice := 0
 		{
 			$Servers($server_name).n_set($node_id_out, ["amp", $amp+$add])
 		}
+	}*/
+
+	@proc_def amp($ampli, $add = 0, $free = false, $action = false)
+	{
+		@local $nim, $lamp, $last_bpf_amp_curve
+
+		if($track_proc($server_name)($mix_group)($track_name).is_defined("amp"))
+		{
+			abort $track_proc($server_name)($mix_group)($track_name)("amp") // stop process to avoid interferences
+		}		
+		// abort $last_bpf_amp_curve // to avoid interferences
+
+		if($ampli.is_tab()) // if $val is bpf
+		{
+			$nim := @build_nim_from_bpf($ampli)
+			// .CheckParam($module, $param, $MYSELF)
+			$amp_bpf_x_min := @min_key($nim)
+			$amp_bpf_x_max := @max_key($nim)
+			$lamp := $ampli[0]
+			$last_bpf_amp_curve := { curve @grain := 0.01, 
+				@action 
+				{
+					$Servers($server_name).n_set($node_id_out2, ["amp", $lamp+$add])
+					// $Servers($server_name).n_set($node_id_out2, ["amp", $lamp+$add])	
+					// print amp $node_id_out2 $lamp
+					$amp := $lamp+$add // global amp
+				} 
+				{ $lamp : $nim }
+				==> { 	if($free.is_numeric()) // if free number then free track in number time
+						{
+							$THISOBJ.free($free)
+						}
+						if($action) // action after amp for exemple clear buffers
+							{
+								// print "fin curve action" (""+$action)
+								($free+0.1) $track_amp_action := $action
+							}
+						}
+					}
+		$track_proc($server_name)($mix_group)($track_name).add_pair("amp", $last_bpf_amp_curve) // store curve in map to avoid interference between different groups
+		}
+		else
+		{
+			$Servers($server_name).n_set($node_id_out2, ["amp", $ampli+$add])
+			// $Servers($server_name).n_set($node_id_out2, ["amp", $amp+$add])
+			$amp := $ampli // global amp 
+		}
 	}
+
+
 
 	@fun_def set_track($params) // set track parameters for HOA_Encode for exemple
 	{
-			$Servers($server_name).n_set($node_id_out, $params)
+			$Servers($server_name).n_set($node_id_out2, $params)
 	}
+
+	@proc_def amp2($ampli, $add = 0) //control encoder amp
+	{
+		@local $nim, $lamp, $last_bpf_amp_curve
+
+		if($track_proc($server_name)($mix_group)($track_name).is_defined("amp2"))
+		{
+			abort $track_proc($server_name)($mix_group)($track_name)("amp2") // stop process to avoid interferences
+		}		
+		// abort $last_bpf_amp_curve // to avoid interferences
+
+		if($ampli.is_tab()) // if $val is bpf
+		{
+			$nim := @build_nim_from_bpf($ampli)
+			// .CheckParam($module, $param, $MYSELF)
+			$amp_bpf_x_min := @min_key($nim)
+			$amp_bpf_x_max := @max_key($nim)
+			$lamp := $ampli[0]
+			$last_bpf_amp_curve := { curve @grain := 0.01, 
+				@action 
+				{
+					// $Servers($server_name).n_set($node_id_out2, ["amp", $lamp+$add])
+					$Servers($server_name).n_set($node_id_out, ["amp", $lamp+$add])	
+					// print amp $node_id_out2 $lamp
+				} 
+				{ $lamp : $nim }
+			}
+		$track_proc($server_name)($mix_group)($track_name).add_pair("amp2", $last_bpf_amp_curve) // store curve in map to avoid interference between different groups
+		}
+		else
+		{
+			// $Servers($server_name).n_set($node_id_out2, ["amp", $ampli+$add])
+			$Servers($server_name).n_set($node_id_out, ["amp", $ampli+$add])
+		}
+	}
+
 
 ///// hacer
 
@@ -9535,6 +9884,7 @@ $FluidBufOnsetSlice := 0
 	{
 		// scServer "n_set" $group_id matrix_ramp @dur2sec($time) gate 0
 		$Servers($server_name).n_set($group_id, ["matrix_ramp", @dur2sec($time), "gate", 0])
+		// $Servers($server_name).n_set($group_id, ["out_ramp", @dur2sec($time), "gatee", 0])
 		// @dur2sec($time) scServer "n_set" $group_id gate 0
 	}
 
@@ -9545,12 +9895,15 @@ $FluidBufOnsetSlice := 0
 		$Servers($server_name).n_run($group_id, 1)
 
 		$Servers($server_name).n_set($group_id, ["matrix_ramp", @dur2sec($time), "gate", 1])
+		// $Servers($server_name).n_set($group_id, ["in_ramp", @dur2sec($time), "gatee", 1])
 
 		forall $x in $sc_struct($server_name)($group_id)($track_name)
 		{
 			// scServer "n_run" $x 1
 			$Servers($server_name).n_run($x, 1)
 			$Servers($server_name).n_set($x, ["matrix_ramp", @dur2sec($time), "gate", 1])
+			// $Servers($server_name).n_set($group_id, ["in_ramp", @dur2sec($time), "gatee", 1])
+
 
 		}	
 	}
@@ -10059,13 +10412,19 @@ $FluidBufOnsetSlice := 0
 		// }
 	}
 
-
-
-
-	@fun_def play_sample($sample, $ampli, $channel)
+	@fun_def play_sample($sample, $ampli = 0, $channel = 0, $loop = 0)
 	{
-		$THISOBJ.mod_add(["TPlaybuf2", "buf", $SF_map($server_name)($sample), "amp", $ampli, "out", $channel], "top")
+		// $THISOBJ.mod_add(["TPlaybuf2", "buf", $SF_map($server_name)($sample), "amp", $ampli, "out", $bus+$channel], "top")
+		$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+		$sflist_map.add_pair($sample, $node_id_mod)
+		$Servers($server_name).s_new(["TPlaybuf2", $node_id_mod, 0, $group_id, "out", $bus+$channel, "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop])
+		$SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)		
 		// print buf ($SF_map($server_name)($sample))
+	}
+
+	@fun_def play_sample_stop($sample, $fade_out = 0.1) 
+	{
+		$Servers($server_name).n_set($sflist_map($sample), [matrix_ramp, $fade_out, free, 0])
 	}
 
 	@fun_def play_sample_ste($sample, $ampli, $channel)
@@ -10079,14 +10438,75 @@ $FluidBufOnsetSlice := 0
 		$THISOBJ.mod_add_top(["TPlaybuf2_ste", "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop])
 		
 	}	
-	@fun_def play_sample8($sample, $ampli, $loop = 0)
-	{
-		$THISOBJ.mod_add(["TPlaybuf8", "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop], "top")
-	}	
 
-	@fun_def play_sample8_stop($sample, $fade_out) // hacer map con samplers tocados para stop
+	@proc_def play_sample_ste3($sample, $ampli = 0, $loop = 0) // only track no_encoder
 	{
-		$THISOBJ.set("TPlaybuf8", ["matrix_ramp", $fade_out, "free", 0])
+		// $THISOBJ.mod_add_top(["TPlaybuf2_HOA_ste"+$order, "buf", $SF_map($server_name)($sample), "amp", $ampli, "coords", $coord, "globTBus", $bus, "loop", $loop])
+		$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+		$sflist_map.add_pair($sample, $node_id_mod)
+		$Servers($server_name).s_new(["TPlaybuf2_ste", $node_id_mod, 2, $node_id_out, "out", $bus, "buf", $SF_map($server_name)($sample), "coords", $coords, "amp", $ampli, "loop", $loop])
+		// print (""+["TPlaybuf2_HOA_ste"+$order, $node_id_mod, 2, $node_id_out, "globTBus", $bus, "buf", $SF_map($server_name)($sample), "coords", $coords, "amp", $ampli, "loop", $loop])
+		$SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+
+		// print sample (""+$SF_map($server_name)($sample))
+	}
+
+
+	@fun_def play_sample_ste3_stop($sample, $fade_out = 0.1) 
+	{
+		$Servers($server_name).n_set($sflist_map($sample), [matrix_ramp, $fade_out, free, 0])
+	}
+
+	// @fun_def play_sample8($sample, $ampli, $loop = 0)
+	// {
+	// 	$THISOBJ.mod_add(["TPlaybuf8", "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop], "top")
+	// }	
+
+	// @fun_def play_sample8_stop($sample, $fade_out) // hacer map con samplers tocados para stop
+	// {
+	// 	$THISOBJ.set("TPlaybuf8", ["matrix_ramp", $fade_out, "free", 0])
+	// }
+
+	@proc_def play_sample8($sample, $ampli = 0, $loop = 0) // only track no_encoder
+	{
+		// $THISOBJ.mod_add_top(["TPlaybuf2_HOA_ste"+$order, "buf", $SF_map($server_name)($sample), "amp", $ampli, "coords", $coord, "globTBus", $bus, "loop", $loop])
+		$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+		$sflist_map.add_pair($sample, $node_id_mod)
+		$Servers($server_name).s_new(["TPlaybuf8", $node_id_mod, 0, $group_id, "out", $bus, "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop])
+		// print (""+["TPlaybuf8", $node_id_mod, 0, $group_id, "out", $bus, "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop])
+		$SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+
+		// print sample (""+$SF_map($server_name)($sample))
+	}
+
+	@fun_def play_sample8_stop($sample, $fade_out = 0.1) 
+	{
+		$Servers($server_name).n_set($sflist_map($sample), [matrix_ramp, $fade_out, free, 0])
+	}
+
+	@proc_def play_sample6($sample, $ampli = 0, $outputs = [0, 1, 2, 3, 4, 5], $loop = 0) // only track no_encoder
+	{
+		// $THISOBJ.mod_add_top(["TPlaybuf2_HOA_ste"+$order, "buf", $SF_map($server_name)($sample), "amp", $ampli, "coords", $coord, "globTBus", $bus, "loop", $loop])
+		$node_id_mod := $SC_Servers($server_name)("node_id") // last id
+		$sflist_map.add_pair($sample, $node_id_mod)
+		$Servers($server_name).s_new(["TPlaybuf6", $node_id_mod, 0, $group_id, "out", $bus, "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop])
+		// print (""+["TPlaybuf2_HOA_ste"+$order, $node_id_mod, 2, $node_id_out, "globTBus", $bus, "buf", $SF_map($server_name)($sample), "coords", $coords, "amp", $ampli, "loop", $loop])
+		$SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
+
+		// print sample (""+$SF_map($server_name)($sample))
+	}
+
+	@fun_def play_sample6_stop($sample, $fade_out = 0.1) 
+	{
+		$Servers($server_name).n_set($sflist_map($sample), [matrix_ramp, $fade_out, free, 0])
+	}
+
+	@fun_def play_sample_stopAll($fade_out = 0.1) 
+	{	
+		forall $k, $v in $sflist_map
+		{
+			$Servers($server_name).n_set($v, [matrix_out, $fade_out, free, 0])
+		}
 	}
 
 	@proc_def free($time = 1) // @proc_def parce qu'il y a un delay pour arrter les proc
@@ -10329,9 +10749,14 @@ $free_track := 0 // send info to program when track is free
 
 						case (! $encoder && ($in_channels == "mono" || $in_channels == 1)): // for pre-hoa stream 
 						print encoder3 no encoder $encoder 
+						print bus $bus
+						print hoa_bus $hoa_bus
 						$out_name := "HOA_Out_"+$order
 						$hoa_inter_bus := $bus+$hoa_num_ch //add hoa input order channel number	
+						print hoa_inter_bus $hoa_inter_bus
 						$Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", $amp2_out])
+						// si encoder = false solo pasaje $hoa_inter_bus -> a verificar !
+						// $Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $hoa_inter_bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", $amp2_out])
 						$SC_Servers($server_name).insert("bus_index", $hoa_inter_bus+$hoa_num_ch) // add hoa stream for next bu
 
 						case (! $encoder && $in_channels == "stereo"):
@@ -10389,6 +10814,7 @@ $free_track := 0 // send info to program when track is free
 				    // ~espace = Synth(\ATK_Omni_8_new, [\in,  ~bus1, \dopon, 1, \glev, 1, \llev, 1, \gbfbus, ~gbfbus, \globTBus, ~globTBus], ~s1, \addAfter)
 				    $synths_map($server_name)($mix_group)($track_name).insert("group", $group_id)
 					$synths_map($server_name)($mix_group)($track_name).insert("audioOut8", $node_id_out)
+					$synths_map($server_name)($mix_group)($track_name).insert("Out", $node_id_out2)
 
 					////// 
 					$tracks.add_pair($track_name, $THISOBJ) // put this group object in dico $group
@@ -10432,10 +10858,13 @@ $free_track := 0 // send info to program when track is free
 			}
    }
 
-   @fun_def mod_add($module, $action = "before_out", $target_mod = <undef>, $fade_in = 0.01, $ext_id = false)
+   @fun_def mod_add($module, $action = "before_out", $target_mod = <undef>, $fade_in = 0.01, $ext_id = false, $mod_in_ch = 1)
    {
 	@local $addmod_index := 0, $params, $fade_in_mod, $node_id_mod, $target_id, $mod_name, $json_file, $json_map, $vst_module
 
+	// print bus2 $bus
+	// print hoa_bus2 $hoa_bus
+	// print hoa_inter_bus2 $hoa_inter_bus
 	if($ext_id.is_numeric()) // externally defined node_id 
 	{
 		$node_id_mod := $ext_id
@@ -10503,18 +10932,20 @@ $free_track := 0 // send info to program when track is free
 				switch ($action)
 				{
 					case "before_out":
-						$Servers($server_name).s_new(["VST_2", $node_id_mod, 2, $target_mod, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
-						$struct_group_id.insert(@size($struct_group_id)-3, $node_id_mod) // root tree 0
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 2, $target_mod, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
+						print struct_group_id2 (""+$struct_group_id)
+						$struct_group_id.insert(@size($struct_group_id)-1, $node_id_mod) // root tree 0
 						case "after":
 						// $mod_after_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
-						$Servers($server_name).s_new(["VST_2", $node_id_mod, 3, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
-						$struct_group_id.insert(@occurs($struct_group_id, $target_id)+1, $node_id_mod) // root tree 0
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 3, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
+						$struct_group_id.insert(@occurs($struct_group_id, $target_id)+2, $node_id_mod) // root tree 0
+						print struct_group_id2
 						case "before":
 						// $mod_before_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
-						$Servers($server_name).s_new(["VST_2", $node_id_mod, 2, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])		   		
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 2, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])		   		
 						$struct_group_id.insert(@occurs($struct_group_id, $target_id), $node_id_mod) // root tree 0
 						case "top":
-						$Servers($server_name).s_new(["VST_2", $node_id_mod, 0, $group_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 0, $group_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
 						$struct_group_id.insert(0, $node_id_mod) // root tree 0
 
 					}
@@ -10568,11 +10999,15 @@ $free_track := 0 // send info to program when track is free
 			{
 				case "before_out":
 					$Servers($server_name).s_new([$mod_name, $node_id_mod, 2, $target_mod, "in", $bus, "out", $bus, "matrix_ramp", $fade_in].concat($params))  //target 2 justo despues del nodo 180 audioOut
+					print struct_group_id3 (""+$struct_group_id)
+					print struct_group_id3_size (""+$struct_group_id.size())
 					$struct_group_id.insert(@size($struct_group_id)-3, $node_id_mod) // root tree 0
+					print struct_group_id (""+$struct_group_id)
 					case "after":
 					// $mod_after_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
 					$Servers($server_name).s_new([$mod_name, $node_id_mod, 3, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in].concat($params))
-					$struct_group_id.insert(@occurs($struct_group_id, $target_id)+1, $node_id_mod) // root tree 0
+					$struct_group_id.insert(@occurs($struct_group_id, $target_id)+2, $node_id_mod) // root tree 0
+					print struct_group_id3
 
 					case "before":
 					// $mod_before_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
@@ -10625,9 +11060,19 @@ $free_track := 0 // send info to program when track is free
 
 				// if($mod_name == "VST") // if VST plugins
 			// {
-				// $vst_module := $module[1] // VST module name	    		
-
-			if($vst_all_map.is_defined($mod_name))
+				// $vst_module := $module[1] // VST module name	 
+				if ($mod_name == "Zylia") 
+				{
+					$Servers($server_name).s_new(["Zylia", $node_id_mod, 2, $target_mod, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
+					print struct_group_id4 (""+$struct_group_id)
+					$struct_group_id.insert(@size($struct_group_id)-1, $node_id_mod) // root tree 0
+					0.1 $Servers($server_name).u_cmd([$node_id_mod, 45, "/open", "ZYLIA Ambisonics Plugin", 1, 0, 0]) // 6 = UGen id inside Synthdef
+					$vst_plugins($server_name)($mix_group)($track_name).insert("Zylia", $node_id_mod) // dictionaire pour les id des vst_plugins
+					0.2 $Servers($server_name).u_cmd([$node_id_mod, 45, "/vis", 1]) // 6 Synthdef UGEN id
+				}  		
+				else
+				{
+				if($vst_all_map.is_defined($mod_name))
 				{	    		
 				
 					$vst_module := $mod_name // VST module name	    		
@@ -10652,28 +11097,31 @@ $free_track := 0 // send info to program when track is free
 				switch ($action)
 				{
 					case "before_out":
-						$Servers($server_name).s_new(["VST_2", $node_id_mod, 2, $target_mod, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
-						$struct_group_id.insert(@size($struct_group_id)-3, $node_id_mod) // root tree 0
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 2, $target_mod, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
+						print struct_group_id4 (""+$struct_group_id)
+						$struct_group_id.insert(@size($struct_group_id)-1, $node_id_mod) // root tree 0
 
 						case "after":
 						// $mod_after_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
-						$Servers($server_name).s_new(["VST_2", $node_id_mod, 3, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
-						$struct_group_id.insert(@occurs($struct_group_id, $target_id)+1, $node_id_mod) // root tree 0
-
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 3, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
+						$struct_group_id.insert(@occurs($struct_group_id, $target_id)+2, $node_id_mod) // root tree 0
+						print struct_group_id4
 						case "before":
 						// $mod_before_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
-						$Servers($server_name).s_new(["VST_2", $node_id_mod, 2, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])		   		
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 2, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])		   		
 						$struct_group_id.insert(@occurs($struct_group_id, $target_id), $node_id_mod) // root tree 0
 
 						case "top":
-						$Servers($server_name).s_new(["VST_2", $node_id_mod, 0, $group_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 0, $group_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
 						$struct_group_id.insert(0, $node_id_mod) // root tree 0
 
 					}
 				$Servers($server_name).u_cmd([$node_id_mod, 6, "/open", $vst_module, 1, 0, 0]) // 6 = UGen id inside Synthdef
 				$vst_plugins($server_name)($mix_group)($track_name).insert($vst_module, $node_id_mod) // dictionaire pour les id des vst_plugins
 
-				$params := $chain.cdr()
+				// $params := $chain.cdr()
+				$params := $module.cdr()
+
 				if($params.car() == "preset")
 				{
 					$Servers($server_name).u_cmd([$node_id_mod, 6, "/program_read", $vst_presets+$vst_all_map($mod_name)("vendor")+"/"+$mod_name+"/"+$params[1], 1]) // 6 = UGen id inside Synthdef
@@ -10720,15 +11168,16 @@ $free_track := 0 // send info to program when track is free
 					case "before_out":
 					 // @set_osc_handling_tab(1) ///SuperCollider a diferencia de antescofo/sclang
 						$Servers($server_name).s_new([$mod_name, $node_id_mod, 2, $target_mod, "in", $bus, "out", $bus, "matrix_ramp", $fade_in].concat($params))  //target 2 justo despues del nodo 180 audioOut
-						$struct_group_id.insert(@size($struct_group_id)-3, $node_id_mod) // root tree 0
+						// print struct_group_id5 (""+$struct_group_id)
+						$struct_group_id.insert(@size($struct_group_id)-1, $node_id_mod) // root tree 0
 
 						// print titititi (""+[$mod_name, $node_id_mod, 2, $target_mod, "in", $bus, "out", $bus, "matrix_ramp", $fade_in, $params])
 						// print params (""+$params)
 						case "after":
 						// $mod_after_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
 						$Servers($server_name).s_new([$mod_name, $node_id_mod, 3, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in].concat($params))
-						$struct_group_id.insert(@occurs($struct_group_id, $target_id)+1, $node_id_mod) // root tree 0
-
+						$struct_group_id.insert(@occurs($struct_group_id, $target_id), $node_id_mod) // root tree 0
+						// print target_id $target_id
 						case "before":
 						// $mod_before_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
 						$Servers($server_name).s_new([$mod_name, $node_id_mod, 2, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in].concat($params))		   		
@@ -10740,6 +11189,7 @@ $free_track := 0 // send info to program when track is free
 
 					}			   	
 				}
+			}
 				// $synths_map($server_name)($mix_group)($track_name).insert($mod_name, $node_id_mod)
 				// $struct_group_id.insert(@size($struct_group_id)-3, $node_id_mod) // root tree 0
 				// $struct_group_id.insert($synth_id_index, $node_id_mod) // root tree 0
@@ -10801,28 +11251,30 @@ $free_track := 0 // send info to program when track is free
 				switch ($action)
 				{
 					case "before_out":
-						$Servers($server_name).s_new(["VST_2", $node_id_mod, 2, $target_mod, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
-						$struct_group_id.insert(@size($struct_group_id)-3, $node_id_mod) // root tree 0
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 2, $target_mod, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
+						print struct_group_id6 (""+$struct_group_id)
+						$struct_group_id.insert(@size($struct_group_id)-1, $node_id_mod) // root tree 0
 
 						case "after":
 						// $mod_after_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
-						$Servers($server_name).s_new(["VST_2", $node_id_mod, 3, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
-						$struct_group_id.insert(@occurs($struct_group_id, $target_id)+1, $node_id_mod) // root tree 0
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 3, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
+						$struct_group_id.insert(@occurs($struct_group_id, $target_id)+2, $node_id_mod) // root tree 0
+						print struct_group_id6
 
 						case "before":
 						// $mod_before_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
-						$Servers($server_name).s_new(["VST_2", $node_id_mod, 2, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])		   		
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 2, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])		   		
 						$struct_group_id.insert(@occurs($struct_group_id, $target_id), $node_id_mod) // root tree 0
 
 						case "top":
-						$Servers($server_name).s_new(["VST_2", $node_id_mod, 0, $group_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 0, $group_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
 						$struct_group_id.insert(0, $node_id_mod) // root tree 0
 
 				}
 				$Servers($server_name).u_cmd([$node_id_mod, 6, "/open", $vst_module, 1, 0, 0]) // 6 = UGen id inside Synthdef
 				$vst_plugins($server_name)($mix_group)($track_name).insert($vst_module, $node_id_mod) // dictionaire pour les id des vst_plugins
 
-				$params := $chain.cdr()
+				$params := $module.cdr()
 				if($params.car() == "preset")
 				{
 					$Servers($server_name).u_cmd([$node_id_mod, 6, "/program_read", $vst_presets+$vst_all_map($mod_name)("vendor")+"/"+$mod_name+"/"+$params[1], 1]) // 6 = UGen id inside Synthdef
@@ -10836,11 +11288,13 @@ $free_track := 0 // send info to program when track is free
 				{
 					case "before_out":
 						$Servers($server_name).s_new([$mod_name, $node_id_mod, 2, $target_mod, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
-						$struct_group_id.insert(@size($struct_group_id)-3, $node_id_mod) // root tree 0
+						print struct_group_id7 (""+$struct_group_id)
+						$struct_group_id.insert(@size($struct_group_id)-1, $node_id_mod) // root tree 0
 
 						case "after":
 						$Servers($server_name).s_new([$mod_name, $node_id_mod, 3, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
-						$struct_group_id.insert(@occurs($struct_group_id, $target_id)+1, $node_id_mod) // root tree 0
+						$struct_group_id.insert(@occurs($struct_group_id, $target_id)+2, $node_id_mod) // root tree 0
+						print struct_group_id7
 
 						case "before":
 						$Servers($server_name).s_new([$mod_name, $node_id_mod, 2, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])		   		
@@ -10875,11 +11329,8 @@ $free_track := 0 // send info to program when track is free
 			}
 			
 		}
-    }
-
-
-	
-	}
+    }	
+}
 
    @fun_def group_add($module, $action = "before_out", $target_mod = <undef>, $fade_in = 0.01, $channels = 1)
    {
@@ -10945,15 +11396,15 @@ $free_track := 0 // send info to program when track is free
 				switch ($action)
 				{
 					case "before_out":
-						$Servers($server_name).s_new(["VST_2", $node_id_mod, 0, $target_mod, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 0, $target_mod, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
 						case "after":
 						// $mod_after_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
-						$Servers($server_name).s_new(["VST_2", $node_id_mod, 3, $target_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 3, $target_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])
 						case "before":
 						// $mod_before_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
-						$Servers($server_name).s_new(["VST_2", $node_id_mod, 2, $target_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])		   		
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 2, $target_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])		   		
 						case "top":
-						$Servers($server_name).s_new(["VST_2", $node_id_mod, 0, $group_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 0, $group_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])
 					}
 				$Servers($server_name).u_cmd([$node_id_mod, 6, "/open", $mod_name, 1, 0, 0]) // 6 = UGen id inside Synthdef
 				$vst_plugins($server_name)($mix_group)($track_name).insert($mod_name, $node_id_mod) // dictionaire pour les id des vst_plugins
@@ -11051,15 +11502,15 @@ $free_track := 0 // send info to program when track is free
 			switch ($action)
 			{
 				case "before_out":
-					$Servers($server_name).s_new(["VST_2", $node_id_mod, 2, $target_mod, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
+					$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 2, $target_mod, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
 					case "after":
 					// $mod_after_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
-					$Servers($server_name).s_new(["VST_2", $node_id_mod, 3, $target_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])
+					$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 3, $target_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])
 					case "before":
 					// $mod_before_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
-					$Servers($server_name).s_new(["VST_2", $node_id_mod, 2, $target_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])		   		
+					$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 2, $target_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])		   		
 					case "top":
-					$Servers($server_name).s_new(["VST_2", $node_id_mod, 0, $group_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])
+					$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 0, $group_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])
 				}
 			$Servers($server_name).u_cmd([$node_id_mod, 6, "/open", $mod_name, 1, 0, 0]) // 6 = UGen id inside Synthdef
 			$vst_plugins($server_name)($mix_group)($track_name).insert($mod_name, $node_id_mod) // dictionaire pour les id des vst_plugins
@@ -11179,15 +11630,15 @@ $free_track := 0 // send info to program when track is free
 			switch ($action)
 			{
 				case "before_out":
-					$Servers($server_name).s_new(["VST_2", $node_id_mod, 2, $target_mod, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
+					$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 2, $target_mod, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
 					case "after":
 					// $mod_after_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
-					$Servers($server_name).s_new(["VST_2", $node_id_mod, 3, $target_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])
+					$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 3, $target_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])
 					case "before":
 					// $mod_before_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
-					$Servers($server_name).s_new(["VST_2", $node_id_mod, 2, $target_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])		   		
+					$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 2, $target_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])		   		
 					case "top":
-					$Servers($server_name).s_new(["VST_2", $node_id_mod, 0, $group_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])
+					$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 0, $group_id, "in", $sub_group_bus, "out", $sub_group_bus, "matrix_ramp", $fade_in])
 				}
 			$Servers($server_name).u_cmd([$node_id_mod, 6, "/open", $mod_name, 1, 0, 0]) // 6 = UGen id inside Synthdef
 			$vst_plugins($server_name)($mix_group)($track_name).insert($mod_name, $node_id_mod) // dictionaire pour les id des vst_plugins
@@ -11686,7 +12137,7 @@ $free_track := 0 // send info to program when track is free
 				$Servers($server_name).n_set($x, ["matrix_ramp", $time_off, "free", 0])
 				_ := $synths_map($server_name)($mix_group)($track_name).remove($sc_struct($server_name)($group_id)($x)("_synth"))
 				$sc_struct($server_name)($server_name).remove($x)
-				_ := $sc_struct($server_name)($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($x))
+				_ := $sc_struct($server_name)($server_name)($group_id).remove($sc_struct($server_name)($group_id)[0].occurs($x))
 				if($track_proc($server_name)($mix_group)($track_name)($x).size() != 0) // abort proc des modules
 				{	
 					$time_off forall $k, $proc in $track_proc($server_name)($mix_group)($track_name)($x) // parcours le dico de proc
@@ -11699,10 +12150,11 @@ $free_track := 0 // send info to program when track is free
 		else
 		{
 			// scServer "n_set" $nodes matrix_ramp $time_off free 0
+			@local $struct_list := $sc_struct($server_name)($group_id)[0]
 			$Servers($server_name).n_set($nodes, ["matrix_ramp", $time_off, "free", 0])
-			_ := $synths_map($server_name)($mix_group)($track_name).remove($sc_struct($server_name)($group_id)($nodes)("_synth"))
+			$synths_map($server_name)($mix_group)($track_name).remove($sc_struct($server_name)($nodes)("_synth"))
 			$sc_struct($server_name).remove($nodes)
-			$sc_struct($server_name)($group_id).remove($sc_struct($server_name)($group_id).occurs($nodes))
+			$struct_list.remove($struct_list.occurs($nodes))
 			if($track_proc($server_name)($mix_group)($track_name)($nodes).size() != 0) // abort proc des modules
 			{	
 				$time_off forall $k, $proc in $track_proc($server_name)($mix_group)($track_name)($nodes) // parcours le dico de proc
@@ -11745,7 +12197,9 @@ $free_track := 0 // send info to program when track is free
 
 		// scServer "n_before" ($synths_map($server_name)($mix_group)($track_name)($module)) ($synths_map($server_name)($mix_group)($track_name)($mod_mov_before)[0])
 
-		$Servers($server_name).n_before([$synths_map($server_name)($mix_group)($track_name)($module), $synths_map($server_name)($mix_group)($track_name)($mod_mov_before)[0]])
+		$Servers($server_name).n_before($synths_map($server_name)($mix_group)($track_name)($module), $synths_map($server_name)($mix_group)($track_name)($mod_mov_before)[0])
+
+		// $struct_group_id.insert(@occurs($struct_group_id, $target_id)+2, $node_id_mod) // root tree 0
 
 
 		// forall $node in ($synths_map($server_name)($mix_group)($track_name)($module))
@@ -11799,7 +12253,7 @@ $free_track := 0 // send info to program when track is free
 		print n_after ($synths_map($server_name)($mix_group)($track_name)($module)) ($synths_map($server_name)($mix_group)($track_name)($mod_mov_after)[0])
 
 		// scServer "n_after" ($synths_map($server_name)($mix_group)($track_name)($module)) ($synths_map($server_name)($mix_group)($track_name)($mod_mov_after)[0])
-		$Servers($server_name).n_after([$synths_map($server_name)($mix_group)($track_name)($module), $synths_map($server_name)($mix_group)($track_name)($mod_mov_after)[0]])
+		$Servers($server_name).n_after($synths_map($server_name)($mix_group)($track_name)($module), $synths_map($server_name)($mix_group)($track_name)($mod_mov_after)[0])
 
 
 		// forall $node in ($synths_map($server_name)($mix_group)($track_name)($module))
@@ -11848,24 +12302,28 @@ $free_track := 0 // send info to program when track is free
 
 	@proc_def mod_rand()
 	{
-		@local $audioOut_val, $track_node_list, $group_va
+		@local $audioOut_val, $audioOut, $track_node_list, $group_va
 		$group_val := $synths_map($server_name)($mix_group)($track_name)("group")
 		// print toto (""+$synths_map($server_name)($mix_group)($track_name)("group"))
 		$audioOut_val := $synths_map($server_name)($mix_group)($track_name)("audioOut8")
+		$audioOut := $synths_map($server_name)($mix_group)($track_name)("Out")
 		// print tata (""+$synths_map($server_name)($mix_group)($track_name)("audioOut8"))
-		$track_node_list := $sc_struct($server_name)($group_val)
-		print ttrack_node $track_node_list
+		$track_node_list := $sc_struct($server_name)($group_val)[0]
+		// print ttrack_node $track_node_list
 		// print mix_group (""+$track_name)
 		// print titi (""+$sc_struct($server_name)($group_val)($track_name))
 		// $Servers($server_name).n_before($synths_map($server_name)($mix_group)($track_name)($module), $synths_map($server_name)($mix_group)($track_name)($mod_mov_before)[0])
 		
-		$track_node_list := $track_node_list.rotate(1)
+		// $track_node_list := $track_node_list.rotate(1)
 		// print tutu (""+$track_node_list.rotate(1))
-		$track_node_list := $track_node_list.cdr()
+		// $track_node_list := $track_node_list.cdr()
 		// print tete (""+$track_node_list.cdr())
+		$track_node_list := $track_node_list.drop(-2)
 		$track_node_list := $track_node_list.scramble()
 		// print tretre (""+$track_node_list.scramble())
 		$track_node_list := $track_node_list.push_back($audioOut_val)
+		$track_node_list := $track_node_list.push_back($audioOut)
+
 		// print tyu (""+$track_node_list.push_back($audioOut_val))
 		// print ("n_order"+$server_name) 0 $group_val (""+$track_node_list)
 		// @command("n_order"+$server_name) 0 $group_val $track_node_list
@@ -12332,6 +12790,7 @@ $free_track := 0 // send info to program when track is free
 	@fun_def set_single ($module, $num, $params)
 	{
 		// scServer "n_set" ($synths_map($server_name)($mix_group)($track_name)($module)[$num]) $params
+		// print (""+[$synths_map($server_name)($mix_group), $params])
 		$Servers($server_name).n_set($synths_map($server_name)($mix_group)($track_name)($module)[$num], $params)
 
 	}
@@ -13178,19 +13637,36 @@ $free_track := 0 // send info to program when track is free
 		$coords_val := $start_coords
 			// ::ambi_orbit($server_name, $node_id_out, $node_id_out, $angle, $grain)
 			// $track_proc($server_name)($mix_group)($track_name).add_pair(($node_id_out+"_traj3D"), ::traj_circ2($server_name, $node_id_out, $start_coords, $clockwise, $tpo)) // instantie un le processus dans le dico
-			$track_proc($server_name)($mix_group)($track_name).add_pair(($node_id_out+"_traj3D"), ::traj_circ22($coords_val, $start_coords, $clockwise, $tpo)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($track_name).add_pair(($node_id_out+"_traj3D"), ::traj_circ22($server_name, $node_id_out, $start_coords, $clockwise, $tpo)) // instantie un le processus dans le dico
 			// print track_proc (""+$track_proc($server_name)($mix_group))
 		// }
 		
-		$int_loop := {
-			loop  10ms  
-			// @abort { print "===> loop killed" $track_name }
-			{ 
-				$THISOBJ.dae($coords_val)
-				// print coords_val (""+$coords_val)
+		// $int_loop := {
+		// 	loop  10ms  
+		// 	// @abort { print "===> loop killed" $track_name }
+		// 	{ 
+		// 		$THISOBJ.dae($coords_val)
+		// 		// print coords_val (""+$coords_val)
 
-			}
+		// 	}
+		// }
+	}
+
+	@proc_def traj_circ_granulator($module, $start_coords, $clockwise, $tpo = 60) // Ambitools
+	{ 
+		@local $nodes
+		// forall $x in ($synths_map($server_name)($mix_group)($track_name)($module)) // parcours la liste de node de la même synth
+		// {
+		$nodes := $synths_map($server_name)($mix_group)($track_name)($module)
+
+		if($track_proc($server_name)($mix_group)($track_name).is_defined($nodes+"_traj3D")) // si ça existe abort et refait
+		{
+			// print abort_rand
+			abort $track_proc($server_name)($mix_group)($track_name)($nodes+"_traj3D")			
 		}
+
+		$track_proc($server_name)($mix_group)($track_name).add_pair(($nodes+"_traj3D"), ::traj_circ_granulator($server_name, $nodes, $start_coords, $clockwise, $tpo)) // instantie un le processus dans le dico
+		// print track_proc (""+$track_proc($server_name)($mix_group)) 
 	}
 
 //// deprecate use d_factor / d_factor_interp!!
@@ -13917,8 +14393,9 @@ $free_track := 0 // send info to program when track is free
 	@fun_def pause($time)
 	{
 		// scServer "n_set" $group_id matrix_ramp @dur2sec($time) gate 0
-		$Servers($server_name).n_set($group_id, ["matrix_ramp", @dur2sec($time), "gate", 0])
+		$Servers($server_name).n_set($group_id, ["matrix_ramp", @dur2sec($time), "gate", 0]) // pause the enclosing synth, but do not free it
 		// @dur2sec($time) scServer "n_set" $group_id gate 0
+		// @dur2sec($time) $Servers($server_name).n_run($group_id, 0)
 	}
 
 	@fun_def resume($time)
@@ -13929,13 +14406,13 @@ $free_track := 0 // send info to program when track is free
 		// scServer "n_set" $group_id matrix_ramp @dur2sec($time) gate 1
 		$Servers($server_name).n_set($group_id, ["matrix_ramp", @dur2sec($time), "gate", 1])
 
-		forall $x in $sc_struct($server_name)($group_id) //
+		forall $x in $sc_struct($server_name)($group_id)[0] //
 		{
 			// scServer "n_run" $x 1
 			$Servers($server_name).n_run($x, 1)
-		}	
+		}
 	}
-
+// print (""+$sc_struct(server1)(10204)[0])
 
 	@fun_def mod_size($module)
 	{
@@ -14003,7 +14480,7 @@ $free_track := 0 // send info to program when track is free
 		// { $lpar : $nim }
   //   }
 
-    @proc_def bpf_param($module, $param, $bpf, $free = false) 
+    @proc_def bpf_param($module, $param, $bpf, $free = false)  //
     {
 		@local $nim, $lpar, $last_bpf_param_curve, $nodes
 
@@ -14248,6 +14725,53 @@ $free_track := 0 // send info to program when track is free
 			  	}
 		}
     }  
+
+    @proc_def nim_multi_param_tempo($module, $v_nim, $tempo = 60, $free = false) 
+    {
+		@local $lpar, $nim_play, $vzer_nim, $vzer_crv_size, $nims_agre := [], $nodes
+
+		if($vezer_curves($v_nim).is_undef())
+		{
+			print this vezer xml file does not exist
+		}
+		else
+		{
+			$vzer_nim := $vezer_curves($v_nim)
+			$vzer_crv_size := $vezer_curves($v_nim).size()
+			// print vzer_nim (""+$vzer_nim)
+
+			forall $n in $vzer_crv_size
+			{
+				$nims_agre.push_back($vzer_nim($n)[1])
+			}
+			// print nims_agre (""+$nims_agre)
+			$nim_play := @aggregate($nims_agre) // aggregate nims for multidim
+			// print nim_play (""+$nim_play)
+
+			$nodes := $synths_map($server_name)($mix_group)($track_name)($module)
+
+			curve 
+			@tempo := $tempo,
+			@grain := 0.01, 
+			@action 
+			{
+				forall $crv in $vzer_crv_size
+				{
+					forall $node in $nodes
+					{
+						// print  (""+[$vzer_nim($crv)[0], $lpar[$crv]])
+						$Servers($server_name).n_set($node, [$vzer_nim($crv)[0], $lpar[$crv]])
+					}
+				}
+			} 
+			{ $lpar : $nim_play }
+			==> {   if($free.is_numeric()) // if free number then free track in number time
+			      	{
+			         	$THISOBJ.free($free)
+			      	}
+			  	}
+		}
+    }
 
 	@fun_def sin_lfo($module, $param, $r_low, $r_hi, $t) 
     {
@@ -15072,34 +15596,35 @@ $free_track := 0 // send info to program when track is free
 
 
 
-	@fun_def play_sample($sample, $ampli = 0, $loop = 0)
+	@fun_def play_sample($sample, $ampli = 0, $loop = 0, $pos = 0)
 	{
-		$THISOBJ.mod_add_top(["TPlaybuf2", "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop])
+		$THISOBJ.mod_add_top(["TPlaybuf2", "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop, "pos", $pos])
 		print sample (""+$SF_map($server_name)($sample))
 	}
 
-	@fun_def play_sampleHOA($sample, $ampli = 0, $coord = [1, 0, 0], $loop = 0) // only track no_encoder
+	@fun_def play_sampleHOA($sample, $ampli = 0, $coords = [1, 0, 0], $loop = 0, $pos = 0) // only track no_encoder
 	{
 		// $THISOBJ.mod_add_top(["TPlaybuf2_HOA"+$order, "buf", $SF_map($server_name)($sample), "amp", $ampli, "coords", $coord, "globTBus", $bus, "loop", $loop])
 		$node_id_mod := $SC_Servers($server_name)("node_id") // last id
 		$sflist_map.add_pair($sample, $node_id_mod)
-		$Servers($server_name).s_new(["TPlaybuf2_HOA"+$order, $node_id_mod, 2, $node_id_out, "globTBus", $bus, "buf", $SF_map($server_name)($sample), "coords", $coords, "amp", $ampli, "loop", $loop])
+		$Servers($server_name).s_new(["TPlaybuf2_HOA"+$order, $node_id_mod, 2, $node_id_out, "globTBus", $bus, "buf", $SF_map($server_name)($sample), "coords", $coords, "amp", $ampli, "loop", $loop, "pos", $pos]) // $bus 
 		// print (""+["TPlaybuf2_HOA_ste"+$order, $node_id_mod, 2, $node_id_out, "globTBus", $bus, "buf", $SF_map($server_name)($sample), "coords", $coords, "amp", $ampli, "loop", $loop])
 		$SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
-		print sample (""+$SF_map($server_name)($sample))		
+		print sample (""+$SF_map($server_name)($sample))
+		// print coords (""+$coord)	
 	}	
-	@fun_def play_sample2($sample, $ampli = 0, $loop = 0)
+	@fun_def play_sample2($sample, $ampli = 0, $loop = 0, $pos = 0)
 	{
-		$THISOBJ.mod_add_top(["TPlaybuf2_ste", "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop])
+		$THISOBJ.mod_add_top(["TPlaybuf2_ste", "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop, "pos", $pos])
 		print sample (""+$SF_map($server_name)($sample))
 	}
 
-	@proc_def play_sample_ste_HOA($sample, $ampli = 0, $coords = [1, -90, 0, 1, 90, 0], $loop = 0) // only track no_encoder
+	@proc_def play_sample_ste_HOA($sample, $ampli = 0, $coords = [1, -90, 0, 1, 90, 0], $loop = 0, $pos = 0) // only track no_encoder
 	{
 		// $THISOBJ.mod_add_top(["TPlaybuf2_HOA_ste"+$order, "buf", $SF_map($server_name)($sample), "amp", $ampli, "coords", $coord, "globTBus", $bus, "loop", $loop])
 		$node_id_mod := $SC_Servers($server_name)("node_id") // last id
 		$sflist_map.add_pair($sample, $node_id_mod)
-		$Servers($server_name).s_new(["TPlaybuf2_HOA_ste"+$order, $node_id_mod, 2, $node_id_out, "globTBus", $bus, "buf", $SF_map($server_name)($sample), "coords", $coords, "amp", $ampli, "loop", $loop])
+		$Servers($server_name).s_new(["TPlaybuf2_HOA_ste"+$order, $node_id_mod, 2, $node_id_out, "globTBus", $bus, "buf", $SF_map($server_name)($sample), "coords", $coords, "amp", $ampli, "loop", $loop, "pos", $pos])
 		// print (""+["TPlaybuf2_HOA_ste"+$order, $node_id_mod, 2, $node_id_out, "globTBus", $bus, "buf", $SF_map($server_name)($sample), "coords", $coords, "amp", $ampli, "loop", $loop])
 		$SC_Servers($server_name).add_pair("node_id", $node_id_mod + 1)
 
@@ -15125,10 +15650,21 @@ $free_track := 0 // send info to program when track is free
 		$THISOBJ.set("TPlaybuf2_ste", ["matrix_out", $fade_out, "free", 0])
 	}
 
-	@fun_def play_sample8($sample, $ampli = 0, $loop = 0)
+	@fun_def play_sample6($sample, $ampli = 0, $loop = 0, $fade_in = 0.1, $pos = 0)
+	{
+		print play_sample6
+		$THISOBJ.mod_add(["TPlaybuf6", "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop, "matrix_ramp", $fade_in, "pos", $pos], "top")
+	}	
+
+	@fun_def play_sample6_stop($sample, $fade_out = 0.1) // hacer map con samplers tocados para stop
+	{
+		$THISOBJ.set("TPlaybuf6", ["matrix_ramp", $fade_out, "free", 0])
+	}
+
+	@fun_def play_sample8($sample, $ampli = 0, $loop = 0, $pos = 0)
 	{
 		print play_sample8
-		$THISOBJ.mod_add(["TPlaybuf8", "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop], "top")
+		$THISOBJ.mod_add(["TPlaybuf8", "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop, "pos", $pos], "top")
 	}	
 
 	@fun_def play_sample8_stop($sample, $fade_out = 0.1) // hacer map con samplers tocados para stop
@@ -15136,9 +15672,9 @@ $free_track := 0 // send info to program when track is free
 		$THISOBJ.set("TPlaybuf8", ["matrix_ramp", $fade_out, "free", 0])
 	}
 
-	@fun_def play_sample16($sample, $ampli = 0, $loop = 0)
+	@fun_def play_sample16($sample, $ampli = 0, $loop = 0, $pos = 0, $pos = 0)
 	{
-		$THISOBJ.mod_add_top(["TPlaybuf16", "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop])
+		$THISOBJ.mod_add_top(["TPlaybuf16", "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop, "pos", $pos])
 	}	
 
 	@fun_def play_sample16_stop($sample, $fade_out = 0.1) // hacer map con samplers tocados para stop
@@ -15146,9 +15682,9 @@ $free_track := 0 // send info to program when track is free
 		$THISOBJ.set("TPlaybuf16", ["matrix_ramp", $fade_out, "free", 0])
 	}
 
-	@fun_def play_sample24($sample, $ampli = 0, $loop = 0)
+	@fun_def play_sample24($sample, $ampli = 0, $loop = 0, $pos = 0)
 	{
-		$THISOBJ.mod_add_top(["TPlaybuf24", "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop])
+		$THISOBJ.mod_add_top(["TPlaybuf24", "buf", $SF_map($server_name)($sample), "amp", $ampli, "loop", $loop, "pos", $pos])
 	}	
 
 	@fun_def play_sample24_stop($sample, $fade_out = 0.1) // hacer map con samplers tocados para stop
@@ -15202,6 +15738,21 @@ $free_track := 0 // send info to program when track is free
 		}
 	}
 
+	@fun_def map_gesture_test($gest, $module, $param, $min, $max) // ($L_incli_lateral, "TMFxShift2", "modfreq", 1, 60)
+	{
+		print gest_inside_obj (""+$gest)
+		forall $x in ($synths_map($server_name)($mix_group)($track_name)($module)) // parcours la liste de node de la même synth
+		{
+			if($track_proc($server_name)($mix_group)($track_name)($x).is_defined("gest"+$module+$param)) // si ça existe abort et refait
+		{
+			print abort_rand
+			abort $track_proc($server_name)($mix_group)($track_name)($x)("gest"+$module+$param) 
+		}
+			$track_proc($server_name)($mix_group)($track_name)($x).add_pair(("gest"+$module+$param), obj::map_gesture_test($gest, $server_name, $group_id, $x, $param, $min, $max)) // instantie un le processus dans le dico
+
+		}
+	}
+
 	@fun_def map_gesture_index($gest, $module, $index, $param, $min, $max) // $tracks("synth1").map_gesture_index($L_incli_lateral, "TMFxShift2", 0, "modfreq", 1, 60)
 	{
 		@local $node_num
@@ -15240,6 +15791,55 @@ $free_track := 0 // send info to program when track is free
 		$track_proc($server_name)($mix_group)($track_name).add_pair(("gest_amp"), obj::map_gesture_func_amp($gest, $func, $server_name, $node_id_out2, $min, $max)) // instantie un le processus dans le dico		
 	}
 
+	@fun_def map_gesture_func_amp2max($gest1, $gest2, $func, $min, $max) // ($L_incli_lateral, "TMFxShift2", "modfreq", 1, 60)
+	{
+		if($track_proc($server_name)($mix_group)($track_name).is_defined("gest_amp")) // si ça existe abort et refait
+		{
+			print abort_rand
+			abort $track_proc($server_name)($mix_group)($track_name)("gest_amp") 
+		}
+		$track_proc($server_name)($mix_group)($track_name).add_pair(("gest_amp"), obj::map_gesture_func_amp2max($gest1, $gest2, $func, $server_name, $node_id_out2, $min, $max)) // instantie un le processus dans le dico		
+	}
+
+	@fun_def map_gesture_func_amp2mov($gest1, $gest2, $mov, $func, $min, $max) // ($L_incli_lateral, "TMFxShift2", "modfreq", 1, 60)
+	{
+		if($track_proc($server_name)($mix_group)($track_name).is_defined("gest_amp")) // si ça existe abort et refait
+		{
+			print abort_rand
+			abort $track_proc($server_name)($mix_group)($track_name)("gest_amp") 
+		}
+		$track_proc($server_name)($mix_group)($track_name).add_pair(("gest_amp"), obj::map_gesture_func_amp2mov($gest1, $gest2, $mov, $func, $server_name, $node_id_out2, $min, $max)) // instantie un le processus dans le dico		
+	}	
+
+	@fun_def map_gesture_func_amp3movL($func, $min, $max) // ($L_incli_lateral, "TMFxShift2", "modfreq", 1, 60)
+	{
+		if($track_proc($server_name)($mix_group)($track_name).is_defined("gest_amp_L")) // si ça existe abort et refait
+		{
+			print abort_rand
+			abort $track_proc($server_name)($mix_group)($track_name)("gest_amp_L") 
+		}
+		$track_proc($server_name)($mix_group)($track_name).add_pair(("gest_amp_L"), obj::map_gesture_func_amp3movL($func, $server_name, $node_id_out, $min, $max)) // instantie un le processus dans le dico		
+	}	
+
+	@fun_def map_gesture_func_amp3movR($func, $min, $max) // ($L_incli_lateral, "TMFxShift2", "modfreq", 1, 60)
+	{
+		if($track_proc($server_name)($mix_group)($track_name).is_defined("gest_amp_R")) // si ça existe abort et refait
+		{
+			print abort_rand
+			abort $track_proc($server_name)($mix_group)($track_name)("gest_amp_R") 
+		}
+		$track_proc($server_name)($mix_group)($track_name).add_pair(("gest_amp_R"), obj::map_gesture_func_amp3movR($func, $server_name, $node_id_out, $min, $max)) // instantie un le processus dans le dico		
+	}		
+
+	@fun_def map_gesture_func_dae($gest, $func, $min, $max) // ($L_incli_lateral, "TMFxShift2", "modfreq", 1, 60)
+	{
+		if($track_proc($server_name)($mix_group)($track_name).is_defined("gest_amp_R")) // si ça existe abort et refait
+		{
+			print abort_rand
+			abort $track_proc($server_name)($mix_group)($track_name)("gest_dae") 
+		}
+		$track_proc($server_name)($mix_group)($track_name).add_pair(("gest_dae"), obj::map_gesture_func_dae($gest, $func, $server_name, $node_id_out, $min, $max)) // instantie un le processus dans le dico		
+	}	
 
 	@fun_def map_gesture_ambi_pol_angle($gest, $radio, $min, $max) 
 	{ 
@@ -15257,6 +15857,21 @@ $free_track := 0 // send info to program when track is free
 	@fun_def server_name() 
 	{ 
 		return $server_name
+	}
+
+	@fun_def bus() 
+	{ 
+		return $bus
+	}
+
+	@fun_def hoa_bus() 
+	{ 
+		return $hoa_bus
+	}
+
+	@fun_def hoa_inter_bus() 
+	{ 
+		return $hoa_inter_bus
 	}
 
 	@proc_def free($time = 1) // @proc_def parce qu'il y a un delay pour arrter les proc
@@ -15418,11 +16033,11 @@ whenever ($track_amp_action==$track_amp_action)
 }
 
 
-@obj_def crea_aux_HOA($aux_name, $mix_group, $synth_collection, $fade_in = 1, $amp = 0, $spk_radius = 1.07) // recuperar el nombre de la variable
+@obj_def crea_aux_HOA($aux_name, $mix_group, $synth_collection, $fade_in = 1, $amp = 0, $plane_spherical = 1, $spk_radius = 1.07, $max_radius = 5, $doppler = 1, $encoder = true, $in_channels = "mono", $ambisonic_in = true, $xyz_init_pos = [0, 0, 0], $ext_id = false, $send_bus_num = false, $control_name = false) // recuperar el nombre de la variable
 {
     @init 
     {
-	    @local $group_id, $bus, $gbus, $hoa_bus, $rev_bus, $ambi_bus, $node_id_out, $gui, $server_name, $main_group_id, $rand_spat_pos := false, $t_trig := 0, $order, $hoa_num_ch, $decoder_id, $aux_track_map := map{}
+	    @local $group_id, $bus, $gbus, $hoa_bus, $rev_bus, $amp2_out := 0, $ambi_bus, $node_id_out, $node_id_out2, $gui, $server_name, $main_group_id, $rand_spat_pos := false, $t_trig := 0, $order, $hoa_num_ch, $decoder_id, $aux_track_map := map{}, $d_factor := 1
 
 
 		if($SC_Groups($mix_group).is_undef()) // si le groupe n'existe pas
@@ -15449,7 +16064,7 @@ whenever ($track_amp_action==$track_amp_action)
 					$hoa_bus := $SC_Groups($mix_group)("hoa_bus")
 					$order :=  $SC_Groups($mix_group)("order")
 					$decoder_id :=  $SC_Groups($mix_group)("decoder_id")
-					
+
 					// $SC_Groups($group_name).insert("hoa_bus", $hoa_bus)
 	    // 			$SC_Groups($group_name).insert("rev_bus", $rev_bus)
 				
@@ -15460,10 +16075,11 @@ whenever ($track_amp_action==$track_amp_action)
 					// $hoa_bus := $SC_Servers($server_name)("hoa_bus") 
 				    print bus $bus
 				    // print rev_bus $rev_bus
-				    print hoa_bus $hoa_bus
-				    print group_id $group_id
-				    print server_name $server_name
-				    print main_group_id $main_group_id
+				    print hoa_busAux $hoa_bus
+				    print group_idAUX $group_id
+				    print server_nameAux $server_name
+				    print main_group_idAUX1 $main_group_id
+				    print decoder_idAUX $decoder_id
 
 				    $gui := false
 
@@ -15477,7 +16093,7 @@ whenever ($track_amp_action==$track_amp_action)
 
 				    $synths_map($server_name)($mix_group).insert($aux_name, map{}) // map pour synth à reemplacer par sc_struct plus tard
 				    $track_proc($server_name)($mix_group).insert($aux_name, map{}) // map des processus pour chaque track
-				    
+				    $vst_plugins($server_name)($mix_group).insert($aux_name, map{}) // map des processus pour chaque track
 
 				    
 				    // print synths_map (""+$synths_map)
@@ -15493,6 +16109,9 @@ whenever ($track_amp_action==$track_amp_action)
 				    // $node_id := $node_id + 1
 				    // print $node_id
 				    $node_id_out := $SC_Servers($server_name)("node_id")
+
+				    print main_group_idAUX2 $node_id_out
+
 				    // $node_id_out := $node_id
 				    // scServer "s_new" audioOut8 $node_id_out 1 $group_id in $bus out ($gbus+$chnl) index $bus in_ramp $fade_in amp $amp
 				    
@@ -15500,12 +16119,91 @@ whenever ($track_amp_action==$track_amp_action)
 
 				    // scServer "s_new" ("HOA_Encode"+$order+"_out") $node_id_out 1 $group_id in $bus globTBus $hoa_bus in_ramp $fade_in amp $amp dopon 1 dopamnt 1 glev 1 llev 1  //gbfbus $rev_bus
 
-				    $Servers($server_name).s_new(["HOA_Encode"+$order+"_out", $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_bus, "in_ramp", $fade_in, "amp", $amp, "dopon", 1, "dopamnt", 1, "glev", 1, "llev", 1, "spk_radius", $spk_radius])
+
+/*			    	$Servers($server_name).s_new(["HOA_Encode"+$order+"_out", $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_bus, "in_ramp", $fade_in, "amp", $amp, "dopon", 1, "dopamnt", 1, "glev", 1, "llev", 1, "spk_radius", $spk_radius])
 				    print ("s_new"+$server_name) ("HOA_Encode"+$order+"_out") $node_id_out 1 $group_id in $bus  globTBus $hoa_bus in_ramp $fade_in amp $amp dopon 1 dopamnt 1 glev 1 llev 1  //gbfbus $rev_bus
+*/
+					switch //($encoder) + +$hoa_num_ch
+					{
+						case ($encoder && ($in_channels == "mono")): // mono or in_channels = 1 (|| $in_channels == 1)
+						print encoder1 $encoder
+						$out_name := "HOA_Encode"+$order+"_out"
+						$hoa_inter_bus := $bus+1 //
+						$Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", $amp2_out, "dopon", $doppler , "dopamnt", 1, "glev", 1, "llev", 1, "plane_spherical", $plane_spherical, "spk_radius", $spk_radius, "max_radius", $max_radius, "x", $xyz_init_pos[0], "y", $xyz_init_pos[1], "z", $xyz_init_pos[2]])				   				    	
+						$SC_Servers($server_name).insert("bus_index", $bus+$hoa_num_ch+1) // +1 = mono input bus incrementa bus de server A ver en funcion del decoder!!!!!!!
+
+						case ($encoder && $in_channels == "stereo"): // Stereo hoa Ambitool panning 
+						print encoder2 $encoder
+						$out_name := "HOA_Encode_Ste"+$order+"_out"
+						$hoa_inter_bus := $bus+2 //
+						$Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", $amp2_out, "dopon", $doppler, "dopamnt", 1, "glev", 1, "llev", 1, "plane_spherical", $plane_spherical, "spk_radius", $spk_radius, "max_radius", $max_radius])				   				    	
+						$SC_Servers($server_name).insert("bus_index", $bus+$hoa_num_ch+2) // +2 = stereo input incrementa bus de server A ver en funcion del decoder!!!!!!!
+							
+						// case ($encoder && $in_channels == "24ch"):
+						// print encoder2 $encoder
+						// $out_name := "HOA_Encode_24ch"+$order+"_out"
+						// $hoa_inter_bus := $bus+24 //
+						// $Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", $amp2_out, "dopon", $doppler, "dopamnt", 1, "glev", 1, "llev", 1, "plane_spherical", $plane_spherical, "spk_radius", $spk_radius])				   				    	
+						// $SC_Servers($server_name).insert("bus_index", $bus+$hoa_num_ch+24) // +2 = stereo input incrementa bus de server A ver en funcion del decoder!!!!!!!
+
+						case ($encoder && $in_channels.is_int()):
+						if($in_channels >= 1 && $in_channels <= 24) // maxi 24, can be changed
+						{
+							print encoder HOA_Ambitools $in_channels channels
+							// Version 2 Ambitools HOA_Encode2_1ch7_out
+							$out_name := "HOA_Encode2_"+$in_channels+"ch"+$order+"_out"
+							$hoa_inter_bus := $bus+$in_channels
+							$Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", $amp2_out, "dopon", $doppler])				   				    	
+							$SC_Servers($server_name).insert("bus_index", $hoa_inter_bus+$hoa_num_ch) // +2 = stereo input incrementa bus de server A ver en funcion del decoder!!!!!!!
+						}
+						else
+						{
+							print wrong number of channels 
+						}
+
+						case (! $encoder && ($in_channels == "mono" || $in_channels == 1)): // for pre-hoa stream 
+						print encoder3 no encoder $encoder 
+						print bus $bus
+						print hoa_bus $hoa_bus
+						$out_name := "HOA_Out_"+$order
+						$hoa_inter_bus := $bus+$hoa_num_ch //add hoa input order channel number	
+						print hoa_inter_bus $hoa_inter_bus
+
+						if($ambisonic_in)
+						{	
+							$Servers($server_name).s_new([$out_name, $node_id_out, 1, $group_id, "in", $bus, "globTBus", $hoa_inter_bus, "in_ramp", $fade_in, "amp", $amp2_out])
+							$SC_Servers($server_name).insert("bus_index", $hoa_inter_bus+$hoa_num_ch) // add hoa stream for next bu
+						}
+						else
+						{
+							$Servers($server_name).s_new(["audioOut8", $node_id_out, 1, $group_id, "in", $bus, "out", $hoa_inter_bus, "in_ramp", $fade_in, "amp", $amp2_out])
+							$SC_Servers($server_name).insert("bus_index", $hoa_inter_bus+8) // 8 channels (for hyperspheres)
+						}
+						case (! $encoder && $in_channels == "stereo"):
+						print "HOA_Group is ambisonic input signal, no stereo input, use encoder = true..."
+
+						case $encoder == "iem":
+
+					}
+
+					$SC_Servers($server_name).insert("node_id", $node_id_out + 1)
+					$node_id_out2 := $SC_Servers($server_name)("node_id")
+
+					if($ambisonic_in)
+					{					
+						$Servers($server_name).s_new(["HOA_Out_"+$order, $node_id_out2, 3, $node_id_out, "in", $hoa_inter_bus, "globTBus", $hoa_bus, "in_ramp", $fade_in, "amp", $amp])	 // "amp", $amp])			   				    						
+					}
+					else
+					{
+						// $Servers($server_name).s_new(["audioOut8", $node_id_out2, 3, $node_id_out, "in", $hoa_inter_bus, "out", 0, "in_ramp", $fade_in, "amp", $amp])	 // "amp", $amp])			   				    						
+						$Servers($server_name).s_new(["HOA_Out_"+$order, $node_id_out2, 3, $node_id_out, "in", $hoa_inter_bus, "globTBus", $hoa_bus, "in_ramp", $fade_in, "amp", $amp])	 // "amp", $amp])			   				    						
+
+					}
+					$SC_Servers($server_name).insert("node_id", $node_id_out2 + 1)
 
 				    // ~espace = Synth(\ATK_Omni_8_new, [\in,  ~bus1, \dopon, 1, \glev, 1, \llev, 1, \gbfbus, ~gbfbus, \globTBus, ~globTBus], ~s1, \addAfter)
-				    _ := $synths_map($server_name)($mix_group)($aux_name).insert("group", $group_id)
-					_ := $synths_map($server_name)($mix_group)($aux_name).insert("audioOut8", $node_id_out)
+				    $synths_map($server_name)($mix_group)($aux_name).insert("group", $group_id)
+					$synths_map($server_name)($mix_group)($aux_name).insert("audioOut8", $node_id_out)
 
 					////// 
 					$aux.add_pair($aux_name, $THISOBJ) // put this group object in dico $aux
@@ -15514,12 +16212,14 @@ whenever ($track_amp_action==$track_amp_action)
 				    $sc_struct($server_name).add_pair($group_id, [$node_id_out]) // crea nueva key group + audioOut
 					$sc_struct($server_name).add_pair($node_id_out, map{("_synth", "HOA_Encode"+$order+"_out"), ("globTBus", $hoa_bus), ("in", $bus), ("in_ramp", $fade_in), ("amp", $amp), ("dopon", 1), ("glev", 1), ("llev", 1) }) // , ("gbfbus", $rev_bus) crea MAP para nombre_synth + parametros
 					
-					$SC_Servers($server_name).insert("bus_index", $bus+$hoa_num_ch) // incrementa bus de server A ver en funcion del decoder!!!!!!!
+					// $SC_Servers($server_name).insert("bus_index", $bus+$hoa_num_ch) // incrementa bus de server A ver en funcion del decoder!!!!!!!
+
+
 					// $rev_bus := $SC_Servers($server_name)("bus_index")
 					// $SC_Servers($server_name).insert("bus_index", $bus+4) // incrementa bus de server para ambi rev
 
 				    // $node_id := $node_id + 1 // incremente de 1 la variable $node_id pour le prochain node
-					$SC_Servers($server_name).insert("node_id", $node_id_out + 1)
+					// $SC_Servers($server_name).insert("node_id", $node_id_out + 1)
 				    
 				    $SC_Groups($mix_group)("aux_sub_group").add_pair($aux_name, $THISOBJ) // store thisobject in TAB of SC_Groups(mix_group)
 
@@ -15537,7 +16237,7 @@ whenever ($track_amp_action==$track_amp_action)
 			}
    }
 
-   @fun_def mod_add($module, $action = "before_out", $target_mod = <undef>, $fade_in = 0.01)
+   @fun_def mod_add($module, $action = "before_out", $target_mod = <undef>, $fade_in = 0.01, $mod_in_ch = 1)
    {
 	@local $addmod_index := 0, $params, $fade_in_mod, $node_id_mod, $target_id, $mod_name, $json_file, $json_map
 
@@ -15559,10 +16259,101 @@ whenever ($track_amp_action==$track_amp_action)
 	forall $chain in $module // s'il y a plus des modules
 	{
 		print chain_synth1 $chain
-		$params := $chain.cdr()
+		// $params := $chain.cdr()
+		$mod_name := $chain.car()
+
 		print test_syn1_params (""+$params)
 			// scServer "s_new" ($chain[0]) $node_id_mod 2 $node_id_out in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
 			// $Servers($server_name).s_new([$chain[0], $node_id_mod, 2, $node_id_out, "in", $bus, "out", $bus, $params, "matrix_ramp", $fade_in_mod])
+
+		if($vst_all_map.is_defined($mod_name)) // VST existe?
+		{	    		
+				$vst_module := $mod_name
+				// $mod_name := $vst_module
+	   //  		if($vst_all_map.is_defined($vst_module)) // VST existe?
+				// {
+					// if($vst_all_map.is_defined($mod_name)) // VST existe?
+					// {
+			if($vst_all_map($mod_name)("sdkversion")[4] == "3") // pour VST3
+		    {
+				// $mod_name := $mod_name+".vst3"
+				$vst_module := $mod_name+".vst3"
+		    }
+			// $vst_id := $vst_plugins($server_name)($group_name)($mod_name) // retrieve vst node_id
+						// $Servers($server_name).u_cmd([$vst_id, 6, "/vis", $view]) // 6 Synthdef UGEN id
+			// }
+			// else
+			// {
+			// 	print "module not found"
+			// }
+
+
+
+				switch ($action)
+				{
+					case "before_out":
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 2, $target_mod, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
+						print struct_group_id2 (""+$struct_group_id)
+						$struct_group_id.insert(@size($struct_group_id)-1, $node_id_mod) // root tree 0
+						case "after":
+						// $mod_after_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 3, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
+						$struct_group_id.insert(@occurs($struct_group_id, $target_id)+2, $node_id_mod) // root tree 0
+						print struct_group_id2
+						case "before":
+						// $mod_before_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 2, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])		   		
+						$struct_group_id.insert(@occurs($struct_group_id, $target_id), $node_id_mod) // root tree 0
+						case "top":
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 0, $group_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
+						$struct_group_id.insert(0, $node_id_mod) // root tree 0
+
+					}
+				$Servers($server_name).u_cmd([$node_id_mod, 6, "/open", $vst_module, 1, 0, 0]) // 6 = UGen id inside Synthdef
+				$vst_plugins($server_name)($mix_group)($aux_name).insert($vst_module, $node_id_mod) // dictionaire pour les id des vst_plugins
+
+			$params := $chain.cdr()
+			if($params.car() == "preset")
+			{
+				$Servers($server_name).u_cmd([$node_id_mod, 6, "/program_read", $vst_presets+$vst_all_map($mod_name)("vendor")+"/"+$mod_name+"/"+$params[1], 1]) // 6 = UGen id inside Synthdef
+				print preset (""+$vst_presets+$vst_all_map($mod_name)("vendor")+"/"+$mod_name+"/"+$params[1])
+			}
+
+		}
+		else
+		{
+			$params := $chain.cdr()
+		
+			// print test_syn1_params (""+$params)
+				// scServer "s_new" ($chain[0]) $node_id_mod 2 $node_id_out in $bus out $bus $params matrix_ramp $fade_in_mod  //target 2 justo despues del nodo 180 audioOut
+				// $Servers($server_name).s_new([$chain[0], $node_id_mod, 2, $node_id_out, "in", $bus, "out", $bus, $params, "matrix_ramp", $fade_in_mod])
+					// print $params
+			if($params.car() == "preset"){
+				@local $params_preset, $par_init, $inc := 0
+
+				$json_file := $home + "/Library/Application\ Support/SuperCollider/TSupport/fxPresets/"+$mod_name+".json"
+
+				$json_file := @json_read($json_file)
+				// print JSON (""+$json_file($mod_name)($params[1]))
+
+				$params_preset := $json_file($mod_name)($params[1]) // recupere la map du preset
+				if($params_preset.is_undef())
+				{
+					print "this preset does not exist"
+				}
+				else
+				{
+					$par_init := $params.drop(2)
+
+					loop 
+					{
+						$params_preset.add_pair($par_init[$inc], $par_init[$inc+1]) // replace parameters after 
+						$inc += 2
+					} until ($inc==$par_init.size())
+
+					$params := $params_preset.map2tab() // convert map to tab
+				}
+			}
 
 			switch ($action)
 		{
@@ -15577,6 +16368,7 @@ whenever ($track_amp_action==$track_amp_action)
 				case "top":
 				$Servers($server_name).s_new([$chain[0], $node_id_mod, 0, $group_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in].concat($params))
 			}
+		}
 
 			$sc_struct($server_name)($group_id).insert(@size($sc_struct($server_name)($group_id))-2, $node_id_mod) // root tree 0
 			$sc_struct($server_name).add_pair($node_id_mod, map{("_synth", $chain[0]), ("in", $bus), ("out", $bus)}) // crea MAP para nombre_synth + parametros
@@ -15611,8 +16403,69 @@ whenever ($track_amp_action==$track_amp_action)
 		{
 			// print DIM 1
 			// $node_id_mod := $SC_Servers($server_name)("node_id") // last id
-			$params := $module.cdr()
+			// $params := $module.cdr()
 			$mod_name := $module.car()
+
+						if($vst_all_map.is_defined($mod_name))
+				{	    		
+				
+					$vst_module := $mod_name // VST module name	    		
+
+				// $mod_name := $vst_module
+
+		   //  		if($vst_all_map.is_defined($vst_module))
+					// {
+				// if($vst_all_map.is_defined($mod_name)) // VST existe?
+				// {
+				if($vst_all_map($mod_name)("sdkversion")[4] == "3") // pour VST3
+				    {
+					$vst_module := $mod_name+".vst3"
+				    }
+					// $vst_id := $vst_plugins($server_name)($group_name)($mod_name) // retrieve vst node_id
+					// $Servers($server_name).u_cmd([$vst_id, 6, "/vis", $view]) // 6 Synthdef UGEN id
+				// }
+				// else
+				// {
+				// 	print "module not found"
+				// }					
+				switch ($action)
+				{
+					case "before_out":
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 2, $target_mod, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
+						print struct_group_id4 (""+$struct_group_id)
+						$struct_group_id.insert(@size($struct_group_id)-1, $node_id_mod) // root tree 0
+
+						case "after":
+						// $mod_after_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 3, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
+						$struct_group_id.insert(@occurs($struct_group_id, $target_id)+2, $node_id_mod) // root tree 0
+						print struct_group_id4
+						case "before":
+						// $mod_before_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 2, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])		   		
+						$struct_group_id.insert(@occurs($struct_group_id, $target_id), $node_id_mod) // root tree 0
+
+						case "top":
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 0, $group_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
+						$struct_group_id.insert(0, $node_id_mod) // root tree 0
+
+					}
+				$Servers($server_name).u_cmd([$node_id_mod, 6, "/open", $vst_module, 1, 0, 0]) // 6 = UGen id inside Synthdef
+				$vst_plugins($server_name)($mix_group)($aux_name).insert($vst_module, $node_id_mod) // dictionaire pour les id des vst_plugins
+
+				// $params := $chain.cdr()
+				$params := $module.cdr()
+
+				if($params.car() == "preset")
+				{
+					$Servers($server_name).u_cmd([$node_id_mod, 6, "/program_read", $vst_presets+$vst_all_map($mod_name)("vendor")+"/"+$mod_name+"/"+$params[1], 1]) // 6 = UGen id inside Synthdef
+					print preset (""+$vst_presets+$vst_all_map($mod_name)("vendor")+"/"+$mod_name+"/"+$params[1])
+				}
+			}
+			else
+			{
+
+			$params := $module.cdr()
 			// print $params
 			if($params.car() == "preset"){
 				@local $params_preset, $par_init, $inc := 0
@@ -15661,6 +16514,7 @@ whenever ($track_amp_action==$track_amp_action)
 				case "top":
 				$Servers($server_name).s_new([$module[0], $node_id_mod, 0, $group_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in].concat($params))
 			}			   	
+		}
 
 			// $synths_map($server_name)($mix_group)($aux_name).insert($module[0], $node_id_mod)
 			$sc_struct($server_name)($group_id).insert(@size($sc_struct($server_name)($group_id))-2, $node_id_mod) // root tree 0
@@ -15693,17 +16547,78 @@ whenever ($track_amp_action==$track_amp_action)
 			// scServer "s_new" ($module) $node_id_mod 2 $node_id_out in $bus out $bus matrix_ramp $fade_in_mod //$params   //target 2 justo despues del nodo 180 audioOut
 			// $Servers($server_name).s_new([$module, $node_id_mod, 2, $node_id_out, "in", $bus, "out", $bus, "matrix_ramp", $fade_in_mod])
 			// $synths_map($server_name)($mix_group)($aux_name).insert($module, $node_id_mod)
+			$mod_name := $module
 
-			switch ($action)
-		{
-			case "before_out":
-				$Servers($server_name).s_new([$module, $node_id_mod, 2, $target_mod, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
-				case "after":
-				$Servers($server_name).s_new([$module, $node_id_mod, 3, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
-				case "before":
-				$Servers($server_name).s_new([$module, $node_id_mod, 2, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])		   		
-				case "top":
-				$Servers($server_name).s_new([$module, $node_id_mod, 0, $group_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
+			if($vst_all_map.is_defined($mod_name))
+				{	    		
+				
+					$vst_module := $mod_name // VST module name	    		
+
+				// $mod_name := $vst_module
+
+		   //  		if($vst_all_map.is_defined($vst_module))
+					// {
+				// if($vst_all_map.is_defined($mod_name)) // VST existe?
+				// {
+				if($vst_all_map($mod_name)("sdkversion")[4] == "3") // pour VST3
+			    {
+					$vst_module := $mod_name+".vst3"
+			    }
+					// $vst_id := $vst_plugins($server_name)($group_name)($mod_name) // retrieve vst node_id
+					// $Servers($server_name).u_cmd([$vst_id, 6, "/vis", $view]) // 6 Synthdef UGEN id
+				// }
+				// else
+				// {
+				// 	print "module not found"
+				// }	
+				switch ($action)
+				{
+					case "before_out":
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 2, $target_mod, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
+						print struct_group_id6 (""+$struct_group_id)
+						$struct_group_id.insert(@size($struct_group_id)-1, $node_id_mod) // root tree 0
+
+						case "after":
+						// $mod_after_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 3, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
+						$struct_group_id.insert(@occurs($struct_group_id, $target_id)+2, $node_id_mod) // root tree 0
+						print struct_group_id6
+
+						case "before":
+						// $mod_before_id := $synths_map($server_name)($group_name)($target_mod)[0] // recupera $mod_after id
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 2, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])		   		
+						$struct_group_id.insert(@occurs($struct_group_id, $target_id), $node_id_mod) // root tree 0
+
+						case "top":
+						$Servers($server_name).s_new(["VST_"+$mod_in_ch, $node_id_mod, 0, $group_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
+						$struct_group_id.insert(0, $node_id_mod) // root tree 0
+
+				}
+				$Servers($server_name).u_cmd([$node_id_mod, 6, "/open", $vst_module, 1, 0, 0]) // 6 = UGen id inside Synthdef
+				$vst_plugins($server_name)($mix_group)($aux_name).insert($vst_module, $node_id_mod) // dictionaire pour les id des vst_plugins
+
+				$params := $module.cdr()
+				if($params.car() == "preset")
+				{
+					$Servers($server_name).u_cmd([$node_id_mod, 6, "/program_read", $vst_presets+$vst_all_map($mod_name)("vendor")+"/"+$mod_name+"/"+$params[1], 1]) // 6 = UGen id inside Synthdef
+					print preset (""+$vst_presets+$vst_all_map($mod_name)("vendor")+"/"+$mod_name+"/"+$params[1])
+				}
+			
+			}	
+			else
+			{
+
+				switch ($action)
+				{
+					case "before_out":
+					$Servers($server_name).s_new([$module, $node_id_mod, 2, $target_mod, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])  //target 2 justo despues del nodo 180 audioOut
+					case "after":
+					$Servers($server_name).s_new([$module, $node_id_mod, 3, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
+					case "before":
+					$Servers($server_name).s_new([$module, $node_id_mod, 2, $target_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])		   		
+					case "top":
+					$Servers($server_name).s_new([$module, $node_id_mod, 0, $group_id, "in", $bus, "out", $bus, "matrix_ramp", $fade_in])
+				}
 			}
 
 			$sc_struct($server_name)($group_id).insert(@size($sc_struct($server_name)($group_id))-2, $node_id_mod) // root tree 0
@@ -16339,10 +17254,15 @@ whenever ($track_amp_action==$track_amp_action)
 
 	@proc_def connect($track, $amp = 0, $fade_in = 1)
 	{
-		@local $id, $target_id, $track_bus_out // , $bus_aux_in
+		@local $id, $target_id, $target_enc_id, $track_bus_out, $aux_hoa_bus, $internal_bus // , $bus_aux_in
 		$id := $SC_Servers($server_name)("node_id")
-		$target_id := $SC_Groups($mix_group)("sub_group")($track).$node_id_out
-		$track_bus_out := $SC_Groups($mix_group)("sub_group")($track).$bus
+		// $target_id := $SC_Groups($mix_group)("sub_group")($track).$node_id_out
+		// $target_id := $groups($mix_group).$group_id
+		$target_enc_id := $tracks($track).$node_id_out	
+		$target_id := $tracks($track).$node_id_out2
+		// $track_bus_out := $SC_Groups($mix_group)("sub_group")($track).$bus
+		$aux_hoa_bus := $tracks($track).$hoa_bus
+		$internal_bus := $tracks($track).$bus
 		print connect_all (""+$SC_Groups($mix_group)("sub_group"))
 		// $bus_aux_in := $bus
 		if($aux_track_map.is_defined($track))
@@ -16352,7 +17272,14 @@ whenever ($track_amp_action==$track_amp_action)
 		else
 		{ 
 			$aux_track_map.add_pair($track, $id)
-			$Servers($server_name).s_new(["AudioInAux2", $id, 3, $target_id, "in", $track_bus_out, "out", $bus, "in_ramp", $fade_in, "amp", $amp])
+			if($ambisonic_in)
+			{
+				$Servers($server_name).s_new(["HOA_Aux"+$order, $id, 3, $target_id, "in", $aux_hoa_bus, "out", $bus, "in_ramp", $fade_in, "amp", $amp])
+			}
+			else
+			{
+				$Servers($server_name).s_new(["AudioInAuxMono", $id, 2, $target_enc_id, "in", $internal_bus, "out", $bus, "in_ramp", $fade_in, "amp", $amp])
+			}
 			$SC_Servers($server_name).add_pair("node_id", $id + 1)			
 		}
 	}
@@ -16764,35 +17691,121 @@ whenever ($track_amp_action==$track_amp_action)
 	// 	}
 	// }
 
-	@proc_def amp($amp)
+	// @proc_def amp($amp)
+	// {
+	// 	@local $nim, $lamp, $last_bpf_amp_curve
+
+	// 	if($track_proc($server_name)($mix_group).is_defined("amp"))
+	// 	{
+	// 		abort $track_proc($server_name)($mix_group)("amp") // to avoid interferences
+	// 	}		
+	// 	// abort $last_bpf_amp_curve // to avoid interferences
+
+	// 	if($amp.is_tab()) // if $val is bpf
+	// 	{
+	// 		$nim := @build_nim_from_bpf($amp)
+	// 		// .CheckParam($module, $param, $MYSELF)
+	// 		$lamp := $amp[0]
+	// 		$last_bpf_amp_curve := { curve @grain := 0.01, 
+	// 			@action 
+	// 			{
+	// 				$Servers($server_name).n_set($node_id_out, ["amp", $lamp])	
+	// 			} 
+	// 			{ $lamp : $nim }
+	// 		}
+	// 	$track_proc($server_name)($mix_group).add_pair("amp", $last_bpf_amp_curve) // store curve in map to avoid interference between different groups
+	// 	}
+	// 	else
+	// 	{
+	// 		$Servers($server_name).n_set($node_id_out, ["amp", $amp])
+	// 	}
+	// }
+
+	@fun_def dae($dae_tab)
+	{
+		@local $dae_res
+
+		$dae_res := [$dae_tab[0]*$d_factor, $dae_tab[1], $dae_tab[2]]
+		$Servers($server_name).n_set($node_id_out, ["coords", $dae_res])
+		// $dae_list_cart := @poltocar3D_tab($dae_res)
+		// $trajs.insert($proc_index, @poltocar3D_tab($dae_res)) // to OpenFrameworks
+	}
+
+	@proc_def traj_circ2($start_coords, $clockwise, $tpo = 60) // Ambitools
+	{ 
+		@local $coords_val
+		// forall $x in ($synths_map($server_name)($mix_group)($aux_name)($module)) // parcours la liste de node de la même synth
+		// {
+			if($track_proc($server_name)($mix_group)($aux_name).is_defined($node_id_out+"_traj3D")) // si ça existe abort et refait
+		{
+			// print abort_rand
+			abort $track_proc($server_name)($mix_group)($aux_name)($node_id_out+"_traj3D")
+			abort $int_loop 
+		}
+		$coords_val := $start_coords
+			// ::ambi_orbit($server_name, $node_id_out, $node_id_out, $angle, $grain)
+			// $track_proc($server_name)($mix_group)($aux_name).add_pair(($node_id_out+"_traj3D"), ::traj_circ2($server_name, $node_id_out, $start_coords, $clockwise, $tpo)) // instantie un le processus dans le dico
+			$track_proc($server_name)($mix_group)($aux_name).add_pair(($node_id_out+"_traj3D"), ::traj_circ22($server_name, $node_id_out, $start_coords, $clockwise, $tpo)) // instantie un le processus dans le dico
+			// print track_proc (""+$track_proc($server_name)($mix_group))
+		// }
+		
+		// $int_loop := { // Error, llamo dos veces 
+		// 	loop  10ms  
+		// 	// @abort { print "===> loop killed" $aux_name }
+		// 	{ 
+		// 		$THISOBJ.dae($coords_val)
+		// 		// print coords_val (""+$coords_val)
+
+		// 	}
+		// }
+	}
+
+	@proc_def amp($ampli, $add = 0, $free = false, $action = false)
 	{
 		@local $nim, $lamp, $last_bpf_amp_curve
 
-		if($track_proc($server_name)($mix_group).is_defined("amp"))
+		if($track_proc($server_name)($mix_group)($aux_name).is_defined("amp"))
 		{
-			abort $track_proc($server_name)($mix_group)("amp") // to avoid interferences
+			abort $track_proc($server_name)($mix_group)($aux_name)("amp") // stop process to avoid interferences
 		}		
 		// abort $last_bpf_amp_curve // to avoid interferences
 
-		if($amp.is_tab()) // if $val is bpf
+		if($ampli.is_tab()) // if $val is bpf
 		{
-			$nim := @build_nim_from_bpf($amp)
+			$nim := @build_nim_from_bpf($ampli)
 			// .CheckParam($module, $param, $MYSELF)
-			$lamp := $amp[0]
+			$amp_bpf_x_min := @min_key($nim)
+			$amp_bpf_x_max := @max_key($nim)
+			$lamp := $ampli[0]
 			$last_bpf_amp_curve := { curve @grain := 0.01, 
 				@action 
 				{
-					$Servers($server_name).n_set($node_id_out, ["amp", $lamp])	
+					$Servers($server_name).n_set($node_id_out2, ["amp", $lamp])	
+					// $Servers($server_name).n_set($node_id_out2, ["amp", $lamp+$add])	
+					// print amp $node_id_out22 $lamp
+					$amp := $lamp+$add // global amp
 				} 
 				{ $lamp : $nim }
-			}
-		$track_proc($server_name)($mix_group).add_pair("amp", $last_bpf_amp_curve) // store curve in map to avoid interference between different groups
+				==> { 	if($free.is_numeric()) // if free number then free track in number time
+						{
+							$THISOBJ.free($free)
+						}
+						if($action) // action after amp for exemple clear buffers
+							{
+								// print "fin curve action" (""+$action)
+								($free+0.1) $track_amp_action := $action
+							}
+						}
+					}
+		$track_proc($server_name)($mix_group)($aux_name).add_pair("amp", $last_bpf_amp_curve) // store curve in map to avoid interference between different groups
 		}
 		else
 		{
-			$Servers($server_name).n_set($node_id_out, ["amp", $amp])
+			$Servers($server_name).n_set($node_id_out2, ["amp", $ampli+$add])
+			// $Servers($server_name).n_set($node_id_out2, ["amp", $amp+$add])
+			$amp := $ampli // global amp 
 		}
-	}
+	}	
 
 	// @fun_def HOABeamDirac2Hoa() // add BeamDirac2Hoa HOA FILTER
 	// {
@@ -17617,17 +18630,126 @@ whenever ($track_amp_action==$track_amp_action)
 		}
 	}
 
-	@fun_def map_gesture($gest, $module, $param, $min, $max) // ($L_incli_lateral, "TMFxShift2", "modfreq", 1, 60)
+/*	@fun_def map_gesture($gest, $module, $param, $min, $max) // ($L_incli_lateral, "TMFxShift2", "modfreq", 1, 60)
 	{
 		$THISOBJ.set("TPlaybuf16", ["matrix_ramp", $fade_out, "free", 0])
+	}*/
+
+	//// Needs gesture riot lib
+
+	@fun_def map_gesture($gest, $module, $param, $min, $max) // ($L_incli_lateral, "TMFxShift2", "modfreq", 1, 60)
+	{
+		print gest_inside_obj (""+$gest)
+		forall $x in ($synths_map($server_name)($mix_group)($aux_name)($module)) // parcours la liste de node de la même synth
+		{
+			if($track_proc($server_name)($mix_group)($aux_name)($x).is_defined("gest"+$module+$param)) // si ça existe abort et refait
+		{
+			print abort_rand
+			abort $track_proc($server_name)($mix_group)($aux_name)($x)("gest"+$module+$param) 
+		}
+			$track_proc($server_name)($mix_group)($aux_name)($x).add_pair(("gest"+$module+$param), obj::map_gesture($gest, $server_name, $group_id, $x, $param, $min, $max)) // instantie un le processus dans le dico
+
+		}
 	}
 
-
-	@proc_def free($time) // @proc_def parce qu'il y a un delay pour arrter les proc
+	@fun_def map_gesture_index($gest, $module, $index, $param, $min, $max) // $tracks("synth1").map_gesture_index($L_incli_lateral, "TMFxShift2", 0, "modfreq", 1, 60)
 	{
+		@local $node_num
+		$node_num := ($synths_map($server_name)($mix_group)($aux_name)($module)[$index])
+		// print modulo_id2 ($synths_map($server_name)($mix_group)($aux_name)($module))
+		if($track_proc($server_name)($mix_group)($aux_name)($node_num).is_defined("gest"+$module+$param)) // si ça existe abort et refait
+		{
+			print abort_rand_s
+			abort $track_proc($server_name)($mix_group)($aux_name)($node_num)("gest"+$module+$param) 
+		}
+		$track_proc($server_name)($mix_group)($aux_name)($node_num).add_pair(("gest"+$module+$param), obj::map_gesture($gest, $server_name, $group_id, $node_num, $param, $min, $max))	
+	}
+
+	@fun_def map_gesture_func($gest, $func, $module, $param, $min, $max) // ($L_incli_lateral, "TMFxShift2", "modfreq", 1, 60)
+	{
+		print gest_inside_obj (""+$gest)
+		forall $x in ($synths_map($server_name)($mix_group)($aux_name)($module)) // parcours la liste de node de la même synth
+		{
+			if($track_proc($server_name)($mix_group)($aux_name)($x).is_defined("gest"+$module+$param)) // si ça existe abort et refait
+		{
+			print abort_rand
+			abort $track_proc($server_name)($mix_group)($aux_name)($x)("gest"+$module+$param) 
+		}
+			$track_proc($server_name)($mix_group)($aux_name)($x).add_pair(("gest"+$module+$param), obj::map_gesture_func($gest, $func, $server_name, $group_id, $x, $param, $min, $max)) // instantie un le processus dans le dico
+
+		}
+	}
+
+	@fun_def map_gesture_func_amp($gest, $func, $min, $max) // ($L_incli_lateral, "TMFxShift2", "modfreq", 1, 60)
+	{
+		if($track_proc($server_name)($mix_group)($aux_name).is_defined("gest_amp")) // si ça existe abort et refait
+		{
+			print abort_rand
+			abort $track_proc($server_name)($mix_group)($aux_name)("gest_amp") 
+		}
+		$track_proc($server_name)($mix_group)($aux_name).add_pair(("gest_amp"), obj::map_gesture_func_amp($gest, $func, $server_name, $node_id_out2, $min, $max)) // instantie un le processus dans le dico		
+	}
+
+	@fun_def map_gesture_func_amp2max($gest1, $gest2, $func, $min, $max) // ($L_incli_lateral, "TMFxShift2", "modfreq", 1, 60)
+	{
+		if($track_proc($server_name)($mix_group)($aux_name).is_defined("gest_amp")) // si ça existe abort et refait
+		{
+			print abort_rand
+			abort $track_proc($server_name)($mix_group)($aux_name)("gest_amp") 
+		}
+		$track_proc($server_name)($mix_group)($aux_name).add_pair(("gest_amp"), obj::map_gesture_func_amp2max($gest1, $gest2, $func, $server_name, $node_id_out2, $min, $max)) // instantie un le processus dans le dico		
+	}
+
+	@fun_def map_gesture_func_amp2mov($gest1, $gest2, $mov, $func, $min, $max) // ($L_incli_lateral, "TMFxShift2", "modfreq", 1, 60)
+	{
+		if($track_proc($server_name)($mix_group)($aux_name).is_defined("gest_amp")) // si ça existe abort et refait
+		{
+			print abort_rand
+			abort $track_proc($server_name)($mix_group)($aux_name)("gest_amp") 
+		}
+		$track_proc($server_name)($mix_group)($aux_name).add_pair(("gest_amp"), obj::map_gesture_func_amp2mov($gest1, $gest2, $mov, $func, $server_name, $node_id_out2, $min, $max)) // instantie un le processus dans le dico		
+	}	
+
+	@fun_def map_gesture_func_amp3movL($func, $min, $max) // ($L_incli_lateral, "TMFxShift2", "modfreq", 1, 60)
+	{
+		if($track_proc($server_name)($mix_group)($aux_name).is_defined("gest_amp_L")) // si ça existe abort et refait
+		{
+			print abort_rand
+			abort $track_proc($server_name)($mix_group)($aux_name)("gest_amp_L") 
+		}
+		$track_proc($server_name)($mix_group)($aux_name).add_pair(("gest_amp_L"), obj::map_gesture_func_amp3movL($func, $server_name, $node_id_out, $min, $max)) // instantie un le processus dans le dico		
+	}	
+
+	@fun_def map_gesture_func_amp3movR($func, $min, $max) // ($L_incli_lateral, "TMFxShift2", "modfreq", 1, 60)
+	{
+		if($track_proc($server_name)($mix_group)($aux_name).is_defined("gest_amp_R")) // si ça existe abort et refait
+		{
+			print abort_rand
+			abort $track_proc($server_name)($mix_group)($aux_name)("gest_amp_R") 
+		}
+		$track_proc($server_name)($mix_group)($aux_name).add_pair(("gest_amp_R"), obj::map_gesture_func_amp3movR($func, $server_name, $node_id_out, $min, $max)) // instantie un le processus dans le dico		
+	}		
+
+
+	@fun_def map_gesture_ambi_pol_angle($gest, $radio, $min, $max) 
+	{ 
+		if($track_proc($server_name)($mix_group)($aux_name).is_defined("gest_spat")) // si ça existe abort et refait
+	{
+		// print abort_rand
+		abort $track_proc($server_name)($mix_group)($aux_name)("gest_spat") 
+	}
+
+		$track_proc($server_name)($mix_group)($aux_name).add_pair("gest_spat", obj::map_gesture_ambi_pol_angle($server_name, $node_id_out2, $mix_group, $gest, $radio, $min, $max)) // instantie un le processus dans le dico
+	}
+
+	///////////////
+
+	@proc_def free($time = 1) // @proc_def parce qu'il y a un delay pour arrter les proc
+	{
+		@local $abs_time := @dur2sec($time)
 		// print track_proc_integral (""+$track_proc)
 		// scServer "n_set" $node_id_out out_ramp @dur2sec($time) gatee 0 // free group in $time
-		$Servers($server_name).n_set($node_id_out, ["out_ramp", @dur2sec($time), "gatee", 0])
+		$Servers($server_name).n_set($node_id_out, ["out_ramp", $abs_time, "gatee", 0])
 
 
 		// ("abort track "+ $THISOBJ).post()
@@ -17635,19 +18757,24 @@ whenever ($track_amp_action==$track_amp_action)
 		// ("mix_group "+ $mix_group).post()
 		// ("aux_name "+ $aux_name).post()
 		// ($track_proc($server_name)($mix_group)($aux_name)).post()
-		if(($track_proc($server_name)($mix_group)($aux_name)).is_undef())
-		{
-			$track_proc($server_name)($mix_group).remove($aux_name) // delete track_proc from map
-			$SC_Groups($mix_group)("sub_group").remove($aux_name) // delete sub_group objects
+		// if(($track_proc($server_name)($mix_group)($aux_name)).is_undef())
+		// {
+		// 	$track_proc($server_name)($mix_group).remove($aux_name) // delete track_proc from map
+		// 	$SC_Groups($mix_group)("sub_group").remove($aux_name) // delete sub_group objects
 
 			
-		}
-		else
-		{
+		// }
+		// else
+		// {
 						// $track_proc($server_name)($mix_group)($aux_name).add_pair(($index+"_rambi_orbit"), ::ambi_orbit($server_name, $index, $node_id_out, $angle, $grain)) // instantie un le processus dans le dico
-
-			($time-0.01) forall $k, $v in $track_proc($server_name)($mix_group)($aux_name) // parcours liste de nodes
+			group
 			{
+			($abs_time-0.01) forall $k, $v in $track_proc($server_name)($mix_group)($aux_name) // parcours liste de nodes
+			{
+					if($k == $node_id_out+"_multi_lfo_track")
+					{
+						$THISOBJ.dae_rand_lfo_abort()
+					}
 				// print track_proc (""+$v)
 				if($v.is_map()) // si map abort proc modules
 				{
@@ -17661,7 +18788,18 @@ whenever ($track_amp_action==$track_amp_action)
 				}
 				else // si proc solo proc de HOA (orbit, ...)
 				{
-					abort $v
+					if($v.is_tab()) // si map abort proc modules
+					{
+						forall $p in $v
+						{
+							abort $p
+						}
+					}
+					else
+					{
+						abort $v
+						
+					}
 				}
 			}
 			group  // free aux connections 
@@ -17678,11 +18816,19 @@ whenever ($track_amp_action==$track_amp_action)
 		$sc_struct($server_name).remove($group_id) // enleve group key de la MAP $sc_struct 
 		$synths_map($server_name)($mix_group).remove($aux_name) // delete synths_map from map
 		$aux.remove($aux_name)
+		$trajs.remove($proc_index)
+					if($control_name != false) // if control_lev assign
+		{
+			$controllers($control_name).remove($track_name)
+		}
+		
+		0.5 abort $THISOBJ // abort objet after 1 time
 	}
 
 	@abort
 	{
-	    $THISOBJ.free(0.01) // 
+		print "remove" $aux_name object
+	    // $THISOBJ.free(0.01) // 
 	 //    forall $k, $v in $track_proc($server_name)($aux_name) // abort processus
 		// {
 		// 	abort $v
@@ -21694,7 +22840,7 @@ $space_group_index := 0
 								 //    $speedlim_actif := false
 								 //    ($speedlim_time)s $speedlim_actif := true //speedlim                    
 	    //      					}
-    loop video 0.1
+    loop video 0.1 
     {
 	osc_send_descriptors ("/spatc/"+$id+"/xyzw") ($xyz.concat([$desc_val]))
 	// print flatt $desc_val
@@ -23269,8 +24415,9 @@ $space_group_index := 0
 		// $duree  $trajs.remove($proc_index)
 	// }
 }
+// ::traj_circ22($server_name, $node_id_out, $coords_val, $start_coords, $clockwise, $tpo)) // instantie un le processus dans le dico
 
-@proc_def traj_circ22($coords, $start_coords, $clockwise, $tpo) // , $clockwise = 1
+@proc_def traj_circ22($server_name, $track_id, $start_coords, $clockwise, $tpo) // , $clockwise = 1
 {
 	@local $phi, $theta, $curve_int_proc := 0, $poltocar, $proc_index, $xyz := [0, 0, 0], $HOA_local_x := 0, $HOA_local_y := 0, $HOA_local_z := 0, $radio, $radio_res, $radio_fac := 1, $tempo_fac := 1 , $inc := 0, $descp_node_id, $desc_val := 0, $track_bus_in, $desc_id, $elev, $params, $angle
 
@@ -23304,7 +24451,51 @@ $space_group_index := 0
 					$angle := $angle
 				}
 
-				$coords[1] := $angle
+				$Servers($server_name).n_set($track_id, ["coords", [$radio, $angle, $elev]])	
+
+				// $coords[1] := $angle
+				$angle += 1*$clockwise
+			} 
+		}
+}
+
+@proc_def traj_circ_granulator($server_name, $node, $start_coords, $clockwise = 1, $tpo = 60) // , $clockwise = 1
+{
+	@local $phi, $theta, $curve_int_proc := 0, $poltocar, $proc_index, $xyz := [0, 0, 0], $HOA_local_x := 0, $HOA_local_y := 0, $HOA_local_z := 0, $radio, $radio_res, $radio_fac := 1, $tempo_fac := 1 , $inc := 0, $descp_node_id, $desc_val := 0, $track_bus_in, $desc_id, $elev, $params, $angle
+
+
+	// $proc_index := $trajs_index
+	// $trajs.add_pair($proc_index, $xyz)
+	// $trajs_index += 1
+
+	$radio := $start_coords[0]
+	$angle := $start_coords[1]
+	$elev := $start_coords[2]
+
+		abort $curve_int_proc
+		$curve_int_proc := {
+			Loop 0.01 @tempo := $tpo //@exclusive //@tempo := $tpo
+			{
+				if($clockwise == 1 && $angle > 180)
+				{
+					$angle := $angle - 360
+				}
+				else
+				{
+					$angle := $angle
+				}
+				if($clockwise == -1 && $angle < -180)
+				{
+					$angle := $angle + 360
+				}		
+				else
+				{
+					$angle := $angle
+				}
+				
+				$Servers($server_name).n_set($node, [azimuth_max, $angle, azimuth_min, $angle, elevation_min, $elev, elevation_max, $elev, radius_min, $radio, radius_max, $radio])
+				// print granul_angle $server_name $node $angle $elev $radio
+				// $coords[1] := $angle
 				$angle += 1*$clockwise
 			} 
 		}
@@ -23649,7 +24840,7 @@ $space_group_index := 0
 									$xyz[0] := $poltocar[0]
 									$xyz[1] := $poltocar[1]
 									$xyz[2] := $poltocar[2]
-									print dae(""+[$radio_res, $phi, $theta])
+									// print dae(""+[$radio_res, $phi, $theta])
 									$Servers($server_name).n_set($track_id, ["coords", [$radio_res, $phi, $theta]])	
 					    }
 
@@ -25860,7 +27051,7 @@ whenever ($from_sc_server2==$from_sc_server2)
 				$ryth_rand := @rand_range($ryth_min, $ryth_max)
 				// $poltocar := @poltocar(0.5, $angle_inc_rand)
 				// $pos := $angle_inc_rand.scale(0, 360, 0., 1., 1)
-
+				// print test (""+[$buf, $envbuf, $rate, $env_dur, $pos, $rand_x+$HOA_global_x, $rand_y+$HOA_global_y, $rand_z+$HOA_global_z, $amp, $track_HOA_NE])
 				::HOA_grain_xyz_track($buf, $envbuf, $rate, $env_dur, $pos, $rand_x+$HOA_global_x, $rand_y+$HOA_global_y, $rand_z+$HOA_global_z, $amp, $track_HOA_NE)
 				@command("of_grains"+$grain_group) @dur2mlsec($env_dur) $rand_x $rand_y $rand_z
 
@@ -26478,7 +27669,7 @@ whenever ($from_sc_server2==$from_sc_server2)
 	@init 
     {
 		$ryth_rand := @rand_range($ryth_min, $ryth_max)
-
+	
 		group // @tempo $inner_tempo 
 		{
 			loop circle_rand $ryth_rand
@@ -26496,7 +27687,7 @@ whenever ($from_sc_server2==$from_sc_server2)
 				// $pos := $angle_inc_rand.scale(0, 360, 0., 1., 1)
 
 				::HOAmbi_grain_xyz_track_buf(@choose($buf_list), $envbuf, $rate, $env_dur, $pos, $cartopol, $amp, $track_HOA_NE)
-				// @command("of_grains"+$grain_group) @dur2mlsec($env_dur) $rand_x $rand_y $rand_z // comment for audio performance
+				@command("of_grains"+$grain_group) @dur2mlsec($env_dur) $rand_x $rand_y $rand_z // comment for audio performance
 
 			}
 		}
@@ -26560,34 +27751,81 @@ whenever ($from_sc_server2==$from_sc_server2)
 			 $t   {$i_z_min, $i_z_max}} 
 	   }
 	}		
-    @proc_def xyz_interpol($bpf, $loop = 0) 
+    @proc_def xyz_interpol_ref($bpf, $loop = 0) 
     {
 		@local $nim, $xyz_pos, $inc := 0, $nim_dur, $periode
 		$nim := @build_nim_from_bpf($bpf)
-		$nim_dur := @max_key($nim)
+		$nim_dur := @max(@max_key($nim))
 		print RT_TEMPO $RT_TEMPO
 		$xyz_pos := $bpf[0]
 		$periode := (60/$RT_TEMPO)*$nim_dur
 		abort $curve_xyz
-		$curve_xyz := { loop $periode
-		{
-			curve @grain := 0.01, 
-			@tempo := $RT_TEMPO,
-			@action 
+		$curve_xyz := { 
+			print xyz_interpol loop periode ("" + $periode) \
+				from nim ("" + $nim) and nim duration ("" + $nim_dur) \
+				grain curve 1 " and end iteration at " $loop \
+				and num duration $nim_dur
+			loop $nim_dur @tempo := $RT_TEMPO
+			@abort { print  xyz_interpol loop cancelled }
+		    {	
+			    print xyz_interpol in loop $inc stop ($inc >= $loop)
+			    curve @grain := 1, 
+			    // @tempo := $RT_TEMPO,
+			    @abort { print  xyz_interpol loop curve cancelled }
+			    @action 
+			    {
+			    	print xyz_interpol in curve loop iteration is $inc tempo $RT_TEMPO now $NOW
+			    		$THISOBJ.rand_x_min($xyz_pos[0])
+			    		$THISOBJ.rand_x_max($xyz_pos[1])
+			    		$THISOBJ.rand_y_min($xyz_pos[2])
+			    		$THISOBJ.rand_y_max($xyz_pos[3])
+			    		$THISOBJ.rand_z_min($xyz_pos[4])
+			    		$THISOBJ.rand_z_max($xyz_pos[5])	
+			    		$periode := (60/$RT_TEMPO)*$nim_dur // actualise la valeur de la periode							
+			    } 
+			    { $xyz_pos : $nim }
+			    $inc += 1			    
+		    } until ($inc >= $loop)
+		    ==> { print "end of loop" }
+		}
+    }
+	@proc_def xyz_interpol($bpf, $loop = 0) 
+	{
+		@local 
+			$xyz_pos, 
+			$inc := 0, 
+			$nim :=  @build_nim_from_bpf($bpf)
+			$nim_dur := @max(@max_key($nim))
+
+		abort $curve_xyz    // or abort xyz_interpol_loop
+		$curve_xyz := { 
+			loop xyz_interpol_loop $nim_dur
+			@tempo := $RT_TEMPO
+			@exclusive
 			{
+				$inc += 1			    
+				curve xyz_interpol_curve
+				@grain := 0.1, 
+				@exclusive
+				@action 
+				{
+					// print id (""+$bpf) iteration $inc curve (""+$xyz_pos) at $NOW 
+					
 					$THISOBJ.rand_x_min($xyz_pos[0])
 					$THISOBJ.rand_x_max($xyz_pos[1])
 					$THISOBJ.rand_y_min($xyz_pos[2])
 					$THISOBJ.rand_y_max($xyz_pos[3])
 					$THISOBJ.rand_z_min($xyz_pos[4])
 					$THISOBJ.rand_z_max($xyz_pos[5])	
-					$periode := (60/$RT_TEMPO)*$nim_dur // actualise la valeur de la periode							
-			} 
-			{ $xyz_pos : $nim }
-			$inc += 1			    
-		} until ($inc >= $loop)
+					
+					
+				} 
+				{ $xyz_pos : $nim }
+			} during[$loop #]
 		}
-    }		
+	}
+   	
+
 	@fun_def xyz_interpol_stop() 
 	{ 
 		abort $curve_xyz
@@ -26927,7 +28165,7 @@ whenever ($from_sc_server2==$from_sc_server2)
 				// $poltocar := @poltocar(0.5, $angle_inc_rand)
 				// $pos := $angle_inc_rand.scale(0, 360, 0., 1., 1)
 				// @proc_def HOA_grainIn_xyz_track($in, $envbuf0, $envbuf1, $dur, $del, $env_interp, $x, $y, $z, $amp, $track_HOA_NE) 
-				// print HOA_grainIn_xyz_track (""+[$in, $envbuf0, $envbuf1, $env_dur, $del, $env_interp, $rand_x+$HOA_global_x, $rand_y+$HOA_global_y, $rand_z+$HOA_global_z, $amp, $track_HOA_NE])
+				print HOA_grainIN_del_xyz (""+[$in, $envbuf0, $envbuf1, $env_dur, $del, $env_interp, $rand_x+$HOA_global_x, $rand_y+$HOA_global_y, $rand_z+$HOA_global_z, $amp, $track_HOA_NE])
 				::HOA_DelGrain_xyz($in, $envbuf0, $envbuf1, $env_dur, $del, $env_interp, $rand_x, $rand_y, $rand_z, $amp, $track_HOA_NE)
 				// @command("of_grains"+$grain_group) @dur2mlsec($env_dur) $rand_x $rand_y $rand_z // oFx
 				$rate := @rand_range($rate_min, $rate_max)	
@@ -29220,6 +30458,7 @@ whenever ($from_sc_server2==$from_sc_server2)
 			// $poltocar := @poltocar3D($rand_radio , $rand_theta, $rand_phi)
 
 			// print $buf $envbuf $rate $env_dur $pos_lfo ($poltocar[0]) ($poltocar[1]) ($poltocar[2]) $amp $track_HOA_NE
+			// print (""+["HOA_Grain_xyz"+$order, $node_inc, 2, $rev_id, "globTBus", $hoa_bus, "buf", $SF_map($server_name)($buf), "envbuf", $envs($server_name)($envbuf), "pos", $pos_lfo, "env_dur", $env_dur, "t_trig", 1, "x", $poltocar[0]+$HOA_global_x, "y", $poltocar[1]+$HOA_global_y, "z", $poltocar[2]+$HOA_global_z, "xoffset", $xyz_offset[0], "yoffset", $xyz_offset[1], "zoffset", $xyz_offset[2], "amp", $amp, "rate", $rate, "spk_radius", $spk_radius])
 			$Servers($server_name).s_new(["HOA_Grain_xyz"+$order, $node_inc, 2, $rev_id, "globTBus", $hoa_bus, "buf", $SF_map($server_name)($buf), "envbuf", $envs($server_name)($envbuf), "pos", $pos_lfo, "env_dur", $env_dur, "t_trig", 1, "x", $poltocar[0]+$HOA_global_x, "y", $poltocar[1]+$HOA_global_y, "z", $poltocar[2]+$HOA_global_z, "xoffset", $xyz_offset[0], "yoffset", $xyz_offset[1], "zoffset", $xyz_offset[2], "amp", $amp, "rate", $rate, "spk_radius", $spk_radius])
 			// print: harm-trem-C5-c4-2.aif perc 1.306915 0.031069 <undef> 0.582017 -0.369433 0.121554 0 <undef>
 
@@ -32629,6 +33868,28 @@ $SpectralShape := map{(["centroid"], 1), (["spread"], 2), (["centroid", "spread"
 	}
 }
 
+// Partial tracking
+@proc_def FluidSineFeature($server_name, $ana_name, $source_buf, $startFrame = 0, $numFrames = -1, $startChan = 0, $numChans = -1, $features_buf = 0, $select = 3, $algorithm = 2, $minFreq = 20, $maxFreq = 10000, $unit = 0, $windowSize = 1024, $hopSize = 512, $fftSize = -1, $padding = 1024, $freeWhenDone = 1)
+{
+	@local $proc_id, $when
+
+	$when := $MYSELF
+	$proc_id := $SC_Servers($server_name)("node_id") // current node id for this server
+	$SC_Servers($server_name).add_pair("node_id", $proc_id + 1) // incremente le node_id dans le dico des serveurs	
+
+	$Servers($server_name).cmd(["FluidSineFeature", "FluidSineFeature/processNew", $proc_id, $source_buf.id(), $startFrame, $numFrames, $startChan, $numChans, $features_buf.id(), 1, $select, $algorithm, $minFreq, $maxFreq, $unit, $windowSize, $hopSize, $fftSize, $padding, $freeWhenDone])
+	
+	whenever (($FluidSineFeatureDone[0] == $server_name) && ($FluidSineFeatureDone[1] == "/done")) // wait for analyse Done
+	{
+		// print FluidSineFeatureDone $FluidSineFeatureDone
+		// $Servers($server_name).b_query($features_buf)
+		$Servers($server_name).cmd(["FluidSineFeature", "FluidSineFeature/free", $proc_id]) // free process into the server
+		// $Servers($server_name).sync($proc_id)
+		abort $when
+		// $sync_inc += 1
+	}
+}
+
 
 @obj_def FluidNormalize($server_name, $min = 0, $max = 1)
 {
@@ -32826,8 +34087,8 @@ $SpectralShape := map{(["centroid"], 1), (["spread"], 2), (["centroid", "spread"
 /// Slice Audio
 
 $onsetdetect := []
-
-@obj_def onset_detect($server_name, $inst, $onset_algo = "Fluid_OnsetReplay", $thresh = 0.5, $antirebond = 1, $id = 0, $amp = 0) // del in ms
+// Antes era Fluid_OnsetReplay por si acaso cambia el comportamiento
+@obj_def onset_detect($server_name, $inst, $onset_algo = "Fluid_OnsetReplay2", $thresh = 0.5, $antirebond = 1, $id = 0, $amp = 0, $inbus = false) // del in ms
 {
 	@local $bus, $group_id, $input_id, $onset_id, $actif := 1, $action, $onebang := 1, $pause := 1 //, $nom, $inc
 	@init 
@@ -32840,12 +34101,22 @@ $onsetdetect := []
 		$Servers($server_name).g_new($group_id, 0, 1) // create group
 		$SC_Servers($server_name).add_pair("node_id", $group_id + 1) // incremente le node_id dans le dico des serveurs	
 
-		$input_id := $SC_Servers($server_name)("node_id")
-   		$Servers($server_name).s_new(["AudioInput", $input_id, 1, $group_id, input, $inst, out, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
-		$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+		if($inbus)
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["OutBus", $input_id, 1, $group_id, "in", $inst, outbus, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+		}
+		else
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["AudioInput", $input_id, 1, $group_id, input, $inst, out, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+
+		}
 
 		$onset_id := $SC_Servers($server_name)("node_id")
-   		$Servers($server_name).s_new([$onset_algo, $onset_id, 3, $input_id, "in", $bus, id, $id, thresh, $thresh])  //target 2 justo despues del nodo 180 audioOut
+   		$Servers($server_name).s_new([$onset_algo, $onset_id, 3, $input_id, "in", $bus, id, $id, threshold, $thresh])  //target 2 justo despues del nodo 180 audioOut
 		$SC_Servers($server_name).add_pair("node_id", $onset_id + 1) // incremente pour le prochain	
 	}
 
@@ -32866,10 +34137,19 @@ $onsetdetect := []
   	}  	
   	@fun_def thresh($thrs) {
       	// crea_track8 $track set 01_Perc_OnsetReplay thresh $thresh
-  		$Servers($server_name).n_set($onset_id, [thresh, $thrs])
+  		$Servers($server_name).n_set($onset_id, [threshold, $thrs])
 
     }
+     @fun_def filterSize($filterSize) {
+      	// crea_track8 $track set 01_Perc_OnsetReplay thresh $thresh
+  		$Servers($server_name).n_set($onset_id, [filterSize, $filterSize])
 
+    }
+    @fun_def minSliceLength($minSliceLength) {
+      	// crea_track8 $track set 01_Perc_OnsetReplay thresh $thresh
+  		$Servers($server_name).n_set($onset_id, [minSliceLength, $minSliceLength])
+
+    }
     @fun_def floor($floor) {
       	// crea_track8 $track set 01_Perc_OnsetReplay floor $floor
       	$Servers($server_name).n_set($onset_id, ["floor", $floor])
@@ -32929,7 +34209,7 @@ $onsetdetect := []
 
 $ampgatedetect := []
 
-@obj_def ampgate_detect($server_name, $inst, $onset_algo = "Fluid_AmpGate", $params = [rampUp, 5, rampDown, 25, onThreshold, -12, offThreshold, -12, lookAhead, 480], $antirebond = 1, $id = 0, $amp = 0) // del in ms
+@obj_def ampgate_detect($server_name, $inst, $onset_algo = "Fluid_AmpGate", $params = [rampUp, 5, rampDown, 25, onThreshold, -12, offThreshold, -12, lookAhead, 480], $antirebond = 1, $id = 0, $amp = 0, $inbus = false) // del in ms
 {
 	@local $bus, $group_id, $input_id, $onset_id, $actif := 1, $action, $onebang := 1, $pause := 1 //, $nom, $inc
 	@init 
@@ -32942,9 +34222,19 @@ $ampgatedetect := []
 		$Servers($server_name).g_new($group_id, 0, 1) // create group
 		$SC_Servers($server_name).add_pair("node_id", $group_id + 1) // incremente le node_id dans le dico des serveurs	
 
-		$input_id := $SC_Servers($server_name)("node_id")
-   		$Servers($server_name).s_new(["AudioInput", $input_id, 1, $group_id, input, $inst, out, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
-		$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+		if($inbus)
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["OutBus", $input_id, 1, $group_id, "in", $inst, outbus, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+		}
+		else
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["AudioInput", $input_id, 1, $group_id, input, $inst, out, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+
+		}
 
 		$onset_id := $SC_Servers($server_name)("node_id")
    		$Servers($server_name).s_new([$onset_algo, $onset_id, 3, $input_id, "in", $bus, id, $id].concat($params))  //target 2 justo despues del nodo 180 audioOut
@@ -33031,7 +34321,7 @@ $ampgatedetect := []
 }
 
 $fluid_loudness := []
-@obj_def fluid_loudness($server_name, $inst, $loudness_algo = "Fluid_Loudness", $lagTimeU = 0.001, $lagTimeD = 0.1, $kWeighting = 1, $truePeak = 1, $windowSize = 1024, $hopSize = 512, $trig_rate = 30, $id = 0, $amp = 0) // del in ms
+@obj_def fluid_loudness($server_name, $inst, $loudness_algo = "Fluid_Loudness", $lagTimeU = 0.001, $lagTimeD = 0.1, $kWeighting = 1, $truePeak = 1, $windowSize = 1024, $hopSize = 512, $trig_rate = 30, $id = 0, $amp = 0, $inbus = false) // del in ms
 {
 	@local $bus, $group_id, $input_id, $onset_id, $actif := 1, $action, $onebang := 1, $pause := 1 //, $nom, $inc
 	@init 
@@ -33044,9 +34334,19 @@ $fluid_loudness := []
 		$Servers($server_name).g_new($group_id, 0, 1) // create group
 		$SC_Servers($server_name).add_pair("node_id", $group_id + 1) // incremente le node_id dans le dico des serveurs	
 
-		$input_id := $SC_Servers($server_name)("node_id")
-   		$Servers($server_name).s_new(["AudioInput", $input_id, 1, $group_id, input, $inst, out, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
-		$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+		if($inbus)
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["OutBus", $input_id, 1, $group_id, "in", $inst, outbus, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+		}
+		else
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["AudioInput", $input_id, 1, $group_id, input, $inst, out, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+
+		}
 
 		$onset_id := $SC_Servers($server_name)("node_id")
    		$Servers($server_name).s_new([$loudness_algo, $onset_id, 3, $input_id, "in", $bus, id, $id, "lagTimeU", $lagTimeU, "lagTimeD", $lagTimeD, "kWeighting", $kWeighting, "truePeak", $truePeak, "windowSize", $windowSize, "hopSize", $hopSize, "trig_rate", $trig_rate])  //target 2 justo despues del nodo 180 audioOut
@@ -33134,7 +34434,7 @@ $fluid_loudness := []
 
 $fluid_pitch := []
 
-@obj_def fluid_pitch($server_name, $inst, $pitch_algo = "Fluid_Pitch", $lagTimeU = 0.001, $lagTimeD = 0.1, $algorithm = 2, $minFreq = 20, $maxFreq = 10000, $unit = 0, $windowSize = 1024, $hopSize = -1, $fftSize = -1, $trig_rate = 30, $id = 0, $amp = 0) // del in ms
+@obj_def fluid_pitch($server_name, $inst, $pitch_algo = "Fluid_Pitch", $lagTimeU = 0.001, $lagTimeD = 0.1, $algorithm = 2, $minFreq = 20, $maxFreq = 10000, $unit = 0, $windowSize = 1024, $hopSize = -1, $fftSize = -1, $trig_rate = 30, $id = 0, $amp = 0, $inbus = false) // del in ms
 {
 	@local $bus, $group_id, $input_id, $onset_id, $actif := 1, $action, $onebang := 1, $pause := 1 //, $nom, $inc
 	@init 
@@ -33147,9 +34447,19 @@ $fluid_pitch := []
 		$Servers($server_name).g_new($group_id, 0, 1) // create group
 		$SC_Servers($server_name).add_pair("node_id", $group_id + 1) // incremente le node_id dans le dico des serveurs	
 
-		$input_id := $SC_Servers($server_name)("node_id")
-   		$Servers($server_name).s_new(["AudioInput", $input_id, 1, $group_id, input, $inst, out, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
-		$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+		if($inbus)
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["OutBus", $input_id, 1, $group_id, "in", $inst, outbus, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+		}
+		else
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["AudioInput", $input_id, 1, $group_id, input, $inst, out, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+
+		}
 
 		$onset_id := $SC_Servers($server_name)("node_id")
    		$Servers($server_name).s_new([$pitch_algo, $onset_id, 3, $input_id, "in", $bus, id, $id, "lagTimeU", $lagTimeU, "lagTimeD", $lagTimeD, "algorithm", $algorithm, "minFreq", $minFreq, "maxFreq", $maxFreq, "unit", $unit, "windowSize", $windowSize, "hopSize", $hopSize, "fftSize", $fftSize, "trig_rate", $trig_rate])  //target 2 justo despues del nodo 180 audioOut
@@ -33236,8 +34546,42 @@ $fluid_pitch := []
 		// }
 	}
 }
-$fluid_spectralshape := []
-@obj_def fluid_spectralshape($server_name, $inst, $shape_algo = "Fluid_SpectralShape", $lagTimeU = 0.001, $lagTimeD = 0.1, $minFreq = 0, $maxFreq = -1, $rolloffPercent = 95, $unit = 0, $power = 0, $windowSize = 1024, $hopSize = -1, $fftSize = -1, $maxFFTSize = -1, $trig_rate = 30, $id = 0, $amp = 0) // del in ms
+
+
+@fun_def shouldAcceptPitch($pitch, $quality, $key, $time = $now)
+{
+    // Temps précédent
+    $lastTime := (@is_numeric($lastPitchTimes[$key]) ? $lastPitchTimes[$key] : 0)
+
+    // Pitch précédent
+    $lastPitch := $lastAcceptedPitches[$key]
+
+    // Assez éloigné dans le temps ?
+    $isFarEnough := ($time - $lastTime) > $minDelay
+
+    // Pitch précédent défini ?
+    $pitchWasDefined := @is_numeric($lastPitch)
+
+    // Tolérance no funciona no se porque !!!
+    // if ($pitchWasDefined) {
+    //     $isOutsideTolerance := abs($pitch - $lastPitch) > $pitchTolerance
+    // } else {
+    //     $isOutsideTolerance := true
+    // }
+
+    // Condition complète
+    if (($quality >= $minQuality) && ($isFarEnough && $isOutsideTolerance)) {
+        $lastPitchTimes[$key] := $time
+        $lastAcceptedPitches[$key] := $pitch
+        return true
+    } else {
+        return false
+    }
+}
+
+
+// fluid_pitch2 use filters shouldAcceptPitch
+@obj_def fluid_pitch2($server_name, $inst, $pitch_algo = "Fluid_Pitch", $lagTimeU = 0.001, $lagTimeD = 0.1, $algorithm = 2, $minFreq = 20, $maxFreq = 10000, $unit = 0, $windowSize = 1024, $hopSize = -1, $fftSize = -1, $trig_rate = 30, $id = 0, $amp = 0, $inbus = false) // del in ms
 {
 	@local $bus, $group_id, $input_id, $onset_id, $actif := 1, $action, $onebang := 1, $pause := 1 //, $nom, $inc
 	@init 
@@ -33250,9 +34594,134 @@ $fluid_spectralshape := []
 		$Servers($server_name).g_new($group_id, 0, 1) // create group
 		$SC_Servers($server_name).add_pair("node_id", $group_id + 1) // incremente le node_id dans le dico des serveurs	
 
-		$input_id := $SC_Servers($server_name)("node_id")
-   		$Servers($server_name).s_new(["AudioInput", $input_id, 1, $group_id, input, $inst, out, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
-		$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+		if($inbus)
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["OutBus", $input_id, 1, $group_id, "in", $inst, outbus, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+		}
+		else
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["AudioInput", $input_id, 1, $group_id, input, $inst, out, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+
+		}
+
+		$onset_id := $SC_Servers($server_name)("node_id")
+   		$Servers($server_name).s_new([$pitch_algo, $onset_id, 3, $input_id, "in", $bus, id, $id, "lagTimeU", $lagTimeU, "lagTimeD", $lagTimeD, "algorithm", $algorithm, "minFreq", $minFreq, "maxFreq", $maxFreq, "unit", $unit, "windowSize", $windowSize, "hopSize", $hopSize, "fftSize", $fftSize, "trig_rate", $trig_rate])  //target 2 justo despues del nodo 180 audioOut
+		$SC_Servers($server_name).add_pair("node_id", $onset_id + 1) // incremente pour le prochain	
+	}
+
+	@abort
+	{
+		$Servers($server_name).n_free($group_id)
+		print onset intrument $inst off 
+	}
+	@fun_def actif($y) {
+  	      $actif := $y
+  	}
+  	@fun_def lagTimeU($lagTimeU_p) {
+  		// crea_track8 $track set 01_Perc_OnsetReplay relaxtime $relaxt
+  		$Servers($server_name).n_set($onset_id, [lagTimeU, $lagTimeU_p])
+  	}
+  	@fun_def lagTimeD($lagTimeD_p) {
+  		$Servers($server_name).n_set($onset_id, [lagTimeD, $lagTimeD_p])
+  	}  
+  	@fun_def thresh($thrs) {
+      	// crea_track8 $track set 01_Perc_OnsetReplay thresh $thresh
+  		$Servers($server_name).n_set($onset_id, [thresh, $thrs])
+
+    }
+
+    @fun_def floor($floor) {
+      	// crea_track8 $track set 01_Perc_OnsetReplay floor $floor
+      	$Servers($server_name).n_set($onset_id, ["floor", $floor])
+    }    
+  	@proc_def pause($pse) 
+  	{
+  		// crea_track8 $track pause $pause //temps fade_out
+  		$pause := 0
+  		print onset pause
+  		$Servers($server_name).n_set($input_id, ["amp", -120, "matrix_ramp", $pse])
+		0.01s $Servers($server_name).n_run($group_id, 0)
+
+  	}
+  	@fun_def resume($rsme) {
+  		// crea_track8 $track resume $resume //temps fade_in
+  		$pause := 1
+  		print onset resume
+		$Servers($server_name).n_run($group_id, 1)
+		// scServer "n_set" $node_id_out amp 0
+		$Servers($server_name).n_set($input_id, ["amp", $amp, "matrix_ramp", $rsme])
+  	}  	
+  	@proc_def free() 
+  	{
+  		// crea_track8 $track off $fade_out
+     	// print $track $THISOBJ off 
+     	print free onsetdetect id $id
+     	$Servers($server_name).n_free($group_id) 	
+    }
+   	@fun_def id()
+   	{
+   		return $id
+   	}  
+   	@fun_def inst($instr, $am = 0)
+   	{
+   		$Servers($server_name).n_set($input_id, [input, $inst, "amp", $am])
+   	}
+	@whenever (($descriptors_receives[0] == $server_name) && $actif && ($descriptors_receives[1][0] == "/fluid_pitch") && ($descriptors_receives[1][2] == $id))
+	{
+		// print onset $onsetdetect
+		// if ($stop_detect){
+			// group 
+			// {
+			// 	($del)ms iana_anal bang 
+			// }
+			// print: fluid_pitch "TAB[\"server5\", TAB[\"/fluid_pitch\", 147, 39, 770.487, 0.891751]]"
+
+			// print fluid_pitch (""+$descriptors_receives)
+			// $onset_id := $id
+			// $nextevent := 1
+			$fluid_pitch := [$server_name, $id].concat($descriptors_receives[1].drop(3)) // send to whenever
+			// print fluid_pitch (""+$fluid_pitch)
+			// $actif := 0
+			// let $descriptors_receives[1][2] := -1 // avoid whenever loop
+			// ($antirebond) $actif := 1 //antirebond
+			// print onsetdetect FINAL id $id inst $inst onset $onsetdetect
+			
+		// }
+	}
+}
+
+
+$fluid_spectralshape := []
+@obj_def fluid_spectralshape($server_name, $inst, $shape_algo = "Fluid_SpectralShape", $lagTimeU = 0.001, $lagTimeD = 0.1, $minFreq = 0, $maxFreq = -1, $rolloffPercent = 95, $unit = 0, $power = 0, $windowSize = 1024, $hopSize = -1, $fftSize = -1, $maxFFTSize = -1, $trig_rate = 30, $id = 0, $amp = 0, $inbus = false) // del in ms
+{
+	@local $bus, $group_id, $input_id, $onset_id, $actif := 1, $action, $onebang := 1, $pause := 1 //, $nom, $inc
+	@init 
+	{
+		print onset id $id
+		$bus := $SC_Servers($server_name)("bus_index") // current bus index for this server
+		$SC_Servers($server_name).insert("bus_index", $bus+1) // inc bus de server  
+
+	    $group_id := $SC_Servers($server_name)("node_id") // current node id for this server
+		$Servers($server_name).g_new($group_id, 0, 1) // create group
+		$SC_Servers($server_name).add_pair("node_id", $group_id + 1) // incremente le node_id dans le dico des serveurs	
+
+		if($inbus)
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["OutBus", $input_id, 1, $group_id, "in", $inst, outbus, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+		}
+		else
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["AudioInput", $input_id, 1, $group_id, input, $inst, out, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+
+		}
 
 		$onset_id := $SC_Servers($server_name)("node_id")
    		$Servers($server_name).s_new([$shape_algo, $onset_id, 3, $input_id, "in", $bus, id, $id, "lagTimeU", $lagTimeU, "lagTimeD", $lagTimeD, "minFreq", $minFreq, "maxFreq", $maxFreq, "rolloffPercent", $rolloffPercent, "unit", $unit, "power", $power, "windowSize", $windowSize, "hopSize", $hopSize, "fftSize", $fftSize, "maxFFTSize", $maxFFTSize, "trig_rate", $trig_rate])  //target 2 justo despues del nodo 180 audioOut
@@ -33340,7 +34809,7 @@ $fluid_spectralshape := []
 }
 
 $fluid_chroma := []
-@obj_def fluid_chroma($server_name, $inst, $shape_algo = "Fluid_Chroma", $lagTimeU = 0.001, $lagTimeD = 0.1, $trig_rate = 30, $id = 0, $amp = 0) // del in ms
+@obj_def fluid_chroma($server_name, $inst, $shape_algo = "Fluid_Chroma", $lagTimeU = 0.001, $lagTimeD = 0.1, $trig_rate = 30, $id = 0, $amp = 0, $inbus = false) // del in ms
 {
 	@local $bus, $group_id, $input_id, $onset_id, $actif := 1, $action, $onebang := 1, $pause := 1 //, $nom, $inc
 	@init 
@@ -33353,9 +34822,19 @@ $fluid_chroma := []
 		$Servers($server_name).g_new($group_id, 0, 1) // create group
 		$SC_Servers($server_name).add_pair("node_id", $group_id + 1) // incremente le node_id dans le dico des serveurs	
 
-		$input_id := $SC_Servers($server_name)("node_id")
-   		$Servers($server_name).s_new(["AudioInput", $input_id, 1, $group_id, input, $inst, out, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
-		$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+		if($inbus)
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["OutBus", $input_id, 1, $group_id, "in", $inst, outbus, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+		}
+		else
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["AudioInput", $input_id, 1, $group_id, input, $inst, out, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+
+		}
 
 		$onset_id := $SC_Servers($server_name)("node_id")
    		$Servers($server_name).s_new([$shape_algo, $onset_id, 3, $input_id, "in", $bus, id, $id, "lagTimeU", $lagTimeU, "lagTimeD", $lagTimeD, "trig_rate", $trig_rate])  //target 2 justo despues del nodo 180 audioOut
@@ -33444,7 +34923,7 @@ $fluid_chroma := []
 
 
 $fluid_melbands := []
-@obj_def fluid_melbands($server_name, $inst, $shape_algo = "Fluid_MelBands", $lagTimeU = 0.001, $lagTimeD = 0.1, $trig_rate = 30, $id = 0, $amp = 0) // del in ms
+@obj_def fluid_melbands($server_name, $inst, $shape_algo = "Fluid_MelBands", $lagTimeU = 0.001, $lagTimeD = 0.1, $trig_rate = 30, $id = 0, $amp = 0, $inbus = false) // del in ms
 {
 	@local $bus, $group_id, $input_id, $onset_id, $actif := 1, $action, $onebang := 1, $pause := 1 //, $nom, $inc
 	@init 
@@ -33457,10 +34936,19 @@ $fluid_melbands := []
 		$Servers($server_name).g_new($group_id, 0, 1) // create group
 		$SC_Servers($server_name).add_pair("node_id", $group_id + 1) // incremente le node_id dans le dico des serveurs	
 
-		$input_id := $SC_Servers($server_name)("node_id")
-   		$Servers($server_name).s_new(["AudioInput", $input_id, 1, $group_id, input, $inst, out, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
-		$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+		if($inbus)
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["OutBus", $input_id, 1, $group_id, "in", $inst, outbus, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+		}
+		else
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["AudioInput", $input_id, 1, $group_id, input, $inst, out, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
 
+		}
 		$onset_id := $SC_Servers($server_name)("node_id")
    		$Servers($server_name).s_new([$shape_algo, $onset_id, 3, $input_id, "in", $bus, id, $id, "lagTimeU", $lagTimeU, "lagTimeD", $lagTimeD, "trig_rate", $trig_rate])  //target 2 justo despues del nodo 180 audioOut
 		$SC_Servers($server_name).add_pair("node_id", $onset_id + 1) // incremente pour le prochain	
@@ -33546,7 +35034,117 @@ $fluid_melbands := []
 	}
 }
 
+$fluid_sine := []
+@obj_def fluid_sine($server_name, $inst, $shape_algo = "Fluid_Sine", $lagTimeU = 0.001, $lagTimeD = 0.1, $trig_rate = 30, $id = 0, $amp = 0, $inbus = false) // del in ms
+{
+	@local $bus, $group_id, $input_id, $onset_id, $actif := 1, $action, $onebang := 1, $pause := 1 //, $nom, $inc
+	@init 
+	{
+		print onset id $id
+		$bus := $SC_Servers($server_name)("bus_index") // current bus index for this server
+		$SC_Servers($server_name).insert("bus_index", $bus+1) // inc bus de server  
 
+	    $group_id := $SC_Servers($server_name)("node_id") // current node id for this server
+		$Servers($server_name).g_new($group_id, 0, 1) // create group
+		$SC_Servers($server_name).add_pair("node_id", $group_id + 1) // incremente le node_id dans le dico des serveurs	
+
+		if($inbus)
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["OutBus", $input_id, 1, $group_id, "in", $inst, outbus, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+		}
+		else
+		{
+			$input_id := $SC_Servers($server_name)("node_id")
+   			$Servers($server_name).s_new(["AudioInput", $input_id, 1, $group_id, input, $inst, out, $bus, amp, $amp])  //target 2 justo despues del nodo 180 audioOut
+			$SC_Servers($server_name).add_pair("node_id", $input_id + 1) // incremente pour le prochain	
+
+		}
+		$onset_id := $SC_Servers($server_name)("node_id")
+   		$Servers($server_name).s_new([$shape_algo, $onset_id, 3, $input_id, "in", $bus, id, $id, "lagTimeU", $lagTimeU, "lagTimeD", $lagTimeD, "trig_rate", $trig_rate])  //target 2 justo despues del nodo 180 audioOut
+		$SC_Servers($server_name).add_pair("node_id", $onset_id + 1) // incremente pour le prochain	
+	}
+
+	@abort
+	{
+		$Servers($server_name).n_free($group_id)
+		print onset intrument $inst off 
+	}
+	@fun_def actif($y) {
+  	      $actif := $y
+  	}
+  	@fun_def lagTimeU($lagTimeU_p) {
+  		// crea_track8 $track set 01_Perc_OnsetReplay relaxtime $relaxt
+  		$Servers($server_name).n_set($onset_id, [lagTimeU, $lagTimeU_p])
+  	}
+  	@fun_def lagTimeD($lagTimeD_p) {
+  		$Servers($server_name).n_set($onset_id, [lagTimeD, $lagTimeD_p])
+  	}  	
+  	@fun_def thresh($thrs) {
+      	// crea_track8 $track set 01_Perc_OnsetReplay thresh $thresh
+  		$Servers($server_name).n_set($onset_id, [thresh, $thrs])
+
+    }
+
+    @fun_def floor($floor) {
+      	// crea_track8 $track set 01_Perc_OnsetReplay floor $floor
+      	$Servers($server_name).n_set($onset_id, ["floor", $floor])
+    }    
+  	@proc_def pause($pse) 
+  	{
+  		// crea_track8 $track pause $pause //temps fade_out
+  		$pause := 0
+  		print onset pause
+  		$Servers($server_name).n_set($input_id, ["amp", -120, "matrix_ramp", $pse])
+		0.01s $Servers($server_name).n_run($group_id, 0)
+
+  	}
+  	@fun_def resume($rsme) {
+  		// crea_track8 $track resume $resume //temps fade_in
+  		$pause := 1
+  		print onset resume
+		$Servers($server_name).n_run($group_id, 1)
+		// scServer "n_set" $node_id_out amp 0
+		$Servers($server_name).n_set($input_id, ["amp", $amp, "matrix_ramp", $rsme])
+  	}  	
+  	@proc_def free() 
+  	{
+  		// crea_track8 $track off $fade_out
+     	// print $track $THISOBJ off 
+     	print free onsetdetect id $id
+     	$Servers($server_name).n_free($group_id) 	
+    }
+   	@fun_def id()
+   	{
+   		return $id
+   	}  
+   	@fun_def inst($instr, $am = 0)
+   	{
+   		$Servers($server_name).n_set($input_id, [input, $inst, "amp", $am])
+   	}
+	@whenever (($descriptors_receives[0] == $server_name) && $actif && ($descriptors_receives[1][0] == "/fluid_sine") && ($descriptors_receives[1][2] == $id))
+	{
+		// print onset $onsetdetect
+		// if ($stop_detect){
+			// group 
+			// {
+			// 	($del)ms iana_anal bang 
+			// }
+			// print fluid_chroma (""+$descriptors_receives)
+			// $onset_id := $id
+			// $nextevent := 1
+			// $fluid_spectralshape := [$server_name, $id] // send to whenever
+			$fluid_sine := [$server_name, $id].concat($descriptors_receives[1].drop(3)) // send to whenever
+			// print fluid_spectralshape (""+$fluid_spectralshape)			
+			// $actif := 0
+			// let $descriptors_receives[1][2] := -1 // avoid whenever loop
+			// ($antirebond) $actif := 1 //antirebond
+			// print onsetdetect FINAL id $id inst $inst onset $onsetdetect
+			
+		// }
+	}
+}
 ////////////Treatements
 
 // Del scrub
